@@ -1,0 +1,35 @@
+{
+    "versionCode": 1,
+    "uuid": "7bd25d0e-ad3c-4e7c-9256-12be89a1a482",
+    "capabilities": [
+        "configurable"
+    ],
+    "appKeys": {},
+    "shortName": "Slebble",
+    "companyName": "Peter Lundberg",
+    "resources": {
+        "media": [
+            {
+                "type": "png",
+                "file": "images/SLEBBLE_BUS_ICON.png",
+                "menuIcon": true,
+                "name": "SLEBBLE_BUS_ICON"
+            },
+            {
+                "type": "png",
+                "file": "images/SLEBBLE_START_BLACK.png",
+                "name": "SLEBBLE_START_BLACK"
+            },
+            {
+                "type": "png",
+                "file": "images/SLEBBLE_LOADING_BLACK.png",
+                "name": "SLEBBLE_LOADING_BLACK"
+            }
+        ]
+    },
+    "versionLabel": "1.0",
+    "watchapp": {
+        "watchface": false
+    },
+    "longName": "Slebble"
+}
