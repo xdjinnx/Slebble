@@ -1,7 +1,8 @@
 
+var key = "UacUcP0MlG9fZ0j82r1k5he6KXQ6koSS";
 
 function requestRides(locationid) {
-	var key = "SLKEY";
+	
 	var response;
 	var req = new XMLHttpRequest();
 	req.open('GET', 
@@ -39,6 +40,39 @@ function requestRides(locationid) {
 
 }
 
+function requestNearbyStation(latitude, longitude) {
+	
+	var response;
+	var req = new XMLHttpRequest();
+	req.open('GET', 
+			'https://api.trafiklab.se/samtrafiken/resrobot/StationsInZone.json?key=' + key + '&centerX=' + longitude + '&centerY=' + latitude + '&radius=500&coordSys=WGS84&apiVersion=2.1', false);
+		req.onload = function(e) {
+		if (req.readyState == 4) {
+			if(req.status == 200) {
+				console.log(req.responseText);
+				
+				if(req.responseText !== '{"stationsinzoneresult":{}}') {
+					response = JSON.parse(req.responseText);
+					if( Object.prototype.toString.call( response.stationsinzoneresult.location ) === '[object Array]' ) {
+						requestRides(response.stationsinzoneresult.location[0]['@id']);
+					} else {
+						requestRides(response.stationsinzoneresult.location['@id']);
+					}
+				} else {
+					addRide(0, "No nearby stations", "", "", 1);
+				}
+				
+						
+			} else {
+				console.log("Error");
+				console.log(req.status);
+				addRide(0, "ERROR", req.status, "", 1);
+			}
+		}
+	};
+	req.send(null);
+}
+
 function addStation(index, from, nr) {
 	Pebble.sendAppMessage({
 		"0" : 1,
@@ -69,6 +103,17 @@ function addRide(index, number, to, time, nr) {
 	);
 	
 }
+
+function locationSuccess(pos) {
+	var coordinates = pos.coords;
+	requestNearbyStation(coordinates.latitude, coordinates.longitude);
+}
+
+function locationError(err) {
+	console.warn('location error (' + err.code + '): ' + err.message);
+}
+
+var locationOptions = { "timeout": 15000, "maximumAge": 60000 }; 
 
 
 Pebble.addEventListener("ready",
@@ -136,9 +181,12 @@ Pebble.addEventListener("webviewclosed",
 						});
 
 Pebble.addEventListener("appmessage",
-						function(e) {							
-							var response;
-							response = JSON.parse(localStorage.getItem("data"));
-							requestRides(response.route[e.payload[1]].locationid);
+						function(e) {
+							if(e.payload[1] !== 0) {
+								var response;
+								response = JSON.parse(localStorage.getItem("data"));
+								requestRides(response.route[e.payload[1]-1].locationid);
+							} else
+								window.navigator.geolocation.getCurrentPosition(locationSuccess, locationError, locationOptions);
 						});
  

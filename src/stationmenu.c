@@ -7,8 +7,8 @@ static Window* windoww;
 static MenuLayer *stationmenu_layer;
 
 //Extern variables from menu_handlers.c
-extern char stationmenu_title[5][20][32];
-extern char stationmenu_subtitle[5][20][32];
+extern char stationmenu_title[6][20][32];
+extern char stationmenu_subtitle[6][20][32];
 extern int station_variable;
 extern int callback_variable2;
 extern AppTimer *menu_load_timer;

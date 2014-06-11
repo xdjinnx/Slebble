@@ -25,7 +25,6 @@ static uint16_t menu_get_num_rows_callback(MenuLayer *menu_layer, uint16_t secti
 static int16_t menu_get_header_height_callback(MenuLayer *menu_layer, uint16_t section_index, void *data);
 static void menu_draw_header_callback(GContext* ctx, const Layer *cell_layer, uint16_t section_index, void *data);
 static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data);
-static void menu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data);
 
 
 static void send_appmessage(int index) {
@@ -44,7 +43,6 @@ static void send_appmessage(int index) {
 	app_message_outbox_send();
 }
 
-
 static void startmenu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
 	//APP_LOG(APP_LOG_LEVEL_INFO, "Selected: %d", cell_index->row);
 	nr_ride_variable = 0;
@@ -53,14 +51,12 @@ static void startmenu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_ind
 	create_stationmenu();
 }
 
-
 static void remove_startscreen() {
 	menu_layer_reload_data(startmenu_layer);
 	menu_load_timer = NULL;
 	bitmap_layer_destroy(start_layer);
 	gbitmap_destroy(startUpImage);
 	menu_layer_set_click_config_onto_window(startmenu_layer, window);
-	
 }
 
 

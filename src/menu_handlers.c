@@ -4,8 +4,8 @@ static AppTimer *menu_load_timer;
 
 static char startmenu_title[5][32];
 
-static char stationmenu_title[5][20][32];
-static char stationmenu_subtitle[5][20][32];
+static char stationmenu_title[6][20][32];
+static char stationmenu_subtitle[6][20][32];
 
 static int station_variable = 0;
 static int nr_station_variable = 0;
@@ -21,7 +21,7 @@ static uint16_t menu_get_num_sections_callback(MenuLayer *menu_layer, void *data
 static uint16_t menu_get_num_rows_callback(MenuLayer *menu_layer, uint16_t section_index, void *data) {
 	int* data2 = data;
 	if(*data2 == 1) {
-		return nr_station_variable;
+		return nr_station_variable + 1;
 	}
 	if(*data2 == 2) {
 		return nr_ride_variable;
@@ -40,14 +40,20 @@ static void menu_draw_header_callback(GContext* ctx, const Layer *cell_layer, ui
 		menu_cell_basic_header_draw(ctx, cell_layer, "Stations");
 	}
 	if(*data2 == 2) {
-		menu_cell_basic_header_draw(ctx, cell_layer, "Rides");
+		if(station_variable == 0)
+			menu_cell_basic_header_draw(ctx, cell_layer, "Nearby Station");
+		else
+			menu_cell_basic_header_draw(ctx, cell_layer, startmenu_title[station_variable - 1]);
 	}
 }
 
 static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data) {
 	int* data2 = data;
 	if(*data2 == 1) {
-		menu_cell_basic_draw(ctx, cell_layer, startmenu_title[cell_index->row], "", NULL);
+		if(cell_index->row == 0)
+			menu_cell_basic_draw(ctx, cell_layer, "Nearby Station", "", NULL);
+		else
+			menu_cell_basic_draw(ctx, cell_layer, startmenu_title[cell_index->row - 1], "", NULL);
 	}
 	if(*data2 == 2) {
 		menu_cell_basic_draw(ctx, cell_layer, stationmenu_title[station_variable][cell_index->row], stationmenu_subtitle[station_variable][cell_index->row], NULL);
