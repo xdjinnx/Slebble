@@ -12,7 +12,7 @@ extern char startmenu_title[5][32];
 extern int callback_variable1;
 extern int station_variable;
 extern int nr_station_variable;
-extern AppTimer *menu_load_timer;
+extern int loaded_rows;
 
 
 //Extern function from stationmenu.c
@@ -53,10 +53,10 @@ static void startmenu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_ind
 
 static void remove_startscreen() {
 	menu_layer_reload_data(startmenu_layer);
-	menu_load_timer = NULL;
 	bitmap_layer_destroy(start_layer);
 	gbitmap_destroy(startUpImage);
 	menu_layer_set_click_config_onto_window(startmenu_layer, window);
+	loaded_rows = 0;
 }
 
 

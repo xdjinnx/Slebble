@@ -9,9 +9,10 @@ static MenuLayer *stationmenu_layer;
 //Extern variables from menu_handlers.c
 extern char stationmenu_title[6][20][32];
 extern char stationmenu_subtitle[6][20][32];
+extern int stationmenu_minLeft[6][20];
 extern int station_variable;
 extern int callback_variable2;
-extern AppTimer *menu_load_timer;
+extern int loaded_rows;
 
 //Extern function from menu_handlers.c
 static uint16_t menu_get_num_sections_callback(MenuLayer *menu_layer, void *data);
@@ -23,13 +24,25 @@ static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuI
 
 static void stationmenu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data){}
 
+static bool tick_handler_bool = false;
+static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
+	if(tick_handler_bool) {
+	    for(int i = 0; i < 6; i++) {
+		    for(int j = 0; j < 20; j++) {
+		        stationmenu_minLeft[i][j]--;
+		    }
+	    }
+	    menu_layer_reload_data(stationmenu_layer);
+    }
+}
 
 static void remove_loadscreen() {
 	menu_layer_reload_data(stationmenu_layer);
-	menu_load_timer = NULL;
 	bitmap_layer_destroy(loading_layer);
 	gbitmap_destroy(loadImage);
 	menu_layer_set_click_config_onto_window(stationmenu_layer, windoww);
+	tick_handler_bool = true;
+	loaded_rows = 0;
 }
 
 
@@ -70,6 +83,7 @@ static void window_load2(Window *window) {
 }
 
 static void window_unload2(Window *window) {
+	tick_handler_bool = false;
 	window_stack_remove(window, true);
 	window_destroy(window);
 	menu_layer_destroy(stationmenu_layer);

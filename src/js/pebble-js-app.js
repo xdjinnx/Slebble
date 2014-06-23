@@ -17,7 +17,7 @@ function requestRides(locationid) {
 					if( Object.prototype.toString.call( response.getdeparturesresult.departuresegment ) === '[object Array]' ) {
 						
 						for(var i = 0; i < response.getdeparturesresult.departuresegment.length; i++){
-							if(i == 20)
+							if(i == 15)
 								break;
 								addRide(i, response.getdeparturesresult.departuresegment[i].segmentid.carrier.number, response.getdeparturesresult.departuresegment[i].direction, response.getdeparturesresult.departuresegment[i].departure.datetime, response.getdeparturesresult.departuresegment.length);					
 						}
@@ -49,7 +49,7 @@ function requestNearbyStation(latitude, longitude) {
 		req.onload = function(e) {
 		if (req.readyState == 4) {
 			if(req.status == 200) {
-				console.log(req.responseText);
+				//console.log(req.responseText);
 				
 				if(req.responseText !== '{"stationsinzoneresult":{}}') {
 					response = JSON.parse(req.responseText);
@@ -92,15 +92,38 @@ function addRide(index, number, to, time, nr) {
 	Pebble.sendAppMessage({
 		"0" : 2,
 		"1" : index,
-		"3" : number + " - " + time.substring(11),
-		"4" : to,
-		"5" : nr
+		"3" : time.substring(11),
+		"4" : number + " " + to,
+		"5" : nr,
+		"6" : determineTimeLeft(time.substring(11))
 		}, 
 		function() {},
 		function() {
 			addRide(index, number, to, time, nr);
 		}
 	);
+	
+}
+
+function determineTimeLeft(time) {
+	if(time === "")
+		return 0;
+	var timeHour = parseInt(time.substr(0, 2));
+	var timeMin = parseInt(time.substr(3));
+	var date = new Date();
+	var realHour = date.getHours();
+	var realMin = date.getMinutes();
+	
+	if(timeHour < realHour) {
+		timeHour += 24;
+	}
+	
+	var hour = timeHour - realHour;
+	var min = hour * 60;
+	
+	var dMin = timeMin - realMin;
+	
+	return min + dMin;
 	
 }
 
@@ -150,7 +173,7 @@ Pebble.addEventListener("showConfiguration",
 
 Pebble.addEventListener("webviewclosed",
 						function(e) {
-							console.log("Configuration window returned: " + e.response);
+							//console.log("Configuration window returned: " + e.response);
 							
 							if(e.response === "reset")
 								localStorage.removeItem("data");
