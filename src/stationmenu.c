@@ -29,7 +29,8 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
 	if(tick_handler_bool) {
 	    for(int i = 0; i < 6; i++) {
 		    for(int j = 0; j < 20; j++) {
-		        stationmenu_minLeft[i][j]--;
+				if(stationmenu_minLeft[i][j] > 0)
+		        	stationmenu_minLeft[i][j]--;
 		    }
 	    }
 	    menu_layer_reload_data(stationmenu_layer);

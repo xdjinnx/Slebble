@@ -57,7 +57,10 @@ static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuI
 			menu_cell_basic_draw(ctx, cell_layer, startmenu_title[cell_index->row - 1], "", NULL);
 	}
 	if(*data2 == 2) {
-		if(stationmenu_minLeft[station_variable][cell_index->row] > 0) {
+		if(stationmenu_minLeft[station_variable][cell_index->row] == -1){
+			menu_cell_basic_draw(ctx, cell_layer, stationmenu_title[station_variable][cell_index->row], stationmenu_subtitle[station_variable][cell_index->row], NULL);
+		}
+		else if(stationmenu_minLeft[station_variable][cell_index->row] > 0) {
 			char buf[7];
 			mini_snprintf(buf, 7, "%dmin", stationmenu_minLeft[station_variable][cell_index->row]);
 			char buff[38];

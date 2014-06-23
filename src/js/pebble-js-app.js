@@ -26,13 +26,13 @@ function requestRides(locationid) {
 						addRide(0, response.getdeparturesresult.departuresegment.segmentid.carrier.number, response.getdeparturesresult.departuresegment.direction, response.getdeparturesresult.departuresegment.departure.datetime, 1);
 					}
 				} else {
-					addRide(0, "No rides available", "Try again later", "", 1);
+					appMessageError("No rides available", "Try again later");
 				}
 						
 			} else {
 				console.log("Error");
 				console.log(req.status);
-				addRide(0, "ERROR", req.status, "", 1);
+				appMessageError("ERROR", req.status);
 			}
 		}
 	};
@@ -59,14 +59,14 @@ function requestNearbyStation(latitude, longitude) {
 						requestRides(response.stationsinzoneresult.location['@id']);
 					}
 				} else {
-					addRide(0, "No nearby stations", "", "", 1);
+					appMessageError("No nearby stations", "");
 				}
 				
 						
 			} else {
 				console.log("Error");
 				console.log(req.status);
-				addRide(0, "ERROR", req.status, "", 1);
+				appMessageError("ERROR", req.status);
 			}
 		}
 	};
@@ -102,7 +102,19 @@ function addRide(index, number, to, time, nr) {
 			addRide(index, number, to, time, nr);
 		}
 	);
-	
+}
+
+function appMessageError(title, subtitle) {
+		Pebble.sendAppMessage({
+		"0" : 3,
+		"7" : title,
+		"8" : subtitle,
+		}, 
+		function() {},
+		function() {
+			appMessageError(title, subtitle);
+		}
+	);
 }
 
 function determineTimeLeft(time) {
@@ -134,6 +146,7 @@ function locationSuccess(pos) {
 
 function locationError(err) {
 	console.warn('location error (' + err.code + '): ' + err.message);
+	appMessageError("Location error", "Can't get your location");
 }
 
 var locationOptions = { "timeout": 15000, "maximumAge": 60000 }; 
