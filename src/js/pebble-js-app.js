@@ -1,5 +1,6 @@
 
 var key = "UacUcP0MlG9fZ0j82r1k5he6KXQ6koSS";
+var maxDepatures = 15;
 
 function requestRides(locationid) {
 	
@@ -17,8 +18,11 @@ function requestRides(locationid) {
 					if( Object.prototype.toString.call( response.getdeparturesresult.departuresegment ) === '[object Array]' ) {
 						
 						for(var i = 0; i < response.getdeparturesresult.departuresegment.length; i++){
-							if(i == 15)
+							if(i == maxDepatures)
 								break;
+							if(response.getdeparturesresult.departuresegment.length > maxDepatures)
+								addRide(i, response.getdeparturesresult.departuresegment[i].segmentid.carrier.number, response.getdeparturesresult.departuresegment[i].direction, response.getdeparturesresult.departuresegment[i].departure.datetime, maxDepatures);
+							else	
 								addRide(i, response.getdeparturesresult.departuresegment[i].segmentid.carrier.number, response.getdeparturesresult.departuresegment[i].direction, response.getdeparturesresult.departuresegment[i].departure.datetime, response.getdeparturesresult.departuresegment.length);					
 						}
 						
@@ -170,6 +174,7 @@ Pebble.addEventListener("ready",
 									//console.log("no array found");
 									addStation(0, response.route.from.replace(/\053/g, " "), 1);
 								}
+								maxDepatures = parseInt(response.maxDepatures);
 							} else {
 								//console.log("no config found!");
 								addStation(0, "No configuration", 1);
@@ -180,8 +185,11 @@ Pebble.addEventListener("ready",
 
 Pebble.addEventListener("showConfiguration",
 						function(e) {
-							//localStorage.removeItem("data");
-							Pebble.openURL('http://mysliceofpi.se/slebble/slebble_conf_1_0_0.html');
+							if (localStorage.data) {
+								Pebble.openURL('http://mysliceofpi.se/slebble?version=1.1.0' + '&setting=' + localStorage.data);
+							}else {
+								Pebble.openURL('http://mysliceofpi.se/slebble?version=1.1.0');
+							}
 						});
 
 Pebble.addEventListener("webviewclosed",
@@ -190,7 +198,7 @@ Pebble.addEventListener("webviewclosed",
 							
 							if(e.response === "reset")
 								localStorage.removeItem("data");
-							else if(e.response != "CANCELLED" && e.response !== '{"route": []}' && e.response !== '{}') {
+							else if(e.response != "CANCELLED" && e.response !== '{"route": [], "maxDepatures": "15"}' && e.response !== '{}') {
 								localStorage.setItem("data", e.response);
 								
 								var response;

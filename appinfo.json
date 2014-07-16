@@ -1,34 +1,35 @@
 {
-    "versionLabel": "1.0",
-    "uuid": "7bd25d0e-ad3c-4e7c-9256-12be89a1a482",
+    "appKeys": {},
     "capabilities": [
         "configurable"
     ],
+    "companyName": "Peter Lundberg",
+    "longName": "Slebble",
+    "projectType": "native",
     "resources": {
         "media": [
             {
-                "menuIcon": true,
-                "type": "png",
                 "file": "images/SLEBBLE_BUS_ICON.png",
-                "name": "SLEBBLE_BUS_ICON"
+                "menuIcon": true,
+                "name": "SLEBBLE_BUS_ICON",
+                "type": "png"
             },
             {
-                "type": "png",
                 "file": "images/SLEBBLE_START_BLACK.png",
-                "name": "SLEBBLE_START_BLACK"
+                "name": "SLEBBLE_START_BLACK",
+                "type": "png"
             },
             {
-                "type": "png",
                 "file": "images/SLEBBLE_LOADING_BLACK.png",
-                "name": "SLEBBLE_LOADING_BLACK"
+                "name": "SLEBBLE_LOADING_BLACK",
+                "type": "png"
             }
         ]
     },
-    "companyName": "Peter Lundberg",
-    "versionCode": 1,
-    "longName": "Slebble",
     "shortName": "Slebble",
-    "appKeys": {},
+    "uuid": "7bd25d0e-ad3c-4e7c-9256-12be89a1a482",
+    "versionCode": 1,
+    "versionLabel": "1.1",
     "watchapp": {
         "watchface": false
     }

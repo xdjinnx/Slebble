@@ -72,10 +72,7 @@ static void in_received_handler(DictionaryIterator *iter, void *context) {
 		
 			stationmenu_minLeft[station_variable][index_tuple->value->uint8] = min_tuple->value->uint8;
 		
-			if(nr_tuple->value->uint8 > 15)
-				nr_ride_variable = 15;
-			else
-				nr_ride_variable = nr_tuple->value->uint8;
+			nr_ride_variable = nr_tuple->value->uint8;
 	
 			loaded_rows++;
 		
