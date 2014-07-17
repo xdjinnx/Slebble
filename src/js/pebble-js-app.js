@@ -136,8 +136,12 @@ function determineTimeLeft(time) {
 	
 	var hour = timeHour - realHour;
 	var min = hour * 60;
-	
+
 	var dMin = timeMin - realMin;
+	
+	if(min === 0 && timeMin < realMin)
+		return 0;
+		//return	24 * 60 + dMin;
 	
 	return min + dMin;
 	
@@ -162,21 +166,19 @@ Pebble.addEventListener("ready",
 							var response;
 							response = localStorage.getItem("data");
 							if(response !== null && response !== "") {
-								//console.log("Config done, and response is " + response);
 								response = JSON.parse(localStorage.getItem("data"));
-								//console.log("config parsed");
+								
 								if( Object.prototype.toString.call( response.route ) === '[object Array]' ) {
-									//console.log("array found");
+									
 									for(var i = 0; i < response.route.length; i++) {
 										addStation(i, response.route[i].from.replace(/\053/g, " "), response.route.length);
 									}
+									
 								} else {
-									//console.log("no array found");
 									addStation(0, response.route.from.replace(/\053/g, " "), 1);
 								}
 								maxDepatures = parseInt(response.maxDepatures);
 							} else {
-								//console.log("no config found!");
 								addStation(0, "No configuration", 1);
 							}
 							 
@@ -194,34 +196,27 @@ Pebble.addEventListener("showConfiguration",
 
 Pebble.addEventListener("webviewclosed",
 						function(e) {
-							//console.log("Configuration window returned: " + e.response);
 							
 							if(e.response === "reset")
 								localStorage.removeItem("data");
-							else if(e.response != "CANCELLED" && e.response !== '{"route": [], "maxDepatures": "15"}' && e.response !== '{}') {
+							else if(e.response != "CANCELLED" && e.response.substring(0, 12) !== '{"route": []' && e.response !== '{}') {
 								localStorage.setItem("data", e.response);
 								
 								var response;
 								response = localStorage.getItem("data");
-								if(response !== null && response !== "") {
-									//console.log("Config done, and response is " + response);
-									response = JSON.parse(localStorage.getItem("data"));
-									//console.log("config parsed");
+								if(localStorage.data) {
+									response = JSON.parse(response);
 									if( Object.prototype.toString.call( response.route ) === '[object Array]' ) {
-										//console.log("array found");
 										for(var i = 0; i < response.route.length; i++) {
 											addStation(i, response.route[i].from.replace(/\053/g, " "), response.route.length);
 										}
 									} else {
-										//console.log("no array found");
 										addStation(0, response.route.from.replace(/\053/g, " "), 1);
 									}
-								} else {
-									//console.log("no config found!");
-									addStation(0, "No configuration", 1);
+									maxDepatures = parseInt(response.maxDepatures);
 								}
 							}
-
+							
 						});
 
 Pebble.addEventListener("appmessage",

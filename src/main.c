@@ -50,6 +50,7 @@ static void in_received_handler(DictionaryIterator *iter, void *context) {
 	Tuple *error_subtitle_tuple = dict_find(iter, ERROR_SUBTITLE_KEY);
 	
 	switch(path_tuple->value->uint8) {
+		//Receive stations
 		case 1:
 			//APP_LOG(APP_LOG_LEVEL_INFO, "Appmessage recived");
 			memcpy(startmenu_title[index_tuple->value->uint8], station_tuple->value->cstring, station_tuple->length);
@@ -63,6 +64,7 @@ static void in_received_handler(DictionaryIterator *iter, void *context) {
 			if(loaded_rows == nr_station_variable)
 				remove_startscreen();
 			break;
+		//Receive depatures
 		case 2:
 			memcpy(stationmenu_title[station_variable][index_tuple->value->uint8], ride_tuple->value->cstring, ride_tuple->length);
 			stationmenu_title[station_variable][index_tuple->value->uint8][31] = '\0';
@@ -80,6 +82,7 @@ static void in_received_handler(DictionaryIterator *iter, void *context) {
 			if(loaded_rows == nr_ride_variable)
 				remove_loadscreen();
 			break;
+		//Receive Error message in depature screen
 		case 3:
 			memcpy(stationmenu_title[station_variable][0], error_title_tuple->value->cstring, error_title_tuple->length);
 			stationmenu_title[station_variable][0][31] = '\0';

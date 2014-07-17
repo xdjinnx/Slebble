@@ -6,6 +6,8 @@ static BitmapLayer *start_layer;
 static Window *window;
 static MenuLayer *startmenu_layer;
 
+static bool startscreen_removed = false;
+
 
 //Extern variables from menu_handlers.c
 extern char startmenu_title[5][32];
@@ -53,8 +55,11 @@ static void startmenu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_ind
 
 static void remove_startscreen() {
 	menu_layer_reload_data(startmenu_layer);
-	bitmap_layer_destroy(start_layer);
-	gbitmap_destroy(startUpImage);
+	if(!startscreen_removed) {
+		startscreen_removed = true;
+		bitmap_layer_destroy(start_layer);
+		gbitmap_destroy(startUpImage);
+	}
 	menu_layer_set_click_config_onto_window(startmenu_layer, window);
 	loaded_rows = 0;
 }
