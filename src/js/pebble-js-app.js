@@ -2,7 +2,7 @@
 var key = "UacUcP0MlG9fZ0j82r1k5he6KXQ6koSS";
 var maxDepatures = 15;
 
-function requestRides(locationid) {
+function requestRides(locationid, filter) {
 	
 	var response;
 	var req = new XMLHttpRequest();
@@ -15,14 +15,17 @@ function requestRides(locationid) {
 				
 				if(req.responseText !== '{"getdeparturesresult":{}}') {
 					response = JSON.parse(req.responseText);
+					
 					if( Object.prototype.toString.call( response.getdeparturesresult.departuresegment ) === '[object Array]' ) {
+						
+						response = filterDepartures(response, filter);
 						
 						for(var i = 0; i < response.getdeparturesresult.departuresegment.length; i++){
 							if(i == maxDepatures)
 								break;
 							if(response.getdeparturesresult.departuresegment.length > maxDepatures)
 								addRide(i, response.getdeparturesresult.departuresegment[i].segmentid.carrier.number, response.getdeparturesresult.departuresegment[i].direction, response.getdeparturesresult.departuresegment[i].departure.datetime, maxDepatures);
-							else	
+							else
 								addRide(i, response.getdeparturesresult.departuresegment[i].segmentid.carrier.number, response.getdeparturesresult.departuresegment[i].direction, response.getdeparturesresult.departuresegment[i].departure.datetime, response.getdeparturesresult.departuresegment.length);					
 						}
 						
@@ -58,9 +61,9 @@ function requestNearbyStation(latitude, longitude) {
 				if(req.responseText !== '{"stationsinzoneresult":{}}') {
 					response = JSON.parse(req.responseText);
 					if( Object.prototype.toString.call( response.stationsinzoneresult.location ) === '[object Array]' ) {
-						requestRides(response.stationsinzoneresult.location[0]['@id']);
+						requestRides(response.stationsinzoneresult.location[0]['@id'], []);
 					} else {
-						requestRides(response.stationsinzoneresult.location['@id']);
+						requestRides(response.stationsinzoneresult.location['@id'], []);
 					}
 				} else {
 					appMessageError("No nearby stations", "");
@@ -147,6 +150,21 @@ function determineTimeLeft(time) {
 	
 }
 
+function filterDepartures(array, filter) {
+	if(filter.length === 0)
+		return array;
+	array.getdeparturesresult.departuresegment = array.getdeparturesresult.departuresegment.filter(function(elem){
+		for(var i = 0; i < filter.length; i++) {
+			if(elem.segmentid.mot['@displaytype'] !== "B" || filter[i] === elem.segmentid.carrier.number)
+				return true;
+		}
+		return false;
+	});
+	
+	return array;
+}
+
+
 function locationSuccess(pos) {
 	var coordinates = pos.coords;
 	requestNearbyStation(coordinates.latitude, coordinates.longitude);
@@ -188,9 +206,9 @@ Pebble.addEventListener("ready",
 Pebble.addEventListener("showConfiguration",
 						function(e) {
 							if (localStorage.data) {
-								Pebble.openURL('http://mysliceofpi.se/slebble?version=1.1.0' + '&setting=' + localStorage.data);
+								Pebble.openURL('http://mysliceofpi.se/slebble?version=1.2.0' + '&setting=' + localStorage.data);
 							}else {
-								Pebble.openURL('http://mysliceofpi.se/slebble?version=1.1.0');
+								Pebble.openURL('http://mysliceofpi.se/slebble?version=1.2.0');
 							}
 						});
 
@@ -224,7 +242,10 @@ Pebble.addEventListener("appmessage",
 							if(e.payload[1] !== 0) {
 								var response;
 								response = JSON.parse(localStorage.getItem("data"));
-								requestRides(response.route[e.payload[1]-1].locationid);
+								if(typeof response.route[e.payload[1]-1].filter != 'undefined')
+									requestRides(response.route[e.payload[1]-1].locationid, response.route[e.payload[1]-1].filter);
+								else
+									requestRides(response.route[e.payload[1]-1].locationid, []);
 							} else
 								window.navigator.geolocation.getCurrentPosition(locationSuccess, locationError, locationOptions);
 						});
