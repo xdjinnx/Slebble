@@ -61,9 +61,9 @@ function requestNearbyStation(latitude, longitude) {
 				if(req.responseText !== '{"stationsinzoneresult":{}}') {
 					response = JSON.parse(req.responseText);
 					if( Object.prototype.toString.call( response.stationsinzoneresult.location ) === '[object Array]' ) {
-						requestRides(response.stationsinzoneresult.location[0]['@id'], []);
+						requestRides(response.stationsinzoneresult.location[0]['@id'], [], "false");
 					} else {
-						requestRides(response.stationsinzoneresult.location['@id'], []);
+						requestRides(response.stationsinzoneresult.location['@id'], [], "false");
 					}
 				} else {
 					appMessageError("No nearby stations", "");
