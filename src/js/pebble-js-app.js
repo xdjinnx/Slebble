@@ -2,7 +2,7 @@
 var key = "UacUcP0MlG9fZ0j82r1k5he6KXQ6koSS";
 var maxDepatures = 15;
 
-function requestRides(locationid, filter) {
+function requestRides(locationid, filter, busFilterActive) {
 	
 	var response;
 	var req = new XMLHttpRequest();
@@ -18,7 +18,7 @@ function requestRides(locationid, filter) {
 					
 					if( Object.prototype.toString.call( response.getdeparturesresult.departuresegment ) === '[object Array]' ) {
 						
-						response = filterDepartures(response, filter);
+						response = filterDepartures(response, filter, busFilterActive);
 						
 						for(var i = 0; i < response.getdeparturesresult.departuresegment.length; i++){
 							if(i == maxDepatures)
@@ -150,9 +150,10 @@ function determineTimeLeft(time) {
 	
 }
 
-function filterDepartures(array, filter) {
-	if(filter.length === 0)
+function filterDepartures(array, filter, busFilterActive) {
+	if(filter.length === 0 || busFilterActive === "false")
 		return array;
+
 	array.getdeparturesresult.departuresegment = array.getdeparturesresult.departuresegment.filter(function(elem){
 		for(var i = 0; i < filter.length; i++) {
 			if(elem.segmentid.mot['@displaytype'] !== "B" || filter[i] === elem.segmentid.carrier.number)
@@ -243,7 +244,7 @@ Pebble.addEventListener("appmessage",
 								var response;
 								response = JSON.parse(localStorage.getItem("data"));
 								if(typeof response.route[e.payload[1]-1].filter != 'undefined')
-									requestRides(response.route[e.payload[1]-1].locationid, response.route[e.payload[1]-1].filter);
+									requestRides(response.route[e.payload[1]-1].locationid, response.route[e.payload[1]-1].filter, response.route[e.payload[1]-1].busFilterActive);
 								else
 									requestRides(response.route[e.payload[1]-1].locationid, []);
 							} else
