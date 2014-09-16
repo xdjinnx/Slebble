@@ -1,0 +1,142 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="description" content="A front-end template that helps you build fast, modern mobile web apps.">
+        <meta name="viewport" content="width=device-width, initial-scale=1, minimal-ui">
+		<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+		<script src="purl/purl.js"></script>
+		<script src="slebble.js"></script>
+		<link rel="stylesheet" type="text/css" href="slebble.css">
+		
+		
+        <title>Slebble Config</title>
+
+        <!-- Add to homescreen for Chrome on Android -->
+        <meta name="mobile-web-app-capable" content="yes">
+
+        <!-- iOS icons -->
+        <link rel="apple-touch-icon-precomposed" sizes="144x144" href="images/touch/apple-touch-icon-144x144-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" sizes="114x114" href="images/touch/apple-touch-icon-114x114-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" sizes="72x72" href="images/touch/apple-touch-icon-72x72-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" href="images/touch/apple-touch-icon-57x57-precomposed.png">
+
+        <!-- Tile icon for Win8 (144x144 + tile color) -->
+        <meta name="msapplication-TileImage" content="images/touch/ms-touch-icon-144x144-precomposed.png">
+        <meta name="msapplication-TileColor" content="#3372DF">
+
+        <!-- Generic Icon -->
+        <link rel="shortcut icon" href="images/touch/touch-icon-57x57.png">
+
+        
+        <!-- Chrome Add to Homescreen -->
+        <link rel="shortcut icon" sizes="196x196" href="images/touch/touch-icon-196x196.png">
+
+        <!-- build:css styles/components/main.min.css -->
+        <link rel="stylesheet" href="styles/h5bp.css">
+        <link rel="stylesheet" href="styles/components/components.css">
+        <link rel="stylesheet" href="styles/main.css">
+        <!-- endbuild -->
+    </head>
+    <body>
+        <header class="app-bar promote-layer">
+            <div class="app-bar-container">
+                <button class="menu"><img src="images/hamburger.svg"></button>
+                <h1 class="logo">Slebble Config</h1>
+                <section class="app-bar-actions">
+                <!-- Put App Bar Buttons Here -->
+                </section>
+            </div>
+        </header>
+
+        <nav class="navdrawer-container promote-layer">
+            <h4>Navigation</h4>
+            <ul>
+				<li><a id="startLink">Start</a></li>
+                <li><a id="searchLink">Find station</a></li>
+				<li><a id="filterLink">Filter station</a></li>
+                <li><a id="reset">Reset app</a></li>
+				<li><a id="submit">Save To app</a></li>
+                <li><a id="cancel">Exit</a></li>
+            </ul>
+        </nav>
+
+        <main>
+		
+			<div class="startPage">
+				<h2>Settings</h2>
+				<div class="adding">
+					<p>No stations set</p>
+				</div>
+				
+				</br>
+				
+				<h3>Max depatures</h3>
+				
+				<input type="range" class="depature-range" min="1" max="20" value="15" step="1" onchange="changePerformance();">
+				<div style="width: 17px; display: inline-block;">
+					<span class="depature-number">15</span>
+				</div>
+				<p class="performance-display theme--user-input">
+					<span class="icon-circle themed--background"><i class="icon icon-performance"></i></span>
+				</p>
+				
+				<div class="highlight-module  highlight-module--right   highlight-module--learning">
+					<div class="highlight-module__container  icon-exclamation ">
+						<div class="highlight-module__content   g-wide--push-1 g-wide--pull-1  g-medium--pull-1   ">
+							<p class="highlight-module__title"> Important</p>
+							<p class="highlight-module__text"> If you have alot of depatures the loading time will increase or even make the app crash. </p>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<div class="searchPage" style="display: none;">
+				<h2>Search</h2>
+				<input type="text" id="search-field" onkeypress="enterKeyPress(event)">
+				<a id="search-btn" class="button--primary"><div class="mglass"></div></a>
+				<div class="results"></div>
+			</div>
+			
+			<div class="filterPage" style="display: none;">
+				<h2>Filtering</h2>
+				
+				<div class="filterAdding">
+					<p>No stations set</p>
+				</div>
+				
+				<div class="highlight-module  highlight-module--right   highlight-module--learning">
+					<div class="highlight-module__container  icon-exclamation ">
+						<div class="highlight-module__content   g-wide--push-1 g-wide--pull-1  g-medium--pull-1   ">
+							<p class="highlight-module__title"> Help </p>
+							<p class="highlight-module__text"> Exemple "514, 321, 534" or "514". Its very important that it has ", " between all the bus numbers! </p>
+						</div>
+					</div>
+				</div>
+				
+			</div>
+			
+        </main>
+
+		<script>
+			checkVersion();
+			getOldDepatures();
+		</script>
+        <!-- build:js scripts/main.min.js -->
+        <script src="scripts/main.js"></script>
+        <!-- endbuild -->
+
+        <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
+        <script>
+            (function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+            function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+            e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+            e.src='//www.google-analytics.com/analytics.js';
+            r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+            ga('create','UA-51591303-1');ga('send','pageview');
+        </script>
+        <!-- Built with love using Web Starter Kit -->
+		
+
+    </body>
+</html>
