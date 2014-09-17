@@ -1,25 +1,26 @@
+#include "menu_handlers.h"
 #include "pebble.h"
 #include "mini-printf.h"
 
-static char startmenu_title[5][32];
+char startmenu_title[5][32];
 
-static char stationmenu_title[6][20][32];
-static char stationmenu_subtitle[6][20][32];
-static int stationmenu_minLeft[6][20];
+char stationmenu_title[6][20][32];
+char stationmenu_subtitle[6][20][32];
+int stationmenu_minLeft[6][20];
 
-static int station_variable = 0;
-static int nr_station_variable = 0;
-static int nr_ride_variable = 0;
-static int loaded_rows = 0;
+int station_variable = 0;
+int nr_station_variable = 0;
+int nr_ride_variable = 0;
+int loaded_rows = 0;
 
-static int callback_variable1 = 1;
-static int callback_variable2 = 2;
+int callback_variable1 = 1;
+int callback_variable2 = 2;
 	
-static uint16_t menu_get_num_sections_callback(MenuLayer *menu_layer, void *data) {
+uint16_t menu_get_num_sections_callback(MenuLayer *menu_layer, void *data) {
 	return 1;
 }
 
-static uint16_t menu_get_num_rows_callback(MenuLayer *menu_layer, uint16_t section_index, void *data) {
+uint16_t menu_get_num_rows_callback(MenuLayer *menu_layer, uint16_t section_index, void *data) {
 	int* data2 = data;
 	if(*data2 == 1) {
 		return nr_station_variable + 1;
@@ -30,12 +31,12 @@ static uint16_t menu_get_num_rows_callback(MenuLayer *menu_layer, uint16_t secti
 	return 0;
 }
 
-static int16_t menu_get_header_height_callback(MenuLayer *menu_layer, uint16_t section_index, void *data) {
+int16_t menu_get_header_height_callback(MenuLayer *menu_layer, uint16_t section_index, void *data) {
 	// This is a define provided in pebble.h that you may use for the default height
 	return MENU_CELL_BASIC_HEADER_HEIGHT;
 }
 
-static void menu_draw_header_callback(GContext* ctx, const Layer *cell_layer, uint16_t section_index, void *data) {
+void menu_draw_header_callback(GContext* ctx, const Layer *cell_layer, uint16_t section_index, void *data) {
 	int* data2 = data;
 	if(*data2 == 1) {
 		menu_cell_basic_header_draw(ctx, cell_layer, "Stations");
@@ -48,7 +49,7 @@ static void menu_draw_header_callback(GContext* ctx, const Layer *cell_layer, ui
 	}
 }
 
-static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data) {
+void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data) {
 	int* data2 = data;
 	if(*data2 == 1) {
 		if(cell_index->row == 0)

@@ -1,18 +1,6 @@
-#include "startmenu.c"
-
-//Extern variables from menu_handlers.c
-extern char startmenu_title[5][32];
-extern char stationmenu_title[6][20][32];
-extern char stationmenu_subtitle[6][20][32];
-extern int stationmenu_minLeft[6][20];
-extern int station_variable;
-extern int nr_station_variable;
-extern int nr_ride_variable;
-extern int loaded_rows;
-
-//Extern functions from stationmenu.c
-extern void tick_handler(struct tm *tick_time, TimeUnits units_changed);
-void remove_loadscreen();
+#include "menu_handlers.h"
+#include "stationmenu.h"
+#include "startmenu.h"
 
 enum SLKey {
   PATH_KEY = 0x0,
@@ -26,18 +14,13 @@ enum SLKey {
   ERROR_SUBTITLE_KEY = 0x8,
 };
 
-//Extern functions from startmenu.c
-void create_startmenu();
-void send_appmessage(int index);
-void remove_startscreen();
 
-
-static void in_dropped_handler(AppMessageResult reason, void *context) {
+void in_dropped_handler(AppMessageResult reason, void *context) {
 	//APP_LOG(APP_LOG_LEVEL_WARNING, "DROPPED PACKAGE");
 }
 
 
-static void in_received_handler(DictionaryIterator *iter, void *context) {
+void in_received_handler(DictionaryIterator *iter, void *context) {
 	
 	Tuple *path_tuple = dict_find(iter, PATH_KEY);
 	Tuple *index_tuple = dict_find(iter, INDEX_KEY);

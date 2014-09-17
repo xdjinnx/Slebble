@@ -1,31 +1,15 @@
-#include "menu_handlers.c"
-	
-static GBitmap* loadImage;
-static BitmapLayer *loading_layer;
+#include "menu_handlers.h"
 
-static Window* windoww;
-static MenuLayer *stationmenu_layer;
+GBitmap* loadImage;
+BitmapLayer *loading_layer;
 
-//Extern variables from menu_handlers.c
-extern char stationmenu_title[6][20][32];
-extern char stationmenu_subtitle[6][20][32];
-extern int stationmenu_minLeft[6][20];
-extern int station_variable;
-extern int callback_variable2;
-extern int loaded_rows;
+Window* windoww;
+MenuLayer *stationmenu_layer;
 
-//Extern function from menu_handlers.c
-static uint16_t menu_get_num_sections_callback(MenuLayer *menu_layer, void *data);
-static uint16_t menu_get_num_rows_callback(MenuLayer *menu_layer, uint16_t section_index, void *data);
-static int16_t menu_get_header_height_callback(MenuLayer *menu_layer, uint16_t section_index, void *data);
-static void menu_draw_header_callback(GContext* ctx, const Layer *cell_layer, uint16_t section_index, void *data);
-static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data);
+void stationmenu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data){}
 
-
-static void stationmenu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data){}
-
-static bool tick_handler_bool = false;
-static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
+bool tick_handler_bool = false;
+void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
 	if(tick_handler_bool) {
 	    for(int i = 0; i < 6; i++) {
 		    for(int j = 0; j < 20; j++) {
@@ -37,7 +21,7 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
     }
 }
 
-static void remove_loadscreen() {
+void remove_loadscreen() {
 	menu_layer_reload_data(stationmenu_layer);
 	bitmap_layer_destroy(loading_layer);
 	gbitmap_destroy(loadImage);
@@ -47,7 +31,7 @@ static void remove_loadscreen() {
 }
 
 
-static void window_load2(Window *window) {
+void window_load2(Window *window) {
 	
 	Layer *window_layer = window_get_root_layer(window);
 	GRect bounds = layer_get_frame(window_layer);
@@ -83,7 +67,7 @@ static void window_load2(Window *window) {
 	
 }
 
-static void window_unload2(Window *window) {
+void window_unload2(Window *window) {
 	tick_handler_bool = false;
 	window_stack_remove(window, true);
 	window_destroy(window);
@@ -91,7 +75,7 @@ static void window_unload2(Window *window) {
 }
 
 
-static void create_stationmenu() {
+void create_stationmenu() {
 	windoww = window_create();
 	
 	// Setup the window handlers
