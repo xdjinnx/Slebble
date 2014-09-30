@@ -207,9 +207,9 @@ Pebble.addEventListener("ready",
 Pebble.addEventListener("showConfiguration",
 						function(e) {
 							if (localStorage.data) {
-								Pebble.openURL('http://mysliceofpi.se/slebble?version=1.2.0' + '&setting=' + localStorage.data);
+								Pebble.openURL('http://diesel-ability-711.appspot.com/webconfig/index.html?version=1.3.0' + '&setting=' + localStorage.data);
 							}else {
-								Pebble.openURL('http://mysliceofpi.se/slebble?version=1.2.0');
+								Pebble.openURL('http://diesel-ability-711.appspot.com/webconfig/index.html?version=1.3.0');
 							}
 						});
 
@@ -248,6 +248,6 @@ Pebble.addEventListener("appmessage",
 								else
 									requestRides(response.route[e.payload[1]-1].locationid, []);
 							} else
-								window.navigator.geolocation.getCurrentPosition(locationSuccess, locationError, locationOptions);
+								navigator.geolocation.getCurrentPosition(locationSuccess, locationError, locationOptions);
 						});
  

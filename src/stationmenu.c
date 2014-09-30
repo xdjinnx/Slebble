@@ -1,3 +1,4 @@
+#include "stationmenu.h"
 #include "menu_handlers.h"
 
 GBitmap* loadImage;

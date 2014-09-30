@@ -3,11 +3,10 @@
 #include "mini-printf.h"
 
 char startmenu_title[5][32];
-
 char stationmenu_title[6][20][32];
 char stationmenu_subtitle[6][20][32];
 int stationmenu_minLeft[6][20];
-
+	
 int station_variable = 0;
 int nr_station_variable = 0;
 int nr_ride_variable = 0;

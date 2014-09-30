@@ -3,8 +3,8 @@
 	
 #include "pebble.h"
 
-void create_startmenu();
-void send_appmessage(int index);
-void remove_startscreen();
+extern void create_startmenu();
+extern void send_appmessage(int index);
+extern void remove_startscreen();
 
 #endif
