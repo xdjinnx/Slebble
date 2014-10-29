@@ -27,6 +27,7 @@ void remove_loadscreen() {
 	bitmap_layer_destroy(loading_layer);
 	gbitmap_destroy(loadImage);
 	menu_layer_set_click_config_onto_window(stationmenu_layer, windoww);
+	vibes_short_pulse();
 	tick_handler_bool = true;
 	loaded_rows = 0;
 }
