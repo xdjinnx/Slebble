@@ -1,6 +1,5 @@
 #include "menu_handlers.h"
 #include "pebble.h"
-#include "mini-printf.h"
 
 char startmenu_title[5][32];
 char stationmenu_title[6][20][32];
@@ -62,14 +61,14 @@ void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuIndex *c
 		}
 		else if(stationmenu_minLeft[station_variable][cell_index->row] > 0) {
 			char buf[7];
-			mini_snprintf(buf, 7, "%dmin", stationmenu_minLeft[station_variable][cell_index->row]);
+			snprintf(buf, 7, "%dmin", stationmenu_minLeft[station_variable][cell_index->row]);
 			char buff[38];
-			mini_snprintf(buff, 38, "%s - %s", buf, stationmenu_title[station_variable][cell_index->row]);
+			snprintf(buff, 38, "%s - %s", buf, stationmenu_title[station_variable][cell_index->row]);
 			
 			menu_cell_basic_draw(ctx, cell_layer, buff, stationmenu_subtitle[station_variable][cell_index->row], NULL);
 		} else {
 			char buff[38];
-			mini_snprintf(buff, 38, "Nu - %s", stationmenu_title[station_variable][cell_index->row]);
+			snprintf(buff, 38, "Nu - %s", stationmenu_title[station_variable][cell_index->row]);
 			
 			menu_cell_basic_draw(ctx, cell_layer, buff, stationmenu_subtitle[station_variable][cell_index->row], NULL);
 		}
