@@ -15,10 +15,13 @@ extern char stationmenu_subtitle[6][20][32];
 extern int stationmenu_minLeft[6][20];
 
 extern int station_variable;
-extern int callback_variable1;
-extern int callback_variable2;
 extern int loaded_rows;
 extern int nr_station_variable;
 extern int nr_ride_variable;
+
+enum CallbackKeys {
+  STARTMENU_CALLBACK = 1,
+  STATIONMENU_CALLBACK= 2,
+};
 
 #endif

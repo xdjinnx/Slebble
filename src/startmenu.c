@@ -5,8 +5,9 @@
 GBitmap* startUpImage;
 BitmapLayer *start_layer;
 
-Window *window;
+Window *startmenu_window;
 MenuLayer *startmenu_layer;
+int startmenu_callback_key = STARTMENU_CALLBACK;
 
 bool startscreen_removed = false;
 
@@ -28,7 +29,6 @@ void send_appmessage(int index) {
 }
 
 void startmenu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
-	//APP_LOG(APP_LOG_LEVEL_INFO, "Selected: %d", cell_index->row);
 	nr_ride_variable = 0;
 	station_variable = cell_index->row;
 	send_appmessage(cell_index->row);
@@ -42,18 +42,18 @@ void remove_startscreen() {
 		bitmap_layer_destroy(start_layer);
 		gbitmap_destroy(startUpImage);
 	}
-	menu_layer_set_click_config_onto_window(startmenu_layer, window);
+	menu_layer_set_click_config_onto_window(startmenu_layer, startmenu_window);
 	loaded_rows = 0;
 }
 
 
-void window_load(Window *window) {
+void startmenu_window_load(Window *window) {
 	Layer *window_layer = window_get_root_layer(window);
 	GRect bounds = layer_get_frame(window_layer);
 	
 	startmenu_layer = menu_layer_create(bounds);
 	
-	menu_layer_set_callbacks(startmenu_layer, &callback_variable1, (MenuLayerCallbacks){
+	menu_layer_set_callbacks(startmenu_layer, &startmenu_callback_key, (MenuLayerCallbacks){
 		.get_num_sections = menu_get_num_sections_callback,
 		.get_num_rows = menu_get_num_rows_callback,
 		.get_header_height = menu_get_header_height_callback,
@@ -70,15 +70,9 @@ void window_load(Window *window) {
 	layer_add_child(window_layer, menu_layer_get_layer(startmenu_layer));
 	layer_add_child(window_layer, bitmap_layer_get_layer(start_layer));
 	
-	
-	for(int i = 0; i < 5; i++) {
-		char *temp = "";
-		memcpy(startmenu_title[i], temp, 1);
-	}
-	
 }
 
-void window_unload(Window *window) {
+void startmenu_window_unload(Window *window) {
 	window_stack_remove(window, true);
 	window_destroy(window);
 	menu_layer_destroy(startmenu_layer);
@@ -87,13 +81,13 @@ void window_unload(Window *window) {
 
 void create_startmenu() {
 	
-	window = window_create();
+	startmenu_window = window_create();
 	
-	window_set_window_handlers(window, (WindowHandlers) {
-		.load = window_load,
-		.unload = window_unload,
+	window_set_window_handlers(startmenu_window, (WindowHandlers) {
+		.load = startmenu_window_load,
+		.unload = startmenu_window_unload,
 	});
 
-	window_stack_push(window, true /* Animated */);
+	window_stack_push(startmenu_window, true);
 	
 }
