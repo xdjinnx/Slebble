@@ -1,7 +1,7 @@
 Slebble
 =======
 
-[![Slebble is available on the Pebble appstore](http://pblweb.com/badge/5320c36f53fab421d000003a/black/large)](pebble://appstore/5320c36f53fab421d000003a)
+[![Slebble is available on the Pebble appstore](http://pblweb.com/badge/5320c36f53fab421d000003a/black/large)](https://apps.getpebble.com/applications/5320c36f53fab421d000003a)
 
 Screenshots
 -------
