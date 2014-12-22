@@ -16,7 +16,7 @@ var Slebble = (function(){
   var _provider = document.querySelector('#provider');
 
   var MAX_STATIONS = 5;
-  var DEBUG = true;
+  var DEBUG = false;
 
   function log(msg) {
     if (DEBUG)
