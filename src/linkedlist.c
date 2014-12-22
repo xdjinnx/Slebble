@@ -52,3 +52,10 @@ void que(struct node *node, struct node *tail) {
 	}
 	que(node->next, tail);
 }
+
+int size(struct node *node) {
+	if(node == NULL)
+		return 0;
+	
+	return 1 + size(node->next);
+}
