@@ -1,10 +1,12 @@
-#include "menu_handlers.h"
 #include "pebble.h"
+#include "menu_handlers.h"
+#include "linkedlist.h"
 
 char startmenu_title[5][32];
-char stationmenu_title[6][20][32];
-char stationmenu_subtitle[6][20][32];
-int stationmenu_minLeft[6][20];
+
+char stationmenu_title[20][32];
+char stationmenu_subtitle[20][32];
+int stationmenu_minLeft[20];
 	
 int station_variable = 0;
 int nr_station_variable = 0;
@@ -53,21 +55,21 @@ void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuIndex *c
 			menu_cell_basic_draw(ctx, cell_layer, startmenu_title[cell_index->row - 1], "", NULL);
 	}
 	if(*data2 == STATIONMENU_CALLBACK) {
-		if(stationmenu_minLeft[station_variable][cell_index->row] == -1){
-			menu_cell_basic_draw(ctx, cell_layer, stationmenu_title[station_variable][cell_index->row], stationmenu_subtitle[station_variable][cell_index->row], NULL);
+		if(stationmenu_minLeft[cell_index->row] == -1){
+			menu_cell_basic_draw(ctx, cell_layer, stationmenu_title[cell_index->row], stationmenu_subtitle[cell_index->row], NULL);
 		}
-		else if(stationmenu_minLeft[station_variable][cell_index->row] > 0) {
+		else if(stationmenu_minLeft[cell_index->row] > 0) {
 			char buf[7];
-			snprintf(buf, 7, "%dmin", stationmenu_minLeft[station_variable][cell_index->row]);
+			snprintf(buf, 7, "%dmin", stationmenu_minLeft[cell_index->row]);
 			char buff[38];
-			snprintf(buff, 38, "%s - %s", buf, stationmenu_title[station_variable][cell_index->row]);
+			snprintf(buff, 38, "%s - %s", buf, stationmenu_title[cell_index->row]);
 			
-			menu_cell_basic_draw(ctx, cell_layer, buff, stationmenu_subtitle[station_variable][cell_index->row], NULL);
+			menu_cell_basic_draw(ctx, cell_layer, buff, stationmenu_subtitle[cell_index->row], NULL);
 		} else {
 			char buff[38];
-			snprintf(buff, 38, "Nu - %s", stationmenu_title[station_variable][cell_index->row]);
+			snprintf(buff, 38, "Nu - %s", stationmenu_title[cell_index->row]);
 			
-			menu_cell_basic_draw(ctx, cell_layer, buff, stationmenu_subtitle[station_variable][cell_index->row], NULL);
+			menu_cell_basic_draw(ctx, cell_layer, buff, stationmenu_subtitle[cell_index->row], NULL);
 		}
 	}
 }

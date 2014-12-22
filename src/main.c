@@ -49,13 +49,13 @@ void in_received_handler(DictionaryIterator *iter, void *context) {
 			break;
 		//Receive depatures
 		case 2:
-			memcpy(stationmenu_title[station_variable][index_tuple->value->uint8], ride_tuple->value->cstring, ride_tuple->length);
-			stationmenu_title[station_variable][index_tuple->value->uint8][31] = '\0';
+			memcpy(stationmenu_title[index_tuple->value->uint8], ride_tuple->value->cstring, ride_tuple->length);
+			stationmenu_title[index_tuple->value->uint8][31] = '\0';
 		
-			memcpy(stationmenu_subtitle[station_variable][index_tuple->value->uint8], to_tuple->value->cstring, to_tuple->length);
-			stationmenu_subtitle[station_variable][index_tuple->value->uint8][31] = '\0';
+			memcpy(stationmenu_subtitle[index_tuple->value->uint8], to_tuple->value->cstring, to_tuple->length);
+			stationmenu_subtitle[index_tuple->value->uint8][31] = '\0';
 		
-			stationmenu_minLeft[station_variable][index_tuple->value->uint8] = min_tuple->value->uint8;
+			stationmenu_minLeft[index_tuple->value->uint8] = min_tuple->value->uint8;
 		
 			nr_ride_variable = nr_tuple->value->uint8;
 	
@@ -67,13 +67,13 @@ void in_received_handler(DictionaryIterator *iter, void *context) {
 			break;
 		//Receive Error message in depature screen
 		case 3:
-			memcpy(stationmenu_title[station_variable][0], error_title_tuple->value->cstring, error_title_tuple->length);
-			stationmenu_title[station_variable][0][31] = '\0';
+			memcpy(stationmenu_title[0], error_title_tuple->value->cstring, error_title_tuple->length);
+			stationmenu_title[0][31] = '\0';
 		
-			memcpy(stationmenu_subtitle[station_variable][0], error_subtitle_tuple->value->cstring, error_subtitle_tuple->length);
-			stationmenu_subtitle[station_variable][0][31] = '\0';
+			memcpy(stationmenu_subtitle[0], error_subtitle_tuple->value->cstring, error_subtitle_tuple->length);
+			stationmenu_subtitle[0][31] = '\0';
 		
-			stationmenu_minLeft[station_variable][0] = -1;
+			stationmenu_minLeft[0] = -1;
 			nr_ride_variable = 1;
 		
 			remove_loadscreen();

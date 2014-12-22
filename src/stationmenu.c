@@ -13,12 +13,10 @@ void stationmenu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, v
 bool tick_handler_bool = false;
 void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
 	if(tick_handler_bool) {
-	    for(int i = 0; i < 6; i++) {
-		    for(int j = 0; j < 20; j++) {
-				if(stationmenu_minLeft[i][j] > 0)
-		        	stationmenu_minLeft[i][j]--;
-		    }
-	    }
+		for(int i = 0; i < 20; i++) {
+			if(stationmenu_minLeft[i] > 0)
+		       	stationmenu_minLeft[i]--;
+		}
 	    menu_layer_reload_data(stationmenu_layer);
     }
 }

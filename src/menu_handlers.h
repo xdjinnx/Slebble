@@ -10,9 +10,11 @@ extern void menu_draw_header_callback(GContext* ctx, const Layer *cell_layer, ui
 extern void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data);
 
 extern char startmenu_title[5][32];
-extern char stationmenu_title[6][20][32];
-extern char stationmenu_subtitle[6][20][32];
-extern int stationmenu_minLeft[6][20];
+//extern struct node *root;
+
+extern char stationmenu_title[20][32];
+extern char stationmenu_subtitle[20][32];
+extern int stationmenu_minLeft[20];
 
 extern int station_variable;
 extern int loaded_rows;
