@@ -71,7 +71,7 @@ var Slebble = (function(Pebble, navigator) {
   };
 
   var _SLRealtimeCallback = function(resp) {
-    console.log('sl callback');
+    //console.log('sl callback');
     var response = JSON.parse(resp);
     var alldeps = [];
     var deps = [];
@@ -129,11 +129,11 @@ var Slebble = (function(Pebble, navigator) {
       }
     });
 
-    console.log('=================================================================');
-    for (var k = 0; k<alldeps.length; k++) {
-      console.log(k+' '+alldeps[k].time+' '+alldeps[k].realtkme+ ' '+alldeps[k].line+' '+alldeps[k].dest);
-    }
-    console.log('=================================================================');
+    //console.log('=================================================================');
+    //for (var k = 0; k<alldeps.length; k++) {
+    //  console.log(k+' '+alldeps[k].time+' '+alldeps[k].realtkme+ ' '+alldeps[k].line+' '+alldeps[k].dest);
+    //}
+    //console.log('=================================================================');
 
     var numberToAdd = alldeps.length>_maxDepatures?_maxDepatures:alldeps.length;
     for (var j = 0; j < numberToAdd; j++) {
@@ -211,7 +211,7 @@ var Slebble = (function(Pebble, navigator) {
    * @private
    */
   var _addRide = function(index, number, destination, time, displayTime, nr) {
-    console.log('adding ride: '+time+' '+number+' '+destination);
+    //console.log('adding ride: '+time+' '+number+' '+destination);
     Pebble.sendAppMessage({
         '0': 2,
         '1': index,
