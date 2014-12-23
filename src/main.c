@@ -1,6 +1,7 @@
 #include "menu_handlers.h"
 #include "stationmenu.h"
 #include "startmenu.h"
+#include "linkedlist.h"
 
 enum SLKey {
   PATH_KEY = 0x0,
@@ -14,6 +15,8 @@ enum SLKey {
   ERROR_SUBTITLE_KEY = 0x8,
 };
 
+struct node *temp;
+
 
 void in_dropped_handler(AppMessageResult reason, void *context) {
 	//APP_LOG(APP_LOG_LEVEL_WARNING, "DROPPED PACKAGE");
@@ -22,6 +25,8 @@ void in_dropped_handler(AppMessageResult reason, void *context) {
 
 void in_received_handler(DictionaryIterator *iter, void *context) {
 	
+	//APP_LOG(APP_LOG_LEVEL_INFO, "Appmessage recived");
+
 	Tuple *path_tuple = dict_find(iter, PATH_KEY);
 	Tuple *index_tuple = dict_find(iter, INDEX_KEY);
 	Tuple *station_tuple = dict_find(iter, STATION_KEY);
@@ -34,10 +39,12 @@ void in_received_handler(DictionaryIterator *iter, void *context) {
 	
 	switch(path_tuple->value->uint8) {
 		//Receive stations
-		case 1:
-			//APP_LOG(APP_LOG_LEVEL_INFO, "Appmessage recived");
-			memcpy(startmenu_title[index_tuple->value->uint8], station_tuple->value->cstring, station_tuple->length);
-			startmenu_title[index_tuple->value->uint8][31] = '\0';
+		case 1:	
+			temp = malloc(sizeof(struct node));
+
+			memcpy(temp->title, station_tuple->value->cstring, station_tuple->length);
+			temp->title[31] = '\0';
+			root_startmenu = linkedlist_push(root_startmenu, temp);
 		
 			nr_station_variable = nr_tuple->value->uint8;
 		
@@ -86,7 +93,9 @@ void in_received_handler(DictionaryIterator *iter, void *context) {
 int main(void) {
 	app_message_register_inbox_received(in_received_handler);
 	app_message_register_inbox_dropped(in_dropped_handler);
+
 	create_startmenu();
+	
 	tick_timer_service_subscribe(MINUTE_UNIT, tick_handler);
 
 	app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());

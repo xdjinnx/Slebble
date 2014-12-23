@@ -2,6 +2,7 @@
 #define __MENU_HANDLERS__
 
 #include "pebble.h"
+#include "linkedlist.h"
 
 extern uint16_t menu_get_num_sections_callback(MenuLayer *menu_layer, void *data);
 extern uint16_t menu_get_num_rows_callback(MenuLayer *menu_layer, uint16_t section_index, void *data);
@@ -9,8 +10,8 @@ extern int16_t menu_get_header_height_callback(MenuLayer *menu_layer, uint16_t s
 extern void menu_draw_header_callback(GContext* ctx, const Layer *cell_layer, uint16_t section_index, void *data);
 extern void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data);
 
-extern char startmenu_title[5][32];
-//extern struct node *root;
+extern struct node *root_startmenu;
+extern struct node *conductor_startmenu;
 
 extern char stationmenu_title[20][32];
 extern char stationmenu_subtitle[20][32];

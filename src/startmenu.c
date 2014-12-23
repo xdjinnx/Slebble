@@ -1,6 +1,7 @@
 #include "startmenu.h"
 #include "stationmenu.h"
 #include "menu_handlers.h"
+#include "linkedlist.h"
 
 GBitmap* startUpImage;
 BitmapLayer *start_layer;
@@ -36,6 +37,7 @@ void startmenu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, voi
 }
 
 void remove_startscreen() {
+	conductor_startmenu = root_startmenu;
 	menu_layer_reload_data(startmenu_layer);
 	if(!startscreen_removed) {
 		startscreen_removed = true;
@@ -76,6 +78,7 @@ void startmenu_window_unload(Window *window) {
 	window_stack_remove(window, true);
 	window_destroy(window);
 	menu_layer_destroy(startmenu_layer);
+	linkedlist_release(root_startmenu);
 }
 
 
