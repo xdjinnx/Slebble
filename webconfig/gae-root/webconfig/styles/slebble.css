@@ -3350,3 +3350,17 @@ main {
 .app-bar button img {
   width: 32px;
   height: 32px; }
+
+.station-filter {
+  margin-left: 10px; }
+  .station-filter input[type="checkbox"] {
+    margin-right: 5px; }
+
+.news {
+  margin-bottom: -21px;
+  display: block;
+  font-size: 1.3em;
+  padding: 7px;
+  margin-top: 10px;
+  background-color: #008100;
+  color: #fff; }
