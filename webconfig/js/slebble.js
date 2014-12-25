@@ -90,7 +90,7 @@ var Slebble = (function(){
 
     _filterAdding.innerHTML = '';
     for(i = 0; i < _stationJson.length; i++) {
-      _filterAdding.innerHTML += '<li>' + _stationJson[i].from + '</li><span class="filterSpan">Bus filter </span><input type="text" class="filter-field"  value="'+ _stationJson[i].filter.join(', ') +'" data-index="'+i+'" '+(_stationJson[i].busFilterActive?'':'disabled') +'/><br><label for="filterEnable'+i+'" class="station-filter"><input type="checkbox" id="filterEnable'+i+'" class="filter-enabled" '+(_stationJson[i].busFilterActive?'checked':'')+' data-index="'+i+'"/>Enable filter</label></div>';
+      _filterAdding.innerHTML += '<li>' + _stationJson[i].from + '</li><span class="filterSpan">Bus filter </span><input type="text" class="filter-field"  value="'+ _stationJson[i].filter.join(', ') +'" data-index="'+i+'" '+(_stationJson[i].busFilterActive === 'true'?'':'disabled') +'/><br><label for="filterEnable'+i+'" class="station-filter"><input type="checkbox" id="filterEnable'+i+'" class="filter-enabled" '+(_stationJson[i].busFilterActive === 'true'?'checked':'')+' data-index="'+i+'"/>Enable filter</label></div>';
     }
 
     _rebindFilterEvent();
@@ -125,8 +125,8 @@ var Slebble = (function(){
     log(e);
     var ele = e.srcElement;
     var index = ele.getAttribute('data-index');
-    _stationJson[index].busFilterActive = ele.checked === true;
-    _filterField[index].disabled = !_stationJson[index].busFilterActive;
+    _stationJson[index].busFilterActive = (ele.checked === true)?'true':'false';
+    _filterField[index].disabled = _stationJson[index].busFilterActive !== 'true';
   };
 
   var _removeClass = function (el, className) {
@@ -277,7 +277,7 @@ var Slebble = (function(){
     station.from = elem.innerHTML;
     station.locationid = elem.getAttribute('data-id');
     station.filter = [];
-    station.busFilterActive = false;
+    station.busFilterActive = 'false';
     _stationJson[_stationJson.length] = station;
 
     _updateStartPageAndFilterPage();
