@@ -50,7 +50,7 @@ gulp.task('uglify', function(){
 
 gulp.task('sass', function () {
   return gulp.src('scss/slebble.scss')
-    .pipe(sass())
+    .pipe(sass({'outputStyle':'compressed'}))
     .pipe(gulp.dest('gae-root/webconfig/styles/'))
     .pipe($.size({title: 'css'}));
 });
