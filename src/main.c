@@ -44,6 +44,7 @@ void in_received_handler(DictionaryIterator *iter, void *context) {
 
 			memcpy(temp->title, station_tuple->value->cstring, station_tuple->length);
 			temp->title[31] = '\0';
+			temp->index = index_tuple->value->uint8;
 			root_startmenu = linkedlist_push(root_startmenu, temp);
 		
 			nr_station_variable = nr_tuple->value->uint8;
@@ -51,8 +52,10 @@ void in_received_handler(DictionaryIterator *iter, void *context) {
 			loaded_rows++;
 		
 			//APP_LOG(APP_LOG_LEVEL_INFO, "Startmenu: number of rows %d of %d", loaded_rows, nr_station_variable);
-			if(loaded_rows == nr_station_variable)
+			if(loaded_rows == nr_station_variable) {
+				root_startmenu = linkedlist_sort(root_startmenu);
 				remove_startscreen();
+			}
 			break;
 		//Receive depatures
 		case 2:
@@ -68,7 +71,7 @@ void in_received_handler(DictionaryIterator *iter, void *context) {
 	
 			loaded_rows++;
 		
-			//APP_LOG(APP_LOG_LEVEL_INFO, "Station: number of rows %d of %d", loaded_rows, nr_ride_variable);
+			APP_LOG(APP_LOG_LEVEL_INFO, "Station: number of rows %d of %d", loaded_rows, nr_ride_variable);
 			if(loaded_rows == nr_ride_variable)
 				remove_loadscreen();
 			break;

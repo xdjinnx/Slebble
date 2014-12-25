@@ -51,3 +51,46 @@ void linkedlist_log(struct node *node) {
 	APP_LOG(APP_LOG_LEVEL_INFO, "Pointer: %p", node);
 	linkedlist_log(node->next);
 }
+
+struct node* linkedlist_sort(struct node *node ) {
+	struct node *conductor;
+	struct node *conductorbefore;
+	int length = linkedlist_size(node);
+	struct node *temp[length];
+	
+	for(int i = 0; i < length; i++) {
+		temp[i] = node;
+		node = node->next;
+	}
+
+	node = temp[0];
+	node->next = 0;
+
+
+	for(int i = 1; i < length; i++) {
+		conductor = node;
+		conductorbefore = NULL;
+		while(true) {
+			if(conductor->index > temp[i]->index) {
+				if(conductorbefore == NULL) {
+					node = temp[i];
+					node->next = conductor;
+				} else {
+					conductorbefore->next = temp[i];
+					temp[i]->next = conductor;
+				}
+				break;
+			}
+			if(conductor->next == NULL) {
+				conductor->next = temp[i];
+				temp[i]->next = 0;
+				break;
+			}
+			conductorbefore = conductor;
+			conductor = conductor->next;
+		}
+	}
+
+	return node;
+
+}

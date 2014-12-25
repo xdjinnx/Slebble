@@ -3,7 +3,6 @@
 #include "linkedlist.h"
 
 struct node *root_startmenu;
-struct node *conductor_startmenu;
 
 char stationmenu_title[20][32];
 char stationmenu_subtitle[20][32];
@@ -53,8 +52,7 @@ void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuIndex *c
 		if(cell_index->row == 0)
 			menu_cell_basic_draw(ctx, cell_layer, "Nearby Station", "", NULL);
 		else {
-			menu_cell_basic_draw(ctx, cell_layer, conductor_startmenu->title, "", NULL);
-			conductor_startmenu = conductor_startmenu->next;
+			menu_cell_basic_draw(ctx, cell_layer, linkedlist_get(root_startmenu, (cell_index->row)-1)->title, "", NULL);
 		}
 	}
 	if(*data2 == STATIONMENU_CALLBACK) {

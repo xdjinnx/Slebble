@@ -11,7 +11,6 @@ extern void menu_draw_header_callback(GContext* ctx, const Layer *cell_layer, ui
 extern void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data);
 
 extern struct node *root_startmenu;
-extern struct node *conductor_startmenu;
 
 extern char stationmenu_title[20][32];
 extern char stationmenu_subtitle[20][32];
