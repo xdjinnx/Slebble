@@ -175,18 +175,8 @@ var Slebble = (function(Pebble, navigator) {
       }
 
       // send to watch
-      for(var i = 0; i < deps.length; i++) {
-        //console.log('rr tid ' + deps[i].departure.datetime);
-        //console.log('rr sub ' + deps[i].departure.datetime.substring(11));
-        if (i === _maxDepatures) {
-          break;
-        }
-
-        var batchLength = deps.length;
-        if (deps.length > _maxDepatures) {
-          batchLength = _maxDepatures;
-        }
-
+      var batchLength  = deps.length>_maxDepatures?_maxDepatures:deps.length;
+      for(var i = 0; i < batchLength; i++) {
         _addRide(i, deps[i].segmentid.carrier.number,
           deps[i].direction,
           deps[i].departure.datetime.substring(11),
