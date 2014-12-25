@@ -4,7 +4,7 @@ var Slebble = (function(Pebble, navigator) {
   'use strict';
 
   var _key = {};
-  _key.slReal3 = '74a6eb6f0a634dc9a774ccfc10ebbdd3';
+  _key.slReal3 = '190079364ffe4e278f7e27dabd6dce6c';
   _key.resrobot = 'UacUcP0MlG9fZ0j82r1k5he6KXQ6koSS';
 
   var _provider = '';

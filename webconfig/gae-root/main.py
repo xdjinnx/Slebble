@@ -42,7 +42,7 @@ def resrobot(query):
 def sl(query):
     json = memcache.get('sl_'+query)
     if json is None:
-        key = 'd6a4ad7ec47e48eeadbf4817c24e71dd'
+        key = '6c0aa9d734fd42398f13ef4a4d6075de'
         url = 'http://api.sl.se/api2/typeahead.json'
         url += '?key=' + key + '&searchstring=' + urllib2.quote(query) + '&stationsonly=True&maxresults=25'
         print url
