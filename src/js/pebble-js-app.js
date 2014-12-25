@@ -186,7 +186,7 @@ var Slebble = (function(Pebble, navigator) {
       }
 
     } else {
-      _addRide(0, deps.segmentid.carrier.number, deps.direction, deps.departure.datetime.substring(11), _determineTimeLeft(deps[i].departure.datetime.substring(11), 1);
+      _addRide(0, deps.segmentid.carrier.number, deps.direction, deps.departure.datetime.substring(11), _determineTimeLeft(deps[i].departure.datetime.substring(11)), 1);
     }
   };
 
