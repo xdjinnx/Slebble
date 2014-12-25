@@ -12,6 +12,7 @@ var Slebble = (function(){
   var _adding = document.querySelector('#adding');
   var _filterAdding = document.querySelector('#filterAdding');
   var _filterField = document.querySelectorAll('.filter-field');
+  var _filterEnabled = document.querySelectorAll('.filter-field');
   var _departureRange = document.querySelector('#depature-range');
   var _provider = document.querySelector('#provider');
 
@@ -90,7 +91,7 @@ var Slebble = (function(){
 
     _filterAdding.innerHTML = '';
     for(i = 0; i < _stationJson.length; i++) {
-      _filterAdding.innerHTML += '<li>' + _stationJson[i].from + '</li><span class="filterSpan">Bus filter :</span><input type="text" class="filter-field"  value="'+ _stationJson[i].filter.join(', ') +'" data-index="'+i+'"/></div>';
+      _filterAdding.innerHTML += '<li>' + _stationJson[i].from + '</li><span class="filterSpan">Bus filter </span><input type="text" class="filter-field"  value="'+ _stationJson[i].filter.join(', ') +'" data-index="'+i+'" '+(_stationJson[i].busFilterActive?'':'disabled') +'/><br><label for="filterEnable'+i+'" class="station-filter"><input type="checkbox" id="filterEnable'+i+'" class="filter-enabled" '+(_stationJson[i].busFilterActive?'checked':'')+' data-index="'+i+'"/>Enable filter</label></div>';
     }
 
     _rebindFilterEvent();
@@ -106,6 +107,11 @@ var Slebble = (function(){
       for (var i = 0; i<_filterField.length; i++){
         _filterField[i].onchange = _filterFieldHandler;
       }
+
+      _filterEnabled = document.querySelectorAll('.station-filter');
+      for (var j = 0; j<_filterEnabled.length; j++){
+        _filterEnabled[j].onclick = _filterEnabledHandler;
+      }
     }
   }
 
@@ -114,7 +120,14 @@ var Slebble = (function(){
     var ele = e.srcElement;
     var index = ele.getAttribute('data-index');
     _stationJson[index].filter = ele.value.split(',');
-    _stationJson[index].busFilterActive = _stationJson[index].filter.length !== 0;
+  };
+
+  var _filterEnabledHandler = function(e) {
+    log(e);
+    var ele = e.srcElement;
+    var index = ele.getAttribute('data-index');
+    _stationJson[index].busFilterActive = ele.checked === true;
+    _filterField[index].disabled = !_stationJson[index].busFilterActive;
   };
 
   var _removeClass = function (el, className) {
