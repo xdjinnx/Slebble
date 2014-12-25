@@ -164,7 +164,7 @@ var Slebble = (function(Pebble, navigator) {
       var filter = _config.route[_queryIndex].filter;
 
       // apply filter if any
-      if (filter.length>0) {
+      if (_config.route[_queryIndex].busFilterActive === "true") {
         deps = response.getdeparturesresult.departuresegment.filter(function(ele){
           for (var i = filter.length - 1; i >= 0; i--) {
             if(ele.segmentid.mot['@displaytype'] !== 'B' || filter[i] === ele.segmentid.carrier.number)
@@ -182,7 +182,6 @@ var Slebble = (function(Pebble, navigator) {
         var batchLength = deps.length;
       }
 
-      //console.log(batchLength + ", " + _maxDepatures + ", " + deps.length);
       for(var i = 0; i < batchLength; i++) {
         _addRide(i, deps[i].segmentid.carrier.number,
           deps[i].direction,
@@ -208,7 +207,6 @@ var Slebble = (function(Pebble, navigator) {
    * @private
    */
   var _addRide = function(index, number, destination, time, displayTime, nr) {
-    console.log('adding ride: '+time+' '+number+' '+destination+' '+nr);
     Pebble.sendAppMessage({
         '0': 2,
         '1': index,
