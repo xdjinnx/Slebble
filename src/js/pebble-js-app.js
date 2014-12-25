@@ -13,6 +13,11 @@ var Slebble = (function(Pebble, navigator) {
   var _queryIndex = 0;
   var _locationOptions = {'timeout': 15000, 'maximumAge': 60000 };
 
+  // Ride Type Constants
+  var RT_BUS = 'B';
+  var RT_TRAIN = 'J';
+  var RT_METRO = 'U';
+
   var _url = {};
   _url.slReal3 = function(locationid) {
     //return 'https://api.sl.se/api2/realtimedepartures.json?key=' + _key.slReal3 + '&siteid=' + locationid + '&timewindow=120';
@@ -89,9 +94,15 @@ var Slebble = (function(Pebble, navigator) {
       ad.time = deps[i].DisplayTime;
       ad.dest = deps[i].Destination;
       ad.realtime = deps[i].ExpectedDateTime !== undefined?deps[i].ExpectedDateTime.substring(16,11):'';
+
+      if (deps[i].TransportMode === 'BUS')
+        ad.ridetype = RT_BUS;
+      else
+        ad.ridetype = 'pony';
       alldeps.push(ad);
     }
 
+    alldeps.filter(_filterRides);
     alldeps.sort(function(a, b){
       if (a.time === b.time) // on equal
         return 0;
@@ -146,6 +157,27 @@ var Slebble = (function(Pebble, navigator) {
     }
   };
 
+  /**
+   * Filter function for rides to be used with array.filter
+   * @param ride        A ride object, se sample in _SLRealtimeCallback
+   * @returns {boolean} Returns true if ride is to be included
+   * @private
+   */
+  var _filterRides = function(ride){
+    // only filter if filter is actually active
+    if (_config.route[_queryIndex].busFilterActive === 'true'){
+      var filter = _config.route[_queryIndex].filter;
+      for (var i = filter.length - 1; i >= 0; i--) {
+        // only filter buses, else always include
+        if(ride.ridetype !== RT_BUS || filter[i] === ride.line)
+          return true;
+      }
+      return false;
+    } else {
+      return true;
+    }
+  };
+
   var _requestResrobot = function(siteid) {
     _xhr(_url.resrobot(siteid), _resrobotCallback);
   };
@@ -159,34 +191,36 @@ var Slebble = (function(Pebble, navigator) {
 
     var response = JSON.parse(resp);
     var deps = response.getdeparturesresult.departuresegment;
-    if (Array.isArray(deps)) {
+    var alldeps = [];
 
-      var filter = _config.route[_queryIndex].filter;
+    if (!Array.isArray(deps))
+      deps = [deps];
 
-      // apply filter if any
-      if (filter.length>0) {
-        deps = response.getdeparturesresult.departuresegment.filter(function(ele){
-          for (var i = filter.length - 1; i >= 0; i--) {
-            if(ele.segmentid.mot['@displaytype'] !== 'B' || filter[i] === ele.segmentid.carrier.number)
-              return true;
-          }
-          return false;
-        });
-      }
+    for (var i = 0; i < deps.length; i++){
+      var ad = {};
+      ad.line = deps[i].segmentid.carrier.number;
+      ad.time = _determineTimeLeft(deps[i].departure.datetime.substring(11));
+      ad.dest = deps[i].direction;
+      ad.realtime = deps[i].departure.datetime.substring(11);
 
-      // send to watch
-      var batchLength  = deps.length>_maxDepatures?_maxDepatures:deps.length;
-      for(var i = 0; i < batchLength; i++) {
-        _addRide(i, deps[i].segmentid.carrier.number,
-          deps[i].direction,
-          deps[i].departure.datetime.substring(11),
-          _determineTimeLeft(deps[i].departure.datetime.substring(11)),
-          batchLength
-        );
-      }
+      if (deps[i].segmentid.mot['@displaytype'] === 'B')
+        ad.ridetype = RT_BUS;
+      else
+        ab.ridetype = 'pony';
+      alldeps.push(ad);
+    }
 
-    } else {
-      _addRide(0, deps.segmentid.carrier.number, deps.direction, deps.departure.datetime, 1);
+    alldeps.filter(_filterRides);
+
+    // send to watch
+    var batchLength  = alldeps.length>_maxDepatures?_maxDepatures:alldeps.length;
+    for(var i = 0; i < batchLength; i++) {
+      _addRide(i, alldeps[i].segmentid.carrier.number,
+        alldeps[i].direction,
+        alldeps[i].departure.datetime.substring(11),
+        _determineTimeLeft(alldeps[i].departure.datetime.substring(11)),
+        batchLength
+      );
     }
   };
 
