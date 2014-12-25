@@ -173,9 +173,16 @@ var Slebble = (function(Pebble, navigator) {
           return false;
         });
       }
+      
 
       // send to watch
-      var batchLength  = deps.length>_maxDepatures?_maxDepatures:deps.length;
+      if(deps.length>_maxDepatures) {
+        var batchLength = _maxDepatures;
+      } else {
+        var batchLength = deps.length;
+      }
+
+      //console.log(batchLength + ", " + _maxDepatures + ", " + deps.length);
       for(var i = 0; i < batchLength; i++) {
         _addRide(i, deps[i].segmentid.carrier.number,
           deps[i].direction,
@@ -201,7 +208,7 @@ var Slebble = (function(Pebble, navigator) {
    * @private
    */
   var _addRide = function(index, number, destination, time, displayTime, nr) {
-    //console.log('adding ride: '+time+' '+number+' '+destination);
+    console.log('adding ride: '+time+' '+number+' '+destination+' '+nr);
     Pebble.sendAppMessage({
         '0': 2,
         '1': index,
@@ -326,7 +333,7 @@ var Slebble = (function(Pebble, navigator) {
     console.log('Loading config..');
     _config = config;
     _provider = config.provider;
-    _maxDepatures = config.maxDepatures;
+    _maxDepatures = parseInt(config.maxDepatures);
   };
 
   api.requestGeoRides = function() {
