@@ -16,7 +16,6 @@ var Slebble = (function(){
   var _departureRange = document.querySelector('#depature-range');
   var _provider = document.querySelector('#provider');
 
-  var MAX_STATIONS = 5;
   var DEBUG = false;
 
   function log(msg) {
@@ -274,17 +273,14 @@ var Slebble = (function(){
    * @param elem
    */
   api.add = function(elem) {
-    // Only add if max is not exceeded, for performance reasons
-    if (_adding.children.length !== MAX_STATIONS){
-      var station = {};
-      station.from = elem.innerHTML;
-      station.locationid = elem.getAttribute('data-id');
-      station.filter = [];
-      station.busFilterActive = false;
-      _stationJson[_stationJson.length] = station;
+    var station = {};
+    station.from = elem.innerHTML;
+    station.locationid = elem.getAttribute('data-id');
+    station.filter = [];
+    station.busFilterActive = false;
+    _stationJson[_stationJson.length] = station;
 
-      _updateStartPageAndFilterPage();
-    }
+    _updateStartPageAndFilterPage();
 
     _changePage('startPage');
     _clearSearchField();
