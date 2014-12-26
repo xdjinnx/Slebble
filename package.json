@@ -1,0 +1,24 @@
+{
+  "name": "Slebble2",
+  "version": "1.0.0",
+  "description": "Slebble",
+  "devDependencies": {
+    "gulp": "^3.8.10",
+    "gulp-jshint": "^1.9.0",
+    "gulp-shell": "^0.2.11",
+    "jshint-stylish": "^1.0.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xdjinnx/Slebble.git"
+  },
+  "author": "",
+  "license": "GPLv3",
+  "bugs": {
+    "url": "https://github.com/xdjinnx/Slebble/issues"
+  },
+  "homepage": "https://github.com/xdjinnx/Slebble"
+}
