@@ -71,7 +71,7 @@ void in_received_handler(DictionaryIterator *iter, void *context) {
 	
 			loaded_rows++;
 		
-			APP_LOG(APP_LOG_LEVEL_INFO, "Station: number of rows %d of %d", loaded_rows, nr_ride_variable);
+			//APP_LOG(APP_LOG_LEVEL_INFO, "Station: number of rows %d of %d", loaded_rows, nr_ride_variable);
 			if(loaded_rows == nr_ride_variable)
 				remove_loadscreen();
 			break;
