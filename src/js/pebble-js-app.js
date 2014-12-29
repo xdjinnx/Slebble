@@ -17,6 +17,7 @@ var Slebble = (function(Pebble, navigator) {
   var RT_BUS = 'B';
   var RT_TRAIN = 'J';
   var RT_METRO = 'U';
+  var RT_UNKNOWN = '?';
 
   var _url = {};
   _url.slReal3 = function(locationid) {
@@ -98,11 +99,11 @@ var Slebble = (function(Pebble, navigator) {
       if (deps[i].TransportMode === 'BUS')
         ad.ridetype = RT_BUS;
       else
-        ad.ridetype = 'pony';
+        ad.ridetype = RT_UNKNOWN;
       alldeps.push(ad);
     }
 
-    alldeps.filter(_filterRides);
+    alldeps = alldeps.filter(_filterRides);
     alldeps.sort(function(a, b){
       if (a.time === b.time) // on equal
         return 0;
@@ -206,19 +207,19 @@ var Slebble = (function(Pebble, navigator) {
       if (deps[i].segmentid.mot['@displaytype'] === 'B')
         ad.ridetype = RT_BUS;
       else
-        ab.ridetype = 'pony';
+        ad.ridetype = RT_UNKNOWN
       alldeps.push(ad);
     }
 
-    alldeps.filter(_filterRides);
+    alldeps = alldeps.filter(_filterRides);
 
     // send to watch
     var batchLength  = alldeps.length>_maxDepatures?_maxDepatures:alldeps.length;
     for(var i = 0; i < batchLength; i++) {
-      _addRide(i, alldeps[i].segmentid.carrier.number,
-        alldeps[i].direction,
-        alldeps[i].departure.datetime.substring(11),
-        _determineTimeLeft(alldeps[i].departure.datetime.substring(11)),
+      _addRide(i, alldeps[i].line,
+        alldeps[i].dest,
+        alldeps[i].realtime,
+        _determineTimeLeft(alldeps[i].realtime),
         batchLength
       );
     }
