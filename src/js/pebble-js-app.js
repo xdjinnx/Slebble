@@ -378,6 +378,8 @@ var Slebble = (function(Pebble, navigator) {
 
 })(Pebble, navigator);
 
+module.exports = Slebble;
+
 Pebble.addEventListener('ready',
             function(e) {
               //console.log('ready');
