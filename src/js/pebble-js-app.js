@@ -378,7 +378,11 @@ var Slebble = (function(Pebble, navigator) {
 
 })(Pebble, navigator);
 
-module.exports = Slebble;
+try {
+  module.exports = Slebble;
+} catch (e){
+  // running on phone
+}
 
 Pebble.addEventListener('ready',
             function(e) {
