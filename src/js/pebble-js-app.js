@@ -324,6 +324,10 @@ var Slebble = (function(Pebble, navigator) {
   // Public api declaration
   var api = {};
 
+  // export private methods for testability
+  api._test = {};
+  api._test.slTimeSort = _slTimeSort;
+
   api.addStation = function(index, from, nr) {
     Pebble.sendAppMessage({
         '0': 1,
