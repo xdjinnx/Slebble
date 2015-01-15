@@ -104,7 +104,7 @@ var Slebble = (function(Pebble, navigator) {
     }
 
     alldeps = alldeps.filter(_filterRides);
-    alldeps.sort(_slTimeSort);
+    alldeps = alldeps.sort(_slTimeSort);
 
     //console.log('=================================================================');
     //for (var k = 0; k<alldeps.length; k++) {
