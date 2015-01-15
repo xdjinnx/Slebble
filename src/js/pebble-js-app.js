@@ -57,8 +57,6 @@ var Slebble = (function(Pebble, navigator) {
     var xhr = new XMLHttpRequest();
     xhr.open('GET', url, false);
     xhr.onload = function(e) {
-      console.log('ready state '+xhr.readyState);
-      console.log('xhr status'+xhr.status);
       if (xhr.readyState === 4) {
         if (xhr.status === 200) {
           callback(xhr.responseText);
