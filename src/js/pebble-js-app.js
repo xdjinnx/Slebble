@@ -57,8 +57,6 @@ var Slebble = (function(Pebble, navigator) {
     var xhr = new XMLHttpRequest();
     xhr.open('GET', url, false);
     xhr.onload = function(e) {
-      console.log('ready state '+xhr.readyState);
-      console.log('xhr status'+xhr.status);
       if (xhr.readyState === 4) {
         if (xhr.status === 200) {
           callback(xhr.responseText);
@@ -104,42 +102,12 @@ var Slebble = (function(Pebble, navigator) {
     }
 
     alldeps = alldeps.filter(_filterRides);
-    alldeps.sort(function(a, b){
-      if (a.time === b.time) // on equal
-        return 0;
+    alldeps = alldeps.sort(_slTimeSort);
 
-      // if any of them is Nu
-      if (a.time === 'Nu')
-        return -1;
-      else if (b.time === 'Nu')
-        return -1;
-
-      // if one is minute
-      else if (a.time.search(':') === -1 && b.time.search(':') > 0)
-        return -1;
-      else if (a.time.search(':') > 0 && b.time.search(':') === -1)
-        return 1;
-
-      else if (a.time.search(':') === -1 && b.time.search(':') === -1) {
-        var at = parseInt(a.time.substr(0, a.time.length-4));
-        var bt = parseInt(b.time.substr(0, b.time.length-4));
-        //console.log(at+'<'+bt+' '+(at<bt?'true -1':'false 1'));
-        return at<bt?-1:1;
-      } else {
-        var ah = parseInt(a.time.split(':')[0]);
-        var bh = parseInt(a.time.split(':')[0]);
-
-        if (ah === bh){
-          var am = parseInt(a.time.split(':')[1]);
-          var bm = parseInt(a.time.split(':')[1]);
-          //console.log(am+'<'+bm+' '+(am<bm?'true -1':'false 1'));
-          return am<bm?-1:1;
-        } else {
-          //console.log(ah+'<'+bh+' '+(ah<bh?'true -1':'false 1'));
-          return ah<bh?-1:1;
-        }
-      }
-    });
+    // TODO Add some kind of message for 0 rides
+    //if (alldeps.length == 0){
+    //  alldeps.push({realtime:'No rides',dest:'at the moment'});
+    //}
 
     //console.log('=================================================================');
     //for (var k = 0; k<alldeps.length; k++) {
@@ -155,6 +123,43 @@ var Slebble = (function(Pebble, navigator) {
         alldeps[j].realtime,
         alldeps[j].time,
         numberToAdd);
+    }
+  };
+
+  var _slTimeSort = function(a, b){
+    if (a.time === b.time) // on equal
+      return 0;
+
+    // if any of them is Nu
+    if (a.time === 'Nu')
+      return -1;
+    else if (b.time === 'Nu')
+      return 1;
+
+    // if one is minute
+    else if (a.time.search(':') === -1 && b.time.search(':') > 0)
+      return -1;
+    else if (a.time.search(':') > 0 && b.time.search(':') === -1)
+      return 1;
+
+    else if (a.time.search(':') === -1 && b.time.search(':') === -1) {
+      var at = parseInt(a.time.substr(0, a.time.length-4));
+      var bt = parseInt(b.time.substr(0, b.time.length-4));
+      //console.log(at+'<'+bt+' '+(at<bt?'true -1':'false 1'));
+      return at<bt?-1:1;
+    } else {
+      var ah = parseInt(a.time.split(':')[0]);
+      var bh = parseInt(b.time.split(':')[0]);
+
+      if (ah === bh){
+        var am = parseInt(a.time.split(':')[1]);
+        var bm = parseInt(b.time.split(':')[1]);
+        //console.log(am+'<'+bm+' '+(am<bm?'true -1':'false 1'));
+        return am<bm?-1:1;
+      } else {
+        //console.log(ah+'<'+bh+' '+(ah<bh?'true -1':'false 1'));
+        return ah<bh?-1:1;
+      }
     }
   };
 
@@ -322,6 +327,10 @@ var Slebble = (function(Pebble, navigator) {
   // Public api declaration
   var api = {};
 
+  // export private methods for testability
+  api._test = {};
+  api._test.slTimeSort = _slTimeSort;
+
   api.addStation = function(index, from, nr) {
     Pebble.sendAppMessage({
         '0': 1,
@@ -371,6 +380,12 @@ var Slebble = (function(Pebble, navigator) {
   return api;
 
 })(Pebble, navigator);
+
+try {
+  module.exports = Slebble;
+} catch (e){
+  // running on phone
+}
 
 Pebble.addEventListener('ready',
             function(e) {
