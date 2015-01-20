@@ -212,7 +212,7 @@ var Slebble = (function(Pebble, navigator) {
       if (deps[i].segmentid.mot['@displaytype'] === 'B')
         ad.ridetype = RT_BUS;
       else
-        ad.ridetype = RT_UNKNOWN
+        ad.ridetype = RT_UNKNOWN;
       alldeps.push(ad);
     }
 
@@ -220,11 +220,11 @@ var Slebble = (function(Pebble, navigator) {
 
     // send to watch
     var batchLength  = alldeps.length>_maxDepatures?_maxDepatures:alldeps.length;
-    for(var i = 0; i < batchLength; i++) {
-      _addRide(i, alldeps[i].line,
-        alldeps[i].dest,
-        alldeps[i].realtime,
-        _determineTimeLeft(alldeps[i].realtime),
+    for(var j = 0; j < batchLength; j++) {
+      _addRide(j, alldeps[j].line,
+        alldeps[j].dest,
+        alldeps[j].realtime,
+        _determineTimeLeft(alldeps[j].realtime),
         batchLength
       );
     }
