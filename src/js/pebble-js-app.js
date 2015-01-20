@@ -104,10 +104,10 @@ var Slebble = (function(Pebble, navigator) {
     alldeps = alldeps.filter(_filterRides);
     alldeps = alldeps.sort(_slTimeSort);
 
-    // TODO Add some kind of message for 0 rides
-    //if (alldeps.length == 0){
-    //  alldeps.push({realtime:'No rides',dest:'at the moment'});
-    //}
+    if (alldeps.length < 1){
+      _appMessageError('No rides available', 'Try again later');
+      return;
+    }
 
     //console.log('=================================================================');
     //for (var k = 0; k<alldeps.length; k++) {
