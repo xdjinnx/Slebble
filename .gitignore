@@ -1,2 +1,5 @@
 build
 node_modules
+.lock-waf_linux2_build
+.idea
+CMakeLists.txt
