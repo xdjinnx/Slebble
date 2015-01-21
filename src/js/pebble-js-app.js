@@ -236,7 +236,7 @@ var Slebble = (function(Pebble, navigator) {
    * @param number       Ride line number
    * @param destination  Ride destination
    * @param time         Departure time HH:MM
-   * @param displayTime  Time to display eg. 5m
+   * @param displayTime  Minutes left to time
    * @param nr           The number of rides to be sent this batch
    * @private
    */
