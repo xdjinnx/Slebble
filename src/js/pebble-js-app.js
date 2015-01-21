@@ -111,7 +111,7 @@ var Slebble = (function(Pebble, navigator) {
 
     //console.log('=================================================================');
     //for (var k = 0; k<alldeps.length; k++) {
-    //  console.log(k+' '+alldeps[k].time+' '+alldeps[k].realtkme+ ' '+alldeps[k].line+' '+alldeps[k].dest);
+    //  console.log(k+' '+alldeps[k].time+' '+alldeps[k].realtime+ ' '+alldeps[k].line+' '+alldeps[k].dest);
     //}
     //console.log('=================================================================');
 
