@@ -296,7 +296,6 @@ var Slebble = (function(Pebble, navigator) {
    * @private
    */
   var _determineTimeLeft = function(time) {
-    //console.log("parsing "+time);
     if(time === '')
       return 0;
     var timeHour = parseInt(time.substr(0, 2));
