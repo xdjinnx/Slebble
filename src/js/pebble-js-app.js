@@ -121,7 +121,7 @@ var Slebble = (function(Pebble, navigator) {
         alldeps[j].line,
         alldeps[j].dest,
         alldeps[j].realtime,
-        alldeps[j].time,
+        _determineTimeLeftSL(alldeps[j].realtime),
         numberToAdd);
     }
   };
@@ -161,6 +161,39 @@ var Slebble = (function(Pebble, navigator) {
         return ah<bh?-1:1;
       }
     }
+  };
+
+  /**
+   * Minutes left for HH:MM input
+   * TODO should probably be uniformed with _determineTimeLeft
+   * @param time Time in format HH:MM
+   * @returns {number} minuted left to time
+   * @private
+   */
+  var _determineTimeLeftSL = function(time) {
+    if (time === '')
+      return 0;
+    var arr = time.split(":");
+    console.log(arr);
+    var timeHour = parseInt(arr[0]);
+    var timeMin = parseInt(arr[1]);
+    var date = new Date();
+    var realHour = date.getHours();
+    var realMin = date.getMinutes();
+
+    if(timeHour < realHour) {
+      timeHour += 24;
+    }
+
+    var hour = timeHour - realHour;
+    var min = hour * 60;
+
+    var dMin = timeMin - realMin;
+
+    if(min === 0 && timeMin < realMin)
+      return 0;
+
+    return min + dMin;
   };
 
   /**
