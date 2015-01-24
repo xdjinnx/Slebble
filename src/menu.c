@@ -5,7 +5,8 @@ uint16_t menu_get_num_sections_callback(MenuLayer *menu_layer, void *data) {
 }
 
 uint16_t menu_get_num_rows_callback(MenuLayer *menu_layer, uint16_t section_index, void *data) {
-    return 0;
+    Menu* menu = data;
+    return menu->size;
 }
 
 int16_t menu_get_header_height_callback(MenuLayer *menu_layer, uint16_t section_index, void *data) {
@@ -15,12 +16,12 @@ int16_t menu_get_header_height_callback(MenuLayer *menu_layer, uint16_t section_
 
 void menu_draw_header_callback(GContext* ctx, const Layer *cell_layer, uint16_t section_index, void *data) {
     Menu* menu = data;
-    menu_cell_basic_header_draw(ctx, cell_layer, "SMALL HEADER NAME");
+    menu_cell_basic_header_draw(ctx, cell_layer, menu->title);
 }
 
 void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data) {
     Menu* menu = data;
-    menu_cell_basic_draw(ctx, cell_layer, "TITLE", "SUBTITLE", NULL);
+    menu_cell_basic_draw(ctx, cell_layer, &(menu->row_title)[cell_index->row], &(menu->row_subtitle)[cell_index->row], NULL);
 }
 
 void startmenu_window_load(Window *window) {
@@ -40,7 +41,7 @@ void startmenu_window_load(Window *window) {
             .select_click = NULL,
     });
 
-    menu->load_image = gbitmap_create_with_resource(RESOURCE_ID_SLEBBLE_START_BLACK);
+    menu->load_image = gbitmap_create_with_resource(menu->load_image_resource_id);
     menu->load_layer = bitmap_layer_create(bounds);
     bitmap_layer_set_background_color(menu->load_layer, GColorWhite);
     bitmap_layer_set_bitmap(menu->load_layer, menu->load_image);
@@ -57,9 +58,10 @@ void startmenu_window_unload(Window *window) {
     menu_layer_destroy(menu->layer);
 }
 
-Menu* menu_create() {
+Menu* menu_create(uint32_t load_image_resource_id) {
     Menu* menu = malloc(sizeof(Menu));
     menu->window = window_create();
+    menu->load_image_resource_id = load_image_resource_id;
 
     window_set_user_data(menu->window, menu);
 
