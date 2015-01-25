@@ -10,6 +10,9 @@ typedef struct Menu {
     char *row_title;
     char *row_subtitle;
 
+    void (*remove_callback)(struct Menu*);
+    void *data;
+
     Window *window;
     MenuLayer *layer;
     uint32_t load_image_resource_id;
@@ -17,4 +20,4 @@ typedef struct Menu {
     BitmapLayer *load_layer;
 } Menu;
 
-extern Menu* menu_create(uint32_t load_image_resource_id);
+extern Menu* menu_create(void (*remove_callback)(Menu*), uint32_t load_image_resource_id);

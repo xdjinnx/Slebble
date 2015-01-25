@@ -56,12 +56,15 @@ void startmenu_window_unload(Window *window) {
     window_stack_remove(window, true);
     window_destroy(window);
     menu_layer_destroy(menu->layer);
+
+    menu->remove_callback(menu);
 }
 
-Menu* menu_create(uint32_t load_image_resource_id) {
+Menu* menu_create(void (*remove_callback)(Menu*), uint32_t load_image_resource_id) {
     Menu* menu = malloc(sizeof(Menu));
     menu->window = window_create();
     menu->load_image_resource_id = load_image_resource_id;
+    menu->remove_callback = remove_callback;
 
     window_set_user_data(menu->window, menu);
 
