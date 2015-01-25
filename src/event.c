@@ -98,3 +98,18 @@ void in_received_handler(DictionaryIterator *iter, void *context) {
 void event_tick_handler(void *data) {
 
 }
+
+void send_appmessage(int index) {
+    Tuplet value = TupletInteger(1, index);
+
+    DictionaryIterator *iter;
+    app_message_outbox_begin(&iter);
+
+    if (iter == NULL)
+        return;
+
+    dict_write_tuplet(iter, &value);
+    dict_write_end(iter);
+
+    app_message_outbox_send();
+}

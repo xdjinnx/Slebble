@@ -2,10 +2,6 @@
 #include "menu.h"
 #include "event.h"
 
-/*
-Add code for the callback from app_message, we want the main to control all interaction with the view.
- */
-
 Menu *menu;
 
 void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
@@ -14,6 +10,15 @@ void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
 
 void select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
 
+    Menu *temp = menu;
+    menu = menu_create(RESOURCE_ID_SLEBBLE_LOADING_BLACK, (MenuCallbacks){
+            .select_click = NULL,
+            .remove_callback = &remove_callback_handler,
+    });
+
+    menu->menu = temp;
+
+    send_appmessage(cell_index->row);
 }
 
 void remove_callback_handler(void *menu) {

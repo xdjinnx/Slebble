@@ -2,6 +2,7 @@
 
 #include "pebble.h"
 
+extern void send_appmessage(int index);
 extern void event_set_view_update(void (*update)(int, char*, int, char*, char*));
 extern void event_tick_handler(void *data);
 extern void in_received_handler(DictionaryIterator *iter, void *context);
