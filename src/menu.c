@@ -66,15 +66,15 @@ void menu_update(Menu *menu, int size, char *title, int index, char *row_title, 
         menu->row_title = malloc(sizeof(char*)*size);
         menu->row_subtitle = malloc(sizeof(char*)*size);
         for(int i = 0; i < size; i++) {
-            menu->title[i] = malloc(sizeof(char)*32);
-            menu->subtitle[i] = malloc(sizeof(char)*32);
+            (&(menu->row_title))[i] = malloc(sizeof(char)*32);
+            (&(menu->row_subtitle))[i] = malloc(sizeof(char)*32);
         }
     }
 
     menu->size = size;
-    menu->title = title;
-    (&(menu->row_title))[index] = row_title;
-    (&(menu->row_subtitle))[index] = row_subtitle;
+    memcpy(menu->title, title, 32);
+    memcpy((&(menu->row_title))[index], row_title, 32);
+    memcpy((&(menu->row_subtitle))[index], row_subtitle, 32);
 }
 
 Menu* menu_create(uint32_t load_image_resource_id, MenuCallbacks callbacks) {
