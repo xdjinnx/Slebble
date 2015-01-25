@@ -24,7 +24,7 @@ void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuIndex *c
     menu_cell_basic_draw(ctx, cell_layer, &(menu->row_title)[cell_index->row], &(menu->row_subtitle)[cell_index->row], NULL);
 }
 
-void startmenu_window_load(Window *window) {
+void window_load(Window *window) {
     Menu* menu = window_get_user_data(window);
 
     Layer *window_layer = window_get_root_layer(window);
@@ -51,7 +51,7 @@ void startmenu_window_load(Window *window) {
 
 }
 
-void startmenu_window_unload(Window *window) {
+void window_unload(Window *window) {
     Menu* menu = window_get_user_data(window);
     window_stack_remove(window, true);
     window_destroy(window);
@@ -69,8 +69,8 @@ Menu* menu_create(uint32_t load_image_resource_id, MenuCallbacks callbacks) {
     window_set_user_data(menu->window, menu);
 
     window_set_window_handlers(menu->window, (WindowHandlers) {
-            .load = startmenu_window_load,
-            .unload = startmenu_window_unload,
+            .load = window_load,
+            .unload = window_unload,
     });
 
     window_stack_push(menu->window, true);
