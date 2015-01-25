@@ -22,7 +22,6 @@ void in_dropped_handler(AppMessageResult reason, void *context) {
     //APP_LOG(APP_LOG_LEVEL_WARNING, "DROPPED PACKAGE");
 }
 
-/*
 void in_received_handler(DictionaryIterator *iter, void *context) {
 
     //APP_LOG(APP_LOG_LEVEL_INFO, "Appmessage recived");
@@ -37,63 +36,53 @@ void in_received_handler(DictionaryIterator *iter, void *context) {
     Tuple *error_title_tuple = dict_find(iter, ERROR_TITLE_KEY);
     Tuple *error_subtitle_tuple = dict_find(iter, ERROR_SUBTITLE_KEY);
 
+    int index = index_tuple->value->uint8;
+    int size = nr_tuple->value->uint8;
+
+    char title[32];
+    char subtitle[32];
+
     switch(path_tuple->value->uint8) {
         //Receive stations
         case 1:
 
-            temp = malloc(sizeof(struct node));
-
-            memcpy(temp->title, station_tuple->value->cstring, station_tuple->length);
-            temp->title[31] = '\0';
-            temp->index = index_tuple->value->uint8;
-            root_startmenu = linkedlist_push(root_startmenu, temp);
-
-            nr_station_variable = nr_tuple->value->uint8;
-
-            loaded_rows++;
+            memcpy(title, station_tuple->value->cstring, station_tuple->length);
+            title[31] = '\0';
 
             //APP_LOG(APP_LOG_LEVEL_INFO, "Startmenu: number of rows %d of %d", loaded_rows, nr_station_variable);
-            if(loaded_rows == nr_station_variable) {
-                root_startmenu = linkedlist_sort(root_startmenu);
-                remove_startscreen();
-            }
+            update_ptr(size, "Stations", index, title, NULL);
             break;
+
             //Receive depatures
         case 2:
-            memcpy(stationmenu_title[index_tuple->value->uint8], ride_tuple->value->cstring, ride_tuple->length);
-            stationmenu_title[index_tuple->value->uint8][31] = '\0';
+            memcpy(title, ride_tuple->value->cstring, ride_tuple->length);
+            title[31] = '\0';
 
-            memcpy(stationmenu_subtitle[index_tuple->value->uint8], to_tuple->value->cstring, to_tuple->length);
-            stationmenu_subtitle[index_tuple->value->uint8][31] = '\0';
+            memcpy(subtitle, to_tuple->value->cstring, to_tuple->length);
+            subtitle[31] = '\0';
 
-            stationmenu_minLeft[index_tuple->value->uint8] = min_tuple->value->uint8;
-
-            nr_ride_variable = nr_tuple->value->uint8;
-
-            loaded_rows++;
+            //stationmenu_minLeft[index_tuple->value->uint8] = min_tuple->value->uint8;
 
             //APP_LOG(APP_LOG_LEVEL_INFO, "Station: number of rows %d of %d", loaded_rows, nr_ride_variable);
-            if(loaded_rows == nr_ride_variable)
-                remove_loadscreen();
+            update_ptr(size, "Depatures", index, title, subtitle);
             break;
+
             //Receive Error message in depature screen
         case 3:
-            memcpy(stationmenu_title[0], error_title_tuple->value->cstring, error_title_tuple->length);
-            stationmenu_title[0][31] = '\0';
+            memcpy(title, error_title_tuple->value->cstring, error_title_tuple->length);
+            title[31] = '\0';
 
-            memcpy(stationmenu_subtitle[0], error_subtitle_tuple->value->cstring, error_subtitle_tuple->length);
-            stationmenu_subtitle[0][31] = '\0';
+            memcpy(subtitle, error_subtitle_tuple->value->cstring, error_subtitle_tuple->length);
+            subtitle[31] = '\0';
 
-            stationmenu_minLeft[0] = -1;
-            nr_ride_variable = 1;
-
-            remove_loadscreen();
+            update_ptr(1, "Error", 0, title, subtitle);
 
             break;
+
     }
 
 }
-*/
+
 
 void event_tick_handler(void *data) {
 

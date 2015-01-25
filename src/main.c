@@ -8,6 +8,10 @@ void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
     event_tick_handler(menu->data);
 }
 
+void remove_callback_handler(void *menu) {
+
+}
+
 void select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
 
     Menu *temp = menu;
@@ -21,17 +25,13 @@ void select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
     send_appmessage(cell_index->row);
 }
 
-void remove_callback_handler(void *menu) {
-
-}
-
 void view_update(int size, char *title, int index, char *row_title, char *row_subtitle) {
     menu_update(menu, size, title, index, row_title, row_subtitle);
 }
 
 int main(void) {
 
-    //app_message_register_inbox_received(in_received_handler);
+    app_message_register_inbox_received(in_received_handler);
     app_message_register_inbox_dropped(in_dropped_handler);
 
     menu = menu_create(RESOURCE_ID_SLEBBLE_START_BLACK, (MenuCallbacks){
