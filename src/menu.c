@@ -77,6 +77,13 @@ void menu_update(Menu *menu, int size, char *title, int index, char *row_title, 
     memcpy((&(menu->row_subtitle))[index], row_subtitle, 32);
 }
 
+void menu_remove_load_image(Menu *menu) {
+    menu_layer_reload_data(menu->layer);
+    bitmap_layer_destroy(menu->load_layer);
+    gbitmap_destroy(menu->load_image);
+    menu_layer_set_click_config_onto_window(menu->layer, menu->window);
+}
+
 Menu* menu_create(uint32_t load_image_resource_id, MenuCallbacks callbacks) {
     Menu* menu = malloc(sizeof(Menu));
     menu->window = window_create();

@@ -3,6 +3,7 @@
 #include "event.h"
 
 Menu *menu;
+int updates = 0;
 
 void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
     event_tick_handler(menu->data);
@@ -27,6 +28,9 @@ void select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
 
 void view_update(int size, char *title, int index, char *row_title, char *row_subtitle) {
     menu_update(menu, size, title, index, row_title, row_subtitle);
+    updates++;
+    if(updates >= size)
+        menu_remove_load_image(menu);
 }
 
 int main(void) {
