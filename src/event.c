@@ -1,4 +1,4 @@
-#include "app_message.h"
+#include "event.h"
 
 enum SLKey {
     PATH_KEY = 0x0,
@@ -11,12 +11,18 @@ enum SLKey {
     ERROR_TITLE_KEY = 0x7,
     ERROR_SUBTITLE_KEY = 0x8,
 };
-/*
+
+void (*update_ptr)(int, char*, int, char*, char*);
+
+void event_set_view_update(void (*update)(int, char*, int, char*, char*)) {
+    update_ptr = update;
+}
+
 void in_dropped_handler(AppMessageResult reason, void *context) {
     //APP_LOG(APP_LOG_LEVEL_WARNING, "DROPPED PACKAGE");
 }
 
-
+/*
 void in_received_handler(DictionaryIterator *iter, void *context) {
 
     //APP_LOG(APP_LOG_LEVEL_INFO, "Appmessage recived");
@@ -88,3 +94,7 @@ void in_received_handler(DictionaryIterator *iter, void *context) {
 
 }
 */
+
+void event_tick_handler(void *data) {
+
+}

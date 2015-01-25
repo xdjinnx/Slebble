@@ -60,6 +60,13 @@ void window_unload(Window *window) {
     menu->callbacks.remove_callback(menu);
 }
 
+void menu_update(Menu *menu, int size, char *title, int index, char *row_title, char *row_subtitle) {
+    menu->size = size;
+    menu->title = title;
+    (&(menu->row_title))[index] = row_title;
+    (&(menu->row_subtitle))[index] = row_subtitle;
+}
+
 Menu* menu_create(uint32_t load_image_resource_id, MenuCallbacks callbacks) {
     Menu* menu = malloc(sizeof(Menu));
     menu->window = window_create();

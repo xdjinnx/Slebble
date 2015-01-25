@@ -26,3 +26,4 @@ typedef struct Menu {
 } Menu;
 
 extern Menu* menu_create(uint32_t load_image_resource_id, MenuCallbacks callbacks);
+extern void menu_update(Menu *menu, int size, char *title, int index, char *row_title, char *row_subtitle);
