@@ -61,6 +61,16 @@ void window_unload(Window *window) {
 }
 
 void menu_update(Menu *menu, int size, char *title, int index, char *row_title, char *row_subtitle) {
+    if(menu->title == NULL) {
+        menu->title = malloc(sizeof(char)*32);
+        menu->row_title = malloc(sizeof(char*)*size);
+        menu->row_subtitle = malloc(sizeof(char*)*size);
+        for(int i = 0; i < size; i++) {
+            menu->title[i] = malloc(sizeof(char)*32);
+            menu->subtitle[i] = malloc(sizeof(char)*32);
+        }
+    }
+
     menu->size = size;
     menu->title = title;
     (&(menu->row_title))[index] = row_title;
@@ -72,6 +82,7 @@ Menu* menu_create(uint32_t load_image_resource_id, MenuCallbacks callbacks) {
     menu->window = window_create();
     menu->load_image_resource_id = load_image_resource_id;
     menu->callbacks = callbacks;
+
 
     window_set_user_data(menu->window, menu);
 
