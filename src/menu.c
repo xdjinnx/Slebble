@@ -38,7 +38,7 @@ void startmenu_window_load(Window *window) {
             .get_header_height = menu_get_header_height_callback,
             .draw_header = menu_draw_header_callback,
             .draw_row = menu_draw_row_callback,
-            .select_click = NULL,
+            .select_click = menu->callbacks.select_click,
     });
 
     menu->load_image = gbitmap_create_with_resource(menu->load_image_resource_id);
@@ -57,14 +57,14 @@ void startmenu_window_unload(Window *window) {
     window_destroy(window);
     menu_layer_destroy(menu->layer);
 
-    menu->remove_callback(menu);
+    menu->callbacks.remove_callback(menu);
 }
 
-Menu* menu_create(void (*remove_callback)(Menu*), uint32_t load_image_resource_id) {
+Menu* menu_create(uint32_t load_image_resource_id, MenuCallbacks callbacks) {
     Menu* menu = malloc(sizeof(Menu));
     menu->window = window_create();
     menu->load_image_resource_id = load_image_resource_id;
-    menu->remove_callback = remove_callback;
+    menu->callbacks = callbacks;
 
     window_set_user_data(menu->window, menu);
 

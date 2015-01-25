@@ -2,6 +2,11 @@
 
 #include "pebble.h"
 
+typedef struct MenuCallbacks {
+    void (*select_click)(MenuLayer*, MenuIndex*, void*);
+    void (*remove_callback)(void*);
+} MenuCallbacks;
+
 typedef struct Menu {
     struct Menu *menu;
 
@@ -10,7 +15,7 @@ typedef struct Menu {
     char *row_title;
     char *row_subtitle;
 
-    void (*remove_callback)(struct Menu*);
+    MenuCallbacks callbacks;
     void *data;
 
     Window *window;
@@ -20,4 +25,4 @@ typedef struct Menu {
     BitmapLayer *load_layer;
 } Menu;
 
-extern Menu* menu_create(void (*remove_callback)(Menu*), uint32_t load_image_resource_id);
+extern Menu* menu_create(uint32_t load_image_resource_id, MenuCallbacks callbacks);
