@@ -57,7 +57,21 @@ void window_unload(Window *window) {
     window_destroy(window);
     menu_layer_destroy(menu->layer);
 
-    //menu->callbacks.remove_callback(menu);
+    for(int i = 0; i < menu->size; i++) {
+        free(menu->row_title[i]);
+        free(menu->row_subtitle[i]);
+    }
+    free(menu->row_title);
+    free(menu->row_subtitle);
+    free(menu->title);
+
+    /*
+    if(menu->data == NULL) {
+        free(sizeof(int)*menu->size);
+    }
+    */
+
+    menu->callbacks.remove_callback(menu);
 }
 
 void menu_update(Menu *menu, int size, char *title, int index, char *row_title, char *row_subtitle) {

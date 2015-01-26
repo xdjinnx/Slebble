@@ -9,7 +9,10 @@ void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
     event_tick_handler(menu->data);
 }
 
-void remove_callback_handler(void *menu) {
+void remove_callback_handler(void *data) {
+    Menu *temp = data;
+    menu = menu->menu;
+    free(temp);
 
 }
 
