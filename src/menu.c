@@ -21,7 +21,7 @@ void menu_draw_header_callback(GContext* ctx, const Layer *cell_layer, uint16_t 
 
 void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data) {
     Menu* menu = data;
-    menu_cell_basic_draw(ctx, cell_layer, &(menu->row_title)[cell_index->row], &(menu->row_subtitle)[cell_index->row], NULL);
+    menu_cell_basic_draw(ctx, cell_layer, menu->row_title[cell_index->row], menu->row_subtitle[cell_index->row], NULL);
 }
 
 void window_load(Window *window) {
@@ -57,24 +57,25 @@ void window_unload(Window *window) {
     window_destroy(window);
     menu_layer_destroy(menu->layer);
 
-    menu->callbacks.remove_callback(menu);
+    //menu->callbacks.remove_callback(menu);
 }
 
 void menu_update(Menu *menu, int size, char *title, int index, char *row_title, char *row_subtitle) {
+
     if(menu->title == NULL) {
         menu->title = malloc(sizeof(char)*32);
         menu->row_title = malloc(sizeof(char*)*size);
         menu->row_subtitle = malloc(sizeof(char*)*size);
         for(int i = 0; i < size; i++) {
-            (&(menu->row_title))[i] = malloc(sizeof(char)*32);
-            (&(menu->row_subtitle))[i] = malloc(sizeof(char)*32);
+            menu->row_title[i] = malloc(sizeof(char)*32);
+            menu->row_subtitle[i] = malloc(sizeof(char)*32);
         }
     }
 
     menu->size = size;
     memcpy(menu->title, title, 32);
-    memcpy((&(menu->row_title))[index], row_title, 32);
-    memcpy((&(menu->row_subtitle))[index], row_subtitle, 32);
+    memcpy(menu->row_title[index], row_title, 32);
+    memcpy(menu->row_subtitle[index], row_subtitle, 32);
 }
 
 void menu_remove_load_image(Menu *menu) {

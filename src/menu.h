@@ -12,8 +12,8 @@ typedef struct Menu {
 
     int size;
     char *title;
-    char *row_title;
-    char *row_subtitle;
+    char **row_title;
+    char **row_subtitle;
 
     MenuCallbacks callbacks;
     void *data;
