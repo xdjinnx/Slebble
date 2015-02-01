@@ -64,10 +64,12 @@ void in_received_handler(DictionaryIterator *iter, void *context) {
         
             memcpy(data_char, ride_tuple->value->cstring, ride_tuple->length);
 
-            snprintf(title, 32, "%dmin - %s", min_tuple->value->uint8, data_char);
+            if(min_tuple->value->uint8 > 0) {
+                snprintf(title, 32, "%dmin - %s", min_tuple->value->uint8, data_char);
+            } else {
+                snprintf(title, 32, "Nu - %s", data_char);
+            }
             title[31] = '\0';
-
-            APP_LOG(APP_LOG_LEVEL_INFO, "%s", title);
 
             memcpy(subtitle, to_tuple->value->cstring, to_tuple->length);
             subtitle[31] = '\0';

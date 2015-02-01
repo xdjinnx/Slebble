@@ -4,14 +4,39 @@
 
 Menu *menu;
 int updates = 0;
+bool first_tick = false;
+
+
+void view_update(int size, char *title, int index, char *row_title, char *row_subtitle, int data_int, char *data_char) {
+    menu_update(menu, size, title, index, row_title, row_subtitle, data_int, data_char);
+    updates++;
+    if(updates >= size)
+        menu_remove_load_image(menu);
+}
 
 void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
-    event_tick_handler(menu->size, menu->data_int);
+    if(first_tick) {
+        event_tick_handler(menu->size, menu->data_int);
+        for(int i = 0; i < menu->size; i++) {
+            char buf[32];
+            if(((int*)menu->data_int)[i] > 0) {
+                snprintf(buf, 32, "%dmin - %s", ((int*)menu->data_int)[i], ((char**)menu->data_char)[i]);
+                buf[31] = '\0';
+            } else {
+                snprintf(buf, 32, "Nu - %s", ((char**)menu->data_char)[i]);
+                buf[31] = '\0';
+            }
+            menu_update(menu, menu->size, menu->title, i, buf, menu->row_subtitle[i], ((int*)menu->data_int)[i], ((char**)menu->data_char)[i]);
+        }
+        menu_layer_reload_data(menu->layer);
+    }
+    first_tick = true;
 }
 
 void remove_callback_handler(void *data) {
     Menu* temp = data;
     menu = temp;
+    tick_timer_service_unsubscribe();
 }
 
 void select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
@@ -30,14 +55,8 @@ void select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
     if(app_comm_get_sniff_interval() == SNIFF_INTERVAL_NORMAL)
         app_comm_set_sniff_interval(SNIFF_INTERVAL_REDUCED);
     send_appmessage(cell_index->row);
-    
-}
 
-void view_update(int size, char *title, int index, char *row_title, char *row_subtitle, int data_int, char *data_char) {
-    menu_update(menu, size, title, index, row_title, row_subtitle, data_int, data_char);
-    updates++;
-    if(updates >= size)
-        menu_remove_load_image(menu);
+    tick_timer_service_subscribe(MINUTE_UNIT, tick_handler);
 }
 
 int main(void) {
@@ -51,8 +70,6 @@ int main(void) {
     });
 
     event_set_view_update(&view_update);
-
-    //tick_timer_service_subscribe(MINUTE_UNIT, tick_handler);
 
     app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
     app_comm_set_sniff_interval(SNIFF_INTERVAL_REDUCED);
