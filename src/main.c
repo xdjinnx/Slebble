@@ -10,10 +10,8 @@ void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
 }
 
 void remove_callback_handler(void *data) {
-    Menu *temp = data;
-    menu = menu->menu;
-    free(temp);
-
+    Menu* temp = data;
+    menu = temp;
 }
 
 void select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
@@ -26,7 +24,11 @@ void select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
 
     menu->menu = temp;
 
+    updates = 0;
+    if(app_comm_get_sniff_interval() == SNIFF_INTERVAL_NORMAL)
+        app_comm_set_sniff_interval(SNIFF_INTERVAL_REDUCED);
     send_appmessage(cell_index->row);
+    
 }
 
 void view_update(int size, char *title, int index, char *row_title, char *row_subtitle) {
@@ -51,6 +53,7 @@ int main(void) {
     tick_timer_service_subscribe(MINUTE_UNIT, tick_handler);
 
     app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
+    app_comm_set_sniff_interval(SNIFF_INTERVAL_REDUCED);
 
-	app_event_loop();
+    app_event_loop();
 }

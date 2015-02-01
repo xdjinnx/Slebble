@@ -42,12 +42,12 @@ void window_load(Window *window) {
     });
 
     menu->load_image = gbitmap_create_with_resource(menu->load_image_resource_id);
-    menu->load_layer = bitmap_layer_create(bounds);
-    bitmap_layer_set_background_color(menu->load_layer, GColorWhite);
-    bitmap_layer_set_bitmap(menu->load_layer, menu->load_image);
+    //menu->load_layer = bitmap_layer_create(bounds);
+    //bitmap_layer_set_background_color(menu->load_layer, GColorWhite);
+    //bitmap_layer_set_bitmap(menu->load_layer, menu->load_image);
 
     layer_add_child(window_layer, menu_layer_get_layer(menu->layer));
-    layer_add_child(window_layer, bitmap_layer_get_layer(menu->load_layer));
+    //layer_add_child(window_layer, bitmap_layer_get_layer(menu->load_layer));
 
 }
 
@@ -71,12 +71,14 @@ void window_unload(Window *window) {
     }
     */
 
-    menu->callbacks.remove_callback(menu);
+    Menu *ret = menu->menu;
+    free(menu);
+    menu->callbacks.remove_callback(ret);
 }
 
 void menu_update(Menu *menu, int size, char *title, int index, char *row_title, char *row_subtitle) {
 
-    if(menu->title == NULL) {
+    if(menu->size == 0) {
         menu->title = malloc(sizeof(char)*32);
         menu->row_title = malloc(sizeof(char*)*size);
         menu->row_subtitle = malloc(sizeof(char*)*size);
@@ -104,7 +106,7 @@ Menu* menu_create(uint32_t load_image_resource_id, MenuCallbacks callbacks) {
     menu->window = window_create();
     menu->load_image_resource_id = load_image_resource_id;
     menu->callbacks = callbacks;
-
+    menu->size = 0;
 
     window_set_user_data(menu->window, menu);
 

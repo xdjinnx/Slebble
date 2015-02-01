@@ -55,6 +55,7 @@ void in_received_handler(DictionaryIterator *iter, void *context) {
 
             //Receive depatures
         case 2:
+        
             memcpy(title, ride_tuple->value->cstring, ride_tuple->length);
             title[31] = '\0';
 
@@ -65,6 +66,7 @@ void in_received_handler(DictionaryIterator *iter, void *context) {
 
             //APP_LOG(APP_LOG_LEVEL_INFO, "Station: number of rows %d of %d", loaded_rows, nr_ride_variable);
             update_ptr(size, "Depatures", index, title, subtitle);
+            
             break;
 
             //Receive Error message in depature screen
