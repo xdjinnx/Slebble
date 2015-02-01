@@ -6,7 +6,7 @@ Menu *menu;
 int updates = 0;
 
 void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
-    event_tick_handler(menu->data);
+    event_tick_handler(menu->size, menu->data_int);
 }
 
 void remove_callback_handler(void *data) {
@@ -31,8 +31,8 @@ void select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
     
 }
 
-void view_update(int size, char *title, int index, char *row_title, char *row_subtitle) {
-    menu_update(menu, size, title, index, row_title, row_subtitle);
+void view_update(int size, char *title, int index, char *row_title, char *row_subtitle, int data_int, char *data_char) {
+    menu_update(menu, size, title, index, row_title, row_subtitle, data_int, data_char);
     updates++;
     if(updates >= size)
         menu_remove_load_image(menu);
@@ -50,7 +50,7 @@ int main(void) {
 
     event_set_view_update(&view_update);
 
-    tick_timer_service_subscribe(MINUTE_UNIT, tick_handler);
+    //tick_timer_service_subscribe(MINUTE_UNIT, tick_handler);
 
     app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
     app_comm_set_sniff_interval(SNIFF_INTERVAL_REDUCED);

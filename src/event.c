@@ -12,9 +12,9 @@ enum SLKey {
     ERROR_SUBTITLE_KEY = 0x8,
 };
 
-void (*update_ptr)(int, char*, int, char*, char*);
+void (*update_ptr)(int, char*, int, char*, char*, int, char*);
 
-void event_set_view_update(void (*update)(int, char*, int, char*, char*)) {
+void event_set_view_update(void (*update)(int, char*, int, char*, char*, int, char*)) {
     update_ptr = update;
 }
 
@@ -41,6 +41,7 @@ void in_received_handler(DictionaryIterator *iter, void *context) {
 
     char title[32];
     char subtitle[32];
+    char data_char[32];
 
     switch(path_tuple->value->uint8) {
         //Receive stations
@@ -50,22 +51,24 @@ void in_received_handler(DictionaryIterator *iter, void *context) {
             title[31] = '\0';
 
             //APP_LOG(APP_LOG_LEVEL_INFO, "Startmenu: number of rows %d of %d", loaded_rows, nr_station_variable);
-            update_ptr(size, "Stations", index, title, "");
+            update_ptr(size, "Stations", index, title, "", 0, NULL);
             break;
 
             //Receive depatures
         case 2:
         
-            memcpy(title, ride_tuple->value->cstring, ride_tuple->length);
+            memcpy(data_char, ride_tuple->value->cstring, ride_tuple->length);
+
+            snprintf(title, 32, "%dmin - %s", min_tuple->value->uint8, data_char);
             title[31] = '\0';
+
+            APP_LOG(APP_LOG_LEVEL_INFO, "%s", title);
 
             memcpy(subtitle, to_tuple->value->cstring, to_tuple->length);
             subtitle[31] = '\0';
 
-            //stationmenu_minLeft[index_tuple->value->uint8] = min_tuple->value->uint8;
-
             //APP_LOG(APP_LOG_LEVEL_INFO, "Station: number of rows %d of %d", loaded_rows, nr_ride_variable);
-            update_ptr(size, "Depatures", index, title, subtitle);
+            update_ptr(size, "Depatures", index, title, subtitle, min_tuple->value->uint8, data_char);
             
             break;
 
@@ -77,7 +80,7 @@ void in_received_handler(DictionaryIterator *iter, void *context) {
             memcpy(subtitle, error_subtitle_tuple->value->cstring, error_subtitle_tuple->length);
             subtitle[31] = '\0';
 
-            update_ptr(1, "Error", 0, title, subtitle);
+            update_ptr(1, "Error", 0, title, subtitle, 0, NULL);
 
             break;
 
@@ -86,8 +89,12 @@ void in_received_handler(DictionaryIterator *iter, void *context) {
 }
 
 
-void event_tick_handler(void *data) {
-
+void event_tick_handler(int size, void *data) {
+    int *min_left = data;
+    for(int i = 0; i < size; i++) {
+        if(min_left[i] > 0)
+            min_left[i]--;
+    }
 }
 
 void send_appmessage(int index) {

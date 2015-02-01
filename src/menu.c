@@ -60,38 +60,44 @@ void window_unload(Window *window) {
     for(int i = 0; i < menu->size; i++) {
         free(menu->row_title[i]);
         free(menu->row_subtitle[i]);
+        free(menu->data_char[i]);
     }
     free(menu->row_title);
     free(menu->row_subtitle);
     free(menu->title);
-
-    /*
-    if(menu->data == NULL) {
-        free(sizeof(int)*menu->size);
-    }
-    */
+    free(menu->data_int);
+    free(menu->data_char);
 
     Menu *ret = menu->menu;
     free(menu);
     menu->callbacks.remove_callback(ret);
 }
 
-void menu_update(Menu *menu, int size, char *title, int index, char *row_title, char *row_subtitle) {
+void menu_update(Menu *menu, int size, char *title, int index, char *row_title, char *row_subtitle, int data_int, char *data_char) {
 
     if(menu->size == 0) {
         menu->title = malloc(sizeof(char)*32);
         menu->row_title = malloc(sizeof(char*)*size);
         menu->row_subtitle = malloc(sizeof(char*)*size);
+        menu->data_char = malloc(sizeof(char*)*size);
         for(int i = 0; i < size; i++) {
             menu->row_title[i] = malloc(sizeof(char)*32);
             menu->row_subtitle[i] = malloc(sizeof(char)*32);
+            menu->data_char[i] = malloc(sizeof(char)*32);
         }
+        menu->data_int = malloc(sizeof(int)*size);
     }
 
     menu->size = size;
     memcpy(menu->title, title, 32);
     memcpy(menu->row_title[index], row_title, 32);
     memcpy(menu->row_subtitle[index], row_subtitle, 32);
+    
+    if(data_char != NULL)
+        memcpy(menu->data_char[index], data_char, 32);
+
+    int *temp = menu->data_int;
+    temp[index] = data_int;
 }
 
 void menu_remove_load_image(Menu *menu) {
