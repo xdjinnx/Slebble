@@ -12,10 +12,15 @@ enum SLKey {
     ERROR_SUBTITLE_KEY = 0x8,
 };
 
+char *event_data_char;
 void (*update_ptr)(int, char*, int, char*, char*, int, char*);
 
 void event_set_view_update(void (*update)(int, char*, int, char*, char*, int, char*)) {
     update_ptr = update;
+}
+
+void event_set_click_data(char* data) {
+    event_data_char = data;
 }
 
 void in_dropped_handler(AppMessageResult reason, void *context) {
@@ -68,7 +73,7 @@ void in_received_handler(DictionaryIterator *iter, void *context) {
             subtitle[31] = '\0';
 
             //APP_LOG(APP_LOG_LEVEL_INFO, "Station: number of rows %d of %d", loaded_rows, nr_ride_variable);
-            update_ptr(size, "Depatures", index, title, subtitle, min_tuple->value->uint8, data_char);
+            update_ptr(size, event_data_char, index, title, subtitle, min_tuple->value->uint8, data_char);
             
             break;
 

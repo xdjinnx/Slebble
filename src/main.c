@@ -16,6 +16,8 @@ void remove_callback_handler(void *data) {
 
 void select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
 
+    event_set_click_data(menu->row_title[cell_index->row]);
+
     Menu *temp = menu;
     menu = menu_create(RESOURCE_ID_SLEBBLE_LOADING_BLACK, (MenuCallbacks){
             .select_click = NULL,
