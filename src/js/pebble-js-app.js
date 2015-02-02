@@ -76,7 +76,6 @@ var Slebble = (function(Pebble, navigator) {
 
   var _SLRealtimeCallback = function(resp) {
     //console.log('sl callback');
-      console.log(resp);
     var response = JSON.parse(resp);
     var alldeps = [];
     var deps = [];
@@ -91,9 +90,9 @@ var Slebble = (function(Pebble, navigator) {
     for (var i = 0; i < deps.length; i++){
       var ad = {};
       ad.line = deps[i].LineNumber;
-      ad.timeleft = deps[i].DisplayTime.substring(deps[i].DisplayTime.length-3, deps[i].DisplayTime.length) !== 'min'?_determineTimeLeftSL(deps[i].DisplayTime):parseInt(deps[i].DisplayTime.substring(0, deps[i].DisplayTime.length - 4));
+      ad.timeleft = deps[i].DisplayTime.substring(deps[i].DisplayTime.length-3, deps[i].DisplayTime.length) !== 'min'?_determineTimeLeft(deps[i].DisplayTime):parseInt(deps[i].DisplayTime.substring(0, deps[i].DisplayTime.length - 4));
       ad.dest = deps[i].Destination;
-      ad.time = deps[i].DisplayTime.substring(deps[i].DisplayTime.length-3, deps[i].DisplayTime.length) !== 'min'?deps[i].DisplayTime:deps[i].DisplayTime.substring(0, deps[i].DisplayTime.length - 4);
+      ad.time = deps[i].DisplayTime.substring(deps[i].DisplayTime.length-3, deps[i].DisplayTime.length) !== 'min'?deps[i].DisplayTime:_determineTime(parseInt(deps[i].DisplayTime.substring(0, deps[i].DisplayTime.length - 4)));
 
       if (deps[i].TransportMode === 'BUS')
         ad.ridetype = RT_BUS;
@@ -112,7 +111,6 @@ var Slebble = (function(Pebble, navigator) {
 
     var numberToAdd = alldeps.length>_maxDepatures?_maxDepatures:alldeps.length;
     for (var j = 0; j < numberToAdd; j++) {
-      console.log(j + ", " + alldeps[j].line + ", " + alldeps[j].dest + ", " + alldeps[j].time.substring(0, alldeps[j].time.length - 4) + ", " + parseInt(alldeps[j].time.substring(0, alldeps[j].time.length - 4)) + ", " + numberToAdd);
       _addRide(j,
             alldeps[j].line,
             alldeps[j].dest,
@@ -130,39 +128,6 @@ var Slebble = (function(Pebble, navigator) {
       return -1;
     else
       return 1;
-  };
-
-  /**
-   * Minutes left for HH:MM input
-   * TODO should probably be uniformed with _determineTimeLeft
-   * @param time Time in format HH:MM
-   * @returns {number} minuted left to time
-   * @private
-   */
-  var _determineTimeLeftSL = function(time) {
-    if (time === '')
-      return 0;
-    var arr = time.split(":");
-    //console.log(arr);
-    var timeHour = parseInt(arr[0]);
-    var timeMin = parseInt(arr[1]);
-    var date = new Date();
-    var realHour = date.getHours();
-    var realMin = date.getMinutes();
-
-    if(timeHour < realHour) {
-      timeHour += 24;
-    }
-
-    var hour = timeHour - realHour;
-    var min = hour * 60;
-
-    var dMin = timeMin - realMin;
-
-    if(min === 0 && timeMin < realMin)
-      return 0;
-
-    return min + dMin;
   };
 
   /**
@@ -287,6 +252,22 @@ var Slebble = (function(Pebble, navigator) {
 
     return min + dMin;
   };
+
+  var _determineTime = function(timeleft) {
+      var date = new Date();
+      var realHour = date.getHours();
+      var realMin = date.getMinutes();
+
+      realMin = realMin + timeleft;
+
+      realHour = realHour + Math.floor(realMin / 60);
+      realMin = realMin % 60;
+
+      realHour = realHour % 24;
+
+      return realHour + ":" + realMin;
+
+  }
 
   /**
    * Callback from location service on success
