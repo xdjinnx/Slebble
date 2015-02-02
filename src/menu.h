@@ -15,6 +15,8 @@ typedef struct Menu {
     char **row_title;
     char **row_subtitle;
 
+    bool nearby;
+
     MenuCallbacks callbacks;
     void *data_int;
     void **data_char;

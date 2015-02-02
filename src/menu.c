@@ -16,12 +16,24 @@ int16_t menu_get_header_height_callback(MenuLayer *menu_layer, uint16_t section_
 
 void menu_draw_header_callback(GContext* ctx, const Layer *cell_layer, uint16_t section_index, void *data) {
     Menu* menu = data;
-    menu_cell_basic_header_draw(ctx, cell_layer, menu->title);
+    if(menu->nearby) {
+        if (section_index == 0)
+            menu_cell_basic_header_draw(ctx, cell_layer, "Nearby Station");
+        else
+            menu_cell_basic_header_draw(ctx, cell_layer, menu->title);
+    } else
+        menu_cell_basic_header_draw(ctx, cell_layer, menu->title);
 }
 
 void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data) {
     Menu* menu = data;
-    menu_cell_basic_draw(ctx, cell_layer, menu->row_title[cell_index->row], menu->row_subtitle[cell_index->row], NULL);
+    if(menu->nearby) {
+        if(cell_index->section == 0)
+            menu_cell_basic_draw(ctx, cell_layer, "Nearby Station", "", NULL);
+        else
+            menu_cell_basic_draw(ctx, cell_layer, menu->row_title[cell_index->row], menu->row_subtitle[cell_index->row], NULL);
+    } else
+        menu_cell_basic_draw(ctx, cell_layer, menu->row_title[cell_index->row], menu->row_subtitle[cell_index->row], NULL);
 }
 
 void window_load(Window *window) {
@@ -113,6 +125,7 @@ Menu* menu_create(uint32_t load_image_resource_id, MenuCallbacks callbacks) {
     menu->load_image_resource_id = load_image_resource_id;
     menu->callbacks = callbacks;
     menu->size = 0;
+    menu->nearby = false;
 
     window_set_user_data(menu->window, menu);
 

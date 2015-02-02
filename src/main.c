@@ -54,7 +54,7 @@ void select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
     updates = 0;
     if(app_comm_get_sniff_interval() == SNIFF_INTERVAL_NORMAL)
         app_comm_set_sniff_interval(SNIFF_INTERVAL_REDUCED);
-    send_appmessage(cell_index->row);
+    send_appmessage(cell_index->row + 1);
 
     tick_timer_service_subscribe(MINUTE_UNIT, tick_handler);
 }
@@ -69,6 +69,7 @@ int main(void) {
             .remove_callback = &remove_callback_handler,
     });
 
+    menu->nearby = true;
     event_set_view_update(&view_update);
 
     app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
