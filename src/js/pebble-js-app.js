@@ -76,6 +76,7 @@ var Slebble = (function(Pebble, navigator) {
 
   var _SLRealtimeCallback = function(resp) {
     //console.log('sl callback');
+      console.log(resp);
     var response = JSON.parse(resp);
     var alldeps = [];
     var deps = [];
@@ -90,9 +91,9 @@ var Slebble = (function(Pebble, navigator) {
     for (var i = 0; i < deps.length; i++){
       var ad = {};
       ad.line = deps[i].LineNumber;
-      ad.time = deps[i].DisplayTime;
+      ad.timeleft = deps[i].DisplayTime.substring(deps[i].DisplayTime.length-3, deps[i].DisplayTime.length) !== 'min'?_determineTimeLeftSL(deps[i].DisplayTime):parseInt(deps[i].DisplayTime.substring(0, deps[i].DisplayTime.length - 4));
       ad.dest = deps[i].Destination;
-      ad.realtime = deps[i].ExpectedDateTime !== undefined?deps[i].ExpectedDateTime.substring(16,11):'';
+      ad.time = deps[i].DisplayTime.substring(deps[i].DisplayTime.length-3, deps[i].DisplayTime.length) !== 'min'?deps[i].DisplayTime:deps[i].DisplayTime.substring(0, deps[i].DisplayTime.length - 4);
 
       if (deps[i].TransportMode === 'BUS')
         ad.ridetype = RT_BUS;
@@ -109,58 +110,26 @@ var Slebble = (function(Pebble, navigator) {
       return;
     }
 
-    //console.log('=================================================================');
-    //for (var k = 0; k<alldeps.length; k++) {
-    //  console.log(k+' '+alldeps[k].time+' '+alldeps[k].realtime+ ' '+alldeps[k].line+' '+alldeps[k].dest);
-    //}
-    //console.log('=================================================================');
-
     var numberToAdd = alldeps.length>_maxDepatures?_maxDepatures:alldeps.length;
     for (var j = 0; j < numberToAdd; j++) {
+      console.log(j + ", " + alldeps[j].line + ", " + alldeps[j].dest + ", " + alldeps[j].time.substring(0, alldeps[j].time.length - 4) + ", " + parseInt(alldeps[j].time.substring(0, alldeps[j].time.length - 4)) + ", " + numberToAdd);
       _addRide(j,
-        alldeps[j].line,
-        alldeps[j].dest,
-        alldeps[j].realtime,
-        _determineTimeLeftSL(alldeps[j].realtime),
-        numberToAdd);
+            alldeps[j].line,
+            alldeps[j].dest,
+            alldeps[j].time,
+            alldeps[j].timeleft,
+            numberToAdd
+      );
     }
   };
 
   var _slTimeSort = function(a, b){
-    if (a.time === b.time) // on equal
+    if(a.timeleft === b.timeleft)
       return 0;
-
-    // if any of them is Nu
-    if (a.time === 'Nu')
+    if(a.timeleft < b.timeleft)
       return -1;
-    else if (b.time === 'Nu')
+    else
       return 1;
-
-    // if one is minute
-    else if (a.time.search(':') === -1 && b.time.search(':') > 0)
-      return -1;
-    else if (a.time.search(':') > 0 && b.time.search(':') === -1)
-      return 1;
-
-    else if (a.time.search(':') === -1 && b.time.search(':') === -1) {
-      var at = parseInt(a.time.substr(0, a.time.length-4));
-      var bt = parseInt(b.time.substr(0, b.time.length-4));
-      //console.log(at+'<'+bt+' '+(at<bt?'true -1':'false 1'));
-      return at<bt?-1:1;
-    } else {
-      var ah = parseInt(a.time.split(':')[0]);
-      var bh = parseInt(b.time.split(':')[0]);
-
-      if (ah === bh){
-        var am = parseInt(a.time.split(':')[1]);
-        var bm = parseInt(b.time.split(':')[1]);
-        //console.log(am+'<'+bm+' '+(am<bm?'true -1':'false 1'));
-        return am<bm?-1:1;
-      } else {
-        //console.log(ah+'<'+bh+' '+(ah<bh?'true -1':'false 1'));
-        return ah<bh?-1:1;
-      }
-    }
   };
 
   /**
@@ -174,7 +143,7 @@ var Slebble = (function(Pebble, navigator) {
     if (time === '')
       return 0;
     var arr = time.split(":");
-    console.log(arr);
+    //console.log(arr);
     var timeHour = parseInt(arr[0]);
     var timeMin = parseInt(arr[1]);
     var date = new Date();
@@ -291,7 +260,7 @@ var Slebble = (function(Pebble, navigator) {
 
   /**
    * Parse time left for resrobot times
-   * @param time
+   * @param time HH:MM
    * @returns {number}
    * @private
    */
