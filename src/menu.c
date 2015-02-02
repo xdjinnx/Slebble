@@ -64,12 +64,12 @@ void window_load(Window *window) {
     });
 
     menu->load_image = gbitmap_create_with_resource(menu->load_image_resource_id);
-    //menu->load_layer = bitmap_layer_create(bounds);
-    //bitmap_layer_set_background_color(menu->load_layer, GColorWhite);
-    //bitmap_layer_set_bitmap(menu->load_layer, menu->load_image);
+    menu->load_layer = bitmap_layer_create(bounds);
+    bitmap_layer_set_background_color(menu->load_layer, GColorWhite);
+    bitmap_layer_set_bitmap(menu->load_layer, menu->load_image);
 
     layer_add_child(window_layer, menu_layer_get_layer(menu->layer));
-    //layer_add_child(window_layer, bitmap_layer_get_layer(menu->load_layer));
+    layer_add_child(window_layer, bitmap_layer_get_layer(menu->load_layer));
 
 }
 
