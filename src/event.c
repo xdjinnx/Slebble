@@ -56,7 +56,7 @@ void in_received_handler(DictionaryIterator *iter, void *context) {
             title[31] = '\0';
 
             //APP_LOG(APP_LOG_LEVEL_INFO, "Startmenu: number of rows %d of %d", loaded_rows, nr_station_variable);
-            update_ptr(size, "Stations", index, title, "", 0, NULL);
+            update_ptr(size, "Favorites", index, title, "", 0, NULL);
             break;
 
             //Receive depatures

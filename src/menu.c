@@ -1,12 +1,22 @@
 #include "menu.h"
 
 uint16_t menu_get_num_sections_callback(MenuLayer *menu_layer, void *data) {
-    return 1;
+    Menu* menu = data;
+    if(menu->nearby)
+        return 2;
+    else
+        return 1;
 }
 
 uint16_t menu_get_num_rows_callback(MenuLayer *menu_layer, uint16_t section_index, void *data) {
-    Menu* menu = data;
-    return menu->size;
+    Menu *menu = data;
+    if (menu->nearby) {
+        if(section_index == 0)
+            return 1;
+        else
+            return menu->size;
+    } else
+        return menu->size;
 }
 
 int16_t menu_get_header_height_callback(MenuLayer *menu_layer, uint16_t section_index, void *data) {
@@ -18,7 +28,7 @@ void menu_draw_header_callback(GContext* ctx, const Layer *cell_layer, uint16_t 
     Menu* menu = data;
     if(menu->nearby) {
         if (section_index == 0)
-            menu_cell_basic_header_draw(ctx, cell_layer, "Nearby Station");
+            menu_cell_basic_header_draw(ctx, cell_layer, "Stations");
         else
             menu_cell_basic_header_draw(ctx, cell_layer, menu->title);
     } else

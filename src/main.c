@@ -40,11 +40,19 @@ void remove_callback_handler(void *data) {
 }
 
 void select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
+    char *click_data;
+    int row_clicked = cell_index->row + 1;
 
-    event_set_click_data(menu->row_title[cell_index->row]);
+    if (cell_index->section == 0) {
+        click_data = "Nearby Station";
+        row_clicked--;
+    } else
+        click_data = menu->row_title[cell_index->row];
+
+    event_set_click_data(click_data);
 
     Menu *temp = menu;
-    menu = menu_create(RESOURCE_ID_SLEBBLE_LOADING_BLACK, (MenuCallbacks){
+    menu = menu_create(RESOURCE_ID_SLEBBLE_LOADING_BLACK, (MenuCallbacks) {
             .select_click = NULL,
             .remove_callback = &remove_callback_handler,
     });
@@ -52,9 +60,9 @@ void select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
     menu->menu = temp;
 
     updates = 0;
-    if(app_comm_get_sniff_interval() == SNIFF_INTERVAL_NORMAL)
+    if (app_comm_get_sniff_interval() == SNIFF_INTERVAL_NORMAL)
         app_comm_set_sniff_interval(SNIFF_INTERVAL_REDUCED);
-    send_appmessage(cell_index->row + 1);
+    send_appmessage(row_clicked);
 
     tick_timer_service_subscribe(MINUTE_UNIT, tick_handler);
 }
