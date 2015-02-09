@@ -89,9 +89,10 @@ var Slebble = (function(Pebble, navigator) {
 
     for (var i = 0; i < deps.length; i++){
       var ad = {};
-      ad.line = deps[i].LineNumber;
-      ad.timeleft = deps[i].DisplayTime.substring(deps[i].DisplayTime.length-3, deps[i].DisplayTime.length) !== 'min'?_determineTimeLeft(deps[i].DisplayTime):parseInt(deps[i].DisplayTime.substring(0, deps[i].DisplayTime.length - 4));
-      ad.dest = deps[i].Destination;
+      ad.index = i;
+      ad.number = deps[i].LineNumber;
+      ad.displayTime = deps[i].DisplayTime.substring(deps[i].DisplayTime.length-3, deps[i].DisplayTime.length) !== 'min'?_determineTimeLeft(deps[i].DisplayTime):parseInt(deps[i].DisplayTime.substring(0, deps[i].DisplayTime.length - 4));
+      ad.destination = deps[i].Destination;
       ad.time = deps[i].DisplayTime.substring(deps[i].DisplayTime.length-3, deps[i].DisplayTime.length) !== 'min'?deps[i].DisplayTime:_determineTime(parseInt(deps[i].DisplayTime.substring(0, deps[i].DisplayTime.length - 4)));
 
       if (deps[i].TransportMode === 'BUS')
@@ -111,20 +112,16 @@ var Slebble = (function(Pebble, navigator) {
 
     var numberToAdd = alldeps.length>_maxDepatures?_maxDepatures:alldeps.length;
     for (var j = 0; j < numberToAdd; j++) {
-      _addRide(j,
-            alldeps[j].line,
-            alldeps[j].dest,
-            alldeps[j].time,
-            alldeps[j].timeleft,
-            numberToAdd
-      );
+      alldeps[j].nr = numberToAdd;
     }
+
+    _addRide(alldeps.slice(0, numberToAdd));
   };
 
   var _slTimeSort = function(a, b){
-    if(a.timeleft === b.timeleft)
+    if(a.displayTime === b.displayTime)
       return 0;
-    if(a.timeleft < b.timeleft)
+    if(a.displayTime < b.displayTime)
       return -1;
     else
       return 1;
@@ -142,7 +139,7 @@ var Slebble = (function(Pebble, navigator) {
       var filter = _config.route[_queryIndex].filter;
       for (var i = filter.length - 1; i >= 0; i--) {
         // only filter buses, else always include
-        if(ride.ridetype !== RT_BUS || filter[i] === ride.line)
+        if(ride.ridetype !== RT_BUS || filter[i] === ride.number)
           return true;
       }
       return false;
@@ -171,10 +168,11 @@ var Slebble = (function(Pebble, navigator) {
 
     for (var i = 0; i < deps.length; i++){
       var ad = {};
-      ad.line = deps[i].segmentid.carrier.number;
-      ad.time = _determineTimeLeft(deps[i].departure.datetime.substring(11));
-      ad.dest = deps[i].direction;
-      ad.realtime = deps[i].departure.datetime.substring(11);
+      ad.index = i;
+      ad.number = deps[i].segmentid.carrier.number;
+      ad.destination = deps[i].direction;
+      ad.time = deps[i].departure.datetime.substring(11);
+      ad.displayTime = _determineTimeLeft(ad.time);
 
       if (deps[i].segmentid.mot['@displaytype'] === 'B')
         ad.ridetype = RT_BUS;
@@ -186,39 +184,34 @@ var Slebble = (function(Pebble, navigator) {
     alldeps = alldeps.filter(_filterRides);
 
     // send to watch
-    var batchLength  = alldeps.length>_maxDepatures?_maxDepatures:alldeps.length;
+    var batchLength  = alldeps.length >_maxDepatures?_maxDepatures:alldeps.length;
     for(var j = 0; j < batchLength; j++) {
-      _addRide(j, alldeps[j].line,
-        alldeps[j].dest,
-        alldeps[j].realtime,
-        _determineTimeLeft(alldeps[j].realtime),
-        batchLength
-      );
+      alldeps[j].nr = batchLength;
     }
+
+    _addRide(alldeps.slice(0, batchLength));
+
   };
 
-  /**
-   * Push ride to watch
-   * @param index        Batch index number
-   * @param number       Ride line number
-   * @param destination  Ride destination
-   * @param time         Departure time HH:MM
-   * @param displayTime  Minutes left to time
-   * @param nr           The number of rides to be sent this batch
-   * @private
-   */
-  var _addRide = function(index, number, destination, time, displayTime, nr) {
+
+  var _addRide = function(depatureList) {
+    if(depatureList.length < 1)
+      return;
+
     Pebble.sendAppMessage({
         '0': 2,
-        '1': index,
-        '3': time,
-        '4': number + ' ' + destination,
-        '5': nr,
-        '6': displayTime
+        '1': depatureList[0].index,
+        '3': depatureList[0].time,
+        '4': depatureList[0].number + ' ' + depatureList[0].destination,
+        '5': depatureList[0].nr,
+        '6': depatureList[0].displayTime
       },
-      function() {},
       function() {
-        _addRide(index, number, destination, time, displayTime, nr);
+        depatureList.shift();
+        _addRide(depatureList);
+      },
+      function() {
+        _addRide(depatureList);
       }
     );
   };
@@ -313,16 +306,21 @@ var Slebble = (function(Pebble, navigator) {
   api._test = {};
   api._test.slTimeSort = _slTimeSort;
 
-  api.addStation = function(index, from, nr) {
+  api.addStation = function(stations) {
+    if(stations.length < 1)
+      return;
     Pebble.sendAppMessage({
         '0': 1,
-        '1': index,
-        '2': from,
-        '5': nr
+        '1': stations[0].index,
+        '2': stations[0].from,
+        '5': stations[0].nr
       },
-      function() {},
       function() {
-        api.addStation(index, from, nr);
+        stations.shift();
+        api.addStation(stations);
+      },
+      function() {
+        api.addStation(stations);
       }
     );
   };
@@ -378,12 +376,22 @@ Pebble.addEventListener('ready',
                 response = JSON.parse(localStorage.data);
                 //console.log('saved data'+JSON.stringify(response));
                 Slebble.loadConfig(response);
+                var stations = [];
                 for(var i = 0; i < response.route.length; i++) {
-                  Slebble.addStation(i, response.route[i].from.replace(/\053/g, ' '), response.route.length);
+                  var ad = {};
+                  ad.index = i;
+                  ad.from = response.route[i].from.replace(/\053/g, ' ');
+                  ad.nr = response.route.length;
+                  stations.push(ad);
                 }
+                Slebble.addStation(stations);
               } else {
-                //console.log('no data');
-                Slebble.addStation(0, 'No configuration', 1);
+                var ad = {};
+                ad.index = 0;
+                ad.from = 'No configuration';
+                ad.nr = 1;
+                ad = [ad];
+                Slebble.addStation(ad);
               }
             });
 
