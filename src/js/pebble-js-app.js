@@ -36,6 +36,8 @@ var Slebble = (function(Pebble, navigator) {
     console.log('sending error '+title+' '+subtitle);
     Pebble.sendAppMessage({
         '0': 3,
+        '1': 0,
+        '5': 1,
         '7': title,
         '8': subtitle
       },
