@@ -78,6 +78,8 @@ void window_unload(Window *window) {
     window_stack_remove(window, true);
     window_destroy(window);
     menu_layer_destroy(menu->layer);
+    bitmap_layer_destroy(menu->load_layer);
+    gbitmap_destroy(menu->load_image);
 
     for(int i = 0; i < menu->size; i++) {
         free(menu->row_title[i]);
@@ -122,10 +124,9 @@ void menu_update(Menu *menu, int size, char *title, int index, char *row_title, 
     temp[index] = data_int;
 }
 
-void menu_remove_load_image(Menu *menu) {
+void menu_hide_load_image(Menu *menu) {
     menu_layer_reload_data(menu->layer);
-    bitmap_layer_destroy(menu->load_layer);
-    gbitmap_destroy(menu->load_image);
+    layer_set_hidden(bitmap_layer_get_layer(menu->load_layer), true);
     menu_layer_set_click_config_onto_window(menu->layer, menu->window);
 }
 
