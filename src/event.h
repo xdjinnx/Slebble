@@ -2,6 +2,7 @@
 
 #include "pebble.h"
 
+extern void event_next_batch();
 extern void send_appmessage(int index);
 extern void event_set_click_data(char* data);
 extern void event_set_view_update(void (*update)(int, char*, int, char*, char*, int, char*));

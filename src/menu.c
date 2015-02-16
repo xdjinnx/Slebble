@@ -74,6 +74,7 @@ void window_load(Window *window) {
 }
 
 void window_unload(Window *window) {
+    menu->callbacks.remove_callback(ret);
     Menu* menu = window_get_user_data(window);
     window_stack_remove(window, true);
     window_destroy(window);
@@ -92,7 +93,6 @@ void window_unload(Window *window) {
 
     Menu *ret = menu->menu;
     free(menu);
-    menu->callbacks.remove_callback(ret);
 }
 
 void menu_update(Menu *menu, int size, char *title, int index, char *row_title, char *row_subtitle, int data_int, char *data_char) {
