@@ -10,16 +10,16 @@ enum SLKey {
     MIN_KEY = 0x6,
     ERROR_TITLE_KEY = 0x7,
     ERROR_SUBTITLE_KEY = 0x8,
-    ACK_KEY = 0x9
+    PACKAGE_KEY = 0x9
 };
 
-int response_key = 0;
+int package_key = 0;
 
 char *event_data_char;
 void (*update_ptr)(int, char*, int, char*, char*, int, char*);
 
 void event_next_batch() {
-    response_key++;
+    package_key++;
 }
 
 void event_set_view_update(void (*update)(int, char*, int, char*, char*, int, char*)) {
@@ -38,9 +38,9 @@ void in_received_handler(DictionaryIterator *iter, void *context) {
 
     //APP_LOG(APP_LOG_LEVEL_INFO, "Appmessage recived");
 
-    Tuple *ack_tuple = dict_find(iter, ACK_KEY);
+    Tuple *package_tuple = dict_find(iter, PACKAGE_KEY);
 
-    if(response_key == ack_tuple->value->uint8) {
+    if(package_key == package_tuple->value->uint8) {
 
         Tuple *path_tuple = dict_find(iter, PATH_KEY);
         Tuple *index_tuple = dict_find(iter, INDEX_KEY);
@@ -118,7 +118,6 @@ void event_tick_handler(int size, void *data) {
 
 void send_appmessage(int index) {
     Tuplet value1 = TupletInteger(1, index);
-    Tuplet value2 = TupletInteger(2, response_key);
 
     DictionaryIterator *iter;
     app_message_outbox_begin(&iter);
@@ -127,7 +126,6 @@ void send_appmessage(int index) {
         return;
 
     dict_write_tuplet(iter, &value1);
-    dict_write_tuplet(iter, &value2);
     dict_write_end(iter);
 
     app_message_outbox_send();

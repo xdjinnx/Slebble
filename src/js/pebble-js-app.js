@@ -12,6 +12,7 @@ var Slebble = (function(Pebble, navigator) {
   var _maxDepatures = 15;
   var _queryIndex = 0;
   var _locationOptions = {'timeout': 15000, 'maximumAge': 60000 };
+  var _packageKey = 0;
 
   // Ride Type Constants
   var RT_BUS = 'B';
@@ -32,18 +33,19 @@ var Slebble = (function(Pebble, navigator) {
     return 'https://api.trafiklab.se/samtrafiken/resrobot/StationsInZone.json?key=' + _key.resrobot + '&centerX=' + long + '&centerY=' + lat + '&radius=500&coordSys=WGS84&apiVersion=2.1';
   };
 
-  var _appMessageError = function(title, subtitle) {
+  var _appMessageError = function(title, subtitle, packageKey) {
     console.log('sending error '+title+' '+subtitle);
     Pebble.sendAppMessage({
         '0': 3,
         '1': 0,
         '5': 1,
         '7': title,
-        '8': subtitle
+        '8': subtitle,
+        '9': packageKey
       },
       function() {},
       function() {
-        _appMessageError(title, subtitle);
+        _appMessageError(title, subtitle, packageKey);
       }
     );
   };
@@ -65,7 +67,7 @@ var Slebble = (function(Pebble, navigator) {
         } else {
           console.log('XHR Error');
           console.log(xhr.status);
-          _appMessageError('ERROR', xhr.status);
+          _appMessageError('ERROR', xhr.status, _packageKey++);
         }
       }
     };
@@ -108,7 +110,7 @@ var Slebble = (function(Pebble, navigator) {
     alldeps = alldeps.sort(_slTimeSort);
 
     if (alldeps.length < 1){
-      _appMessageError('No rides available', 'Try again later');
+      _appMessageError('No rides available', 'Try again later', _packageKey++);
       return;
     }
 
@@ -117,7 +119,7 @@ var Slebble = (function(Pebble, navigator) {
       alldeps[j].nr = numberToAdd;
     }
 
-    _addRide(alldeps.slice(0, numberToAdd));
+    _addRide(alldeps.slice(0, numberToAdd), _packageKey++);
   };
 
   var _slTimeSort = function(a, b){
@@ -157,7 +159,7 @@ var Slebble = (function(Pebble, navigator) {
   var _resrobotCallback = function(resp) {
     // check for empty response
     if (resp === '{"getdeparturesresult":{}}') {
-      _appMessageError('No rides available', 'Try again later');
+      _appMessageError('No rides available', 'Try again later', _packageKey++);
       return;
     }
 
@@ -191,12 +193,12 @@ var Slebble = (function(Pebble, navigator) {
       alldeps[j].nr = batchLength;
     }
 
-    _addRide(alldeps.slice(0, batchLength));
+    _addRide(alldeps.slice(0, batchLength), _packageKey++);
 
   };
 
 
-  var _addRide = function(depatureList) {
+  var _addRide = function(depatureList, packageKey) {
     if(depatureList.length < 1)
       return;
 
@@ -206,14 +208,15 @@ var Slebble = (function(Pebble, navigator) {
         '3': depatureList[0].time,
         '4': depatureList[0].number + ' ' + depatureList[0].destination,
         '5': depatureList[0].nr,
-        '6': depatureList[0].displayTime
+        '6': depatureList[0].displayTime,
+        '9': packageKey
       },
       function() {
         depatureList.shift();
-        _addRide(depatureList);
+        _addRide(depatureList, packageKey);
       },
       function() {
-        _addRide(depatureList);
+        _addRide(depatureList, packageKey);
       }
     );
   };
@@ -281,7 +284,7 @@ var Slebble = (function(Pebble, navigator) {
    */
   var _locationError = function(err) {
     console.warn('location error (' + err.code + '): ' + err.message);
-    _appMessageError('Location error', 'Can\'t get your location');
+    _appMessageError('Location error', 'Can\'t get your location', _packageKey++);
   };
 
   var _requestNearbyStation = function(latitude, longitude) {
@@ -297,7 +300,7 @@ var Slebble = (function(Pebble, navigator) {
         _requestResrobot(response.stationsinzoneresult.location['@id']);
       }
     } else {
-      _appMessageError('No nearby stations', '');
+      _appMessageError('No nearby stations', '', _packageKey++);
     }
   };
 
@@ -315,7 +318,8 @@ var Slebble = (function(Pebble, navigator) {
         '0': 1,
         '1': stations[0].index,
         '2': stations[0].from,
-        '5': stations[0].nr
+        '5': stations[0].nr,
+        '9': 0
       },
       function() {
         stations.shift();
