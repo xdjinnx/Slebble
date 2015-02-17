@@ -199,7 +199,7 @@ var Slebble = (function(){
 
     var provider = _provider.value;
 
-    var url = 'https://deductive-team-792.appspot.com/'+provider+'/';
+    var url = 'http://diesel-ability-711.appspot.com/'+provider+'/';
 
     if (DEBUG) {
       url = 'http://localhost:8080/'+provider+'/';
