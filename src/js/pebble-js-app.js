@@ -421,10 +421,18 @@ Pebble.addEventListener('webviewclosed',
                 if (localStorage.data) {
                   var response = JSON.parse(localStorage.data);
                   Slebble.loadConfig(response);
-                  // TODO stations should be cleaned/reset before reload, otherwise they are duplicated, c stuff needed
+
+                  var stations = [];
                   for(var i = 0; i < response.route.length; i++) {
-                    Slebble.addStation(i, response.route[i].from.replace(/\053/g, ' '), response.route.length);
+                    var ad = {};
+                    ad.index = i;
+                    ad.from = response.route[i].from.replace(/\053/g, ' ');
+                    ad.nr = response.route.length;
+                    stations.push(ad);
                   }
+                  
+                  Slebble.addStation(stations);
+
                 }
               }
             });
