@@ -80,7 +80,6 @@ var Slebble = (function(Pebble, navigator) {
 
   var _SLRealtimeCallback = function(resp) {
     //console.log('sl callback');
-    console.log(resp);
     var response = JSON.parse(resp);
     var alldeps = [];
     var deps = [];

@@ -118,7 +118,7 @@ var Slebble = (function(){
     log(e);
     var ele = e.srcElement;
     var index = ele.getAttribute('data-index');
-    _stationJson[index].filter = ele.value.split(',');
+    _stationJson[index].filter = ele.value.split(', ');
   };
 
   var _filterEnabledHandler = function(e) {
