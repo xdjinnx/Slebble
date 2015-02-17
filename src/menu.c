@@ -85,10 +85,7 @@ void window_unload(Window *window) {
     bitmap_layer_destroy(menu->load_layer);
     gbitmap_destroy(menu->load_image);
 
-    /**
-    *  MEMORY LEAK!!!!!
-    **/
-    if(menu->size == 0) {
+    if(menu->size != 0) {
         for(int i = 0; i < menu->size; i++) {
             free(menu->row_title[i]);
             free(menu->row_subtitle[i]);
