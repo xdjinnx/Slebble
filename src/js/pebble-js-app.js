@@ -80,6 +80,7 @@ var Slebble = (function(Pebble, navigator) {
 
   var _SLRealtimeCallback = function(resp) {
     //console.log('sl callback');
+    console.log(resp);
     var response = JSON.parse(resp);
     var alldeps = [];
     var deps = [];
@@ -93,7 +94,6 @@ var Slebble = (function(Pebble, navigator) {
 
     for (var i = 0; i < deps.length; i++){
       var ad = {};
-      ad.index = i;
       ad.number = deps[i].LineNumber;
       ad.displayTime = deps[i].DisplayTime.substring(deps[i].DisplayTime.length-3, deps[i].DisplayTime.length) !== 'min'?_determineTimeLeft(deps[i].DisplayTime):parseInt(deps[i].DisplayTime.substring(0, deps[i].DisplayTime.length - 4));
       ad.destination = deps[i].Destination;
@@ -116,6 +116,7 @@ var Slebble = (function(Pebble, navigator) {
 
     var numberToAdd = alldeps.length>_maxDepatures?_maxDepatures:alldeps.length;
     for (var j = 0; j < numberToAdd; j++) {
+      alldeps[j].index = j;
       alldeps[j].nr = numberToAdd;
     }
 
@@ -255,6 +256,7 @@ var Slebble = (function(Pebble, navigator) {
       var date = new Date();
       var realHour = date.getHours();
       var realMin = date.getMinutes();
+      var zero = "";
 
       realMin = realMin + timeleft;
 
@@ -263,7 +265,10 @@ var Slebble = (function(Pebble, navigator) {
 
       realHour = realHour % 24;
 
-      return realHour + ":" + realMin;
+      if(realMin < 10)
+        zero = "0";
+
+      return realHour + ":" + zero + realMin;
 
   }
 
