@@ -371,12 +371,6 @@ var Slebble = (function(Pebble, navigator) {
 
 })(Pebble, navigator);
 
-try {
-  module.exports = Slebble;
-} catch (e){
-  // running on phone
-}
-
 Pebble.addEventListener('ready',
             function(e) {
               //console.log('ready');
@@ -409,9 +403,9 @@ Pebble.addEventListener('ready',
 Pebble.addEventListener('showConfiguration',
             function(e) {
               if (localStorage.data) {
-                Pebble.openURL('https://deductive-team-792.appspot.com/webconfig/index.html?version=1.3.0' + '&setting=' + localStorage.data);
+                Pebble.openURL('http://diesel-ability-711.appspot.com/webconfig/index.html?version=2.0' + '&setting=' + localStorage.data);
               }else {
-                Pebble.openURL('https://deductive-team-792.appspot.com/webconfig/index.html?version=1.3.0');
+                Pebble.openURL('http://diesel-ability-711.appspot.com/webconfig/index.html?version=2.0');
               }
             });
 
