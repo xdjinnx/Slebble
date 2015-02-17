@@ -34,6 +34,7 @@ void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
 }
 
 void remove_callback_handler(void *data) {
+    event_next_batch();
     Menu* temp = data;
     menu = temp;
     tick_timer_service_unsubscribe();

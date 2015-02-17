@@ -75,26 +75,30 @@ void window_load(Window *window) {
 
 void window_unload(Window *window) {
     Menu* menu = window_get_user_data(window);
+
+    Menu *ret = menu->menu;
+    menu->callbacks.remove_callback(ret);
+
     window_stack_remove(window, true);
     window_destroy(window);
     menu_layer_destroy(menu->layer);
     bitmap_layer_destroy(menu->load_layer);
     gbitmap_destroy(menu->load_image);
 
-    for(int i = 0; i < menu->size; i++) {
-        free(menu->row_title[i]);
-        free(menu->row_subtitle[i]);
-        free(menu->data_char[i]);
+    if(menu->size != 0) {
+        for(int i = 0; i < menu->size; i++) {
+            free(menu->row_title[i]);
+            free(menu->row_subtitle[i]);
+            free(menu->data_char[i]);
+        }
+        free(menu->row_title);
+        free(menu->row_subtitle);
+        free(menu->title);
+        free(menu->data_int);
+        free(menu->data_char);
     }
-    free(menu->row_title);
-    free(menu->row_subtitle);
-    free(menu->title);
-    free(menu->data_int);
-    free(menu->data_char);
 
-    Menu *ret = menu->menu;
     free(menu);
-    menu->callbacks.remove_callback(ret);
 }
 
 void menu_update(Menu *menu, int size, char *title, int index, char *row_title, char *row_subtitle, int data_int, char *data_char) {
