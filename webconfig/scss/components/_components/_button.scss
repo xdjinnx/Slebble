@@ -42,7 +42,7 @@
 
 .button--primary {
   @extend .button;
-  @include style-button(#4285f4, #ffffff);
+  @include style-button(#dd0000, #ffffff);
 }
 
 .button--secondary {
