@@ -150,9 +150,13 @@ var Slebble = (function(Pebble, navigator) {
     // only filter if filter is actually active
     if (_config.route[_queryIndex].busFilterActive === 'true'){
       var filter = _config.route[_queryIndex].filter;
+      
+      if(ride.ridetype !== RT_BUS)
+        return true;
+
       for (var i = filter.length - 1; i >= 0; i--) {
         // only filter buses, else always include
-        if(ride.ridetype !== RT_BUS || filter[i] === ride.number)
+        if(filter[i] === ride.number)
           return true;
       }
       return false;
