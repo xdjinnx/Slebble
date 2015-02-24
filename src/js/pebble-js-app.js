@@ -94,15 +94,24 @@ var Slebble = (function(Pebble, navigator) {
     for (var i = 0; i < deps.length; i++){
       var ad = {};
       ad.number = deps[i].LineNumber;
-      ad.displayTime = deps[i].DisplayTime.substring(deps[i].DisplayTime.length-3, deps[i].DisplayTime.length) !== 'min'?_determineTimeLeft(deps[i].DisplayTime):parseInt(deps[i].DisplayTime.substring(0, deps[i].DisplayTime.length - 4));
+      if(deps[i].DisplayTime === 'Nu') {
+        ad.displayTime = 0;
+        ad.time = _determineTime(0);
+      }
+      else {
+        ad.displayTime = deps[i].DisplayTime.substring(deps[i].DisplayTime.length-3, deps[i].DisplayTime.length) !== 'min'?_determineTimeLeft(deps[i].DisplayTime):parseInt(deps[i].DisplayTime.substring(0, deps[i].DisplayTime.length - 4));
+        ad.time = deps[i].DisplayTime.substring(deps[i].DisplayTime.length-3, deps[i].DisplayTime.length) !== 'min'?deps[i].DisplayTime:_determineTime(ad.displayTime);
+      }
       ad.destination = deps[i].Destination;
-      ad.time = deps[i].DisplayTime.substring(deps[i].DisplayTime.length-3, deps[i].DisplayTime.length) !== 'min'?deps[i].DisplayTime:_determineTime(parseInt(deps[i].DisplayTime.substring(0, deps[i].DisplayTime.length - 4)));
+      
 
       if (deps[i].TransportMode === 'BUS')
         ad.ridetype = RT_BUS;
       else
         ad.ridetype = RT_UNKNOWN;
       alldeps.push(ad);
+      //console.log(i + " Before if: " + deps[i].DisplayTime);
+      //console.log(i + " After if: " + ad.displayTime);
     }
 
     alldeps = alldeps.filter(_filterRides);
