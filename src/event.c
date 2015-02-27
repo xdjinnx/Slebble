@@ -84,7 +84,7 @@ void in_received_handler(DictionaryIterator *iter, void *context) {
 
                 memcpy(subtitle, to_tuple->value->cstring, to_tuple->length);
                 subtitle[31] = '\0';
-
+                
                 //APP_LOG(APP_LOG_LEVEL_INFO, "Station: number of rows %d of %d", loaded_rows, nr_ride_variable);
                 update_ptr(size, event_data_char, index, title, subtitle, min_tuple->value->uint8, data_char);
                 
@@ -98,6 +98,7 @@ void in_received_handler(DictionaryIterator *iter, void *context) {
                 memcpy(subtitle, error_subtitle_tuple->value->cstring, error_subtitle_tuple->length);
                 subtitle[31] = '\0';
 
+                tick_timer_service_unsubscribe();
                 update_ptr(1, "Error", 0, title, subtitle, 0, NULL);
 
                 break;
