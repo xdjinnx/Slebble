@@ -11,6 +11,7 @@ void view_update(int size, char *title, int index, char *row_title, char *row_su
     menu_update(menu, size, title, index, row_title, row_subtitle, data_int, data_char);
     updates++;
     if(updates >= size) {
+        updates = 0;
         menu_hide_load_image(menu);
         vibes_short_pulse();
     }
