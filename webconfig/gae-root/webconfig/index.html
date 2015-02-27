@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, minimal-ui">
   <meta name="mobile-web-app-capable" content="yes">
 
-  <title>Slebble Config</title>
+  <title>Slebble</title>
   <link rel="stylesheet" type="text/css" href="styles/slebble.css">
 </head>
 <body>
 <header class="app-bar promote-layer">
   <div class="app-bar-container">
     <button class="menu"><img src="images/ic_menu_24px.svg" class="icon"></button>
-    <h1 class="logo">Slebble Config</h1>
+    <h1 class="logo">Slebble</h1>
     <section class="app-bar-actions">
       <button id="submit-toolbar"><img src="images/ic_save_24px.svg" class="icon"></button>
       <!-- Put App Bar Buttons Here -->
@@ -24,10 +24,10 @@
   <!--<h4>Navigation</h4>-->
   <ul>
     <li><a id="startLink">Start</a></li>
-    <li><a id="searchLink">Find station</a></li>
-    <li><a id="filterLink">Filter station</a></li>
-    <li><a id="reset">Reset app</a></li>
-    <li><a id="submit">Save To app</a></li>
+    <li><a id="searchLink">Add</a></li>
+    <li><a id="filterLink">Filter</a></li>
+    <li><a id="reset">Reset Config</a></li>
+    <li><a id="submit">Save To App</a></li>
     <li><a id="cancel">Exit</a></li>
   </ul>
 </nav>
@@ -35,7 +35,6 @@
 <main>
 
   <div id="startPage" class="page">
-    <span class="news">There is no longer a limit on the number of stations you can have.</span>
     <h2>Stations</h2>
 
     <ul id="adding" class="slebble-list list-links--primary">
@@ -60,11 +59,12 @@
       <option value="sl">SL - Stockholm</option>
     </select>
     <p>Note: It is only possible to have stations from one area at a time. Current stations will be removed if you change.</p>
-    
+
   </div>
 
   <div id="searchPage" class="page">
     <h2>Search</h2>
+
     <input type="text" id="search-field" onkeypress="Slebble.enterKeyPress(event)" />
     <a id="search-btn" class="button--primary">
       <div class="mglass"></div>
