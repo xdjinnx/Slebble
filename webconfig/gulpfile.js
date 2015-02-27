@@ -70,7 +70,7 @@ gulp.task('style', function () {
 
 // Build Production Files, the Default Task
 gulp.task('default', function (cb) {
-  runSequence(['uglify', 'sass', 'fonts'], cb);
+  runSequence(['uglify', 'style', 'fonts'], cb);
 });
 
 // Load custom tasks from the `tasks` directory
