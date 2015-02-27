@@ -26,6 +26,9 @@ var $ = require('gulp-load-plugins')();
 var runSequence = require('run-sequence');
 var pagespeed = require('psi');
 var sass = require('gulp-sass');
+var streamqueue = require('streamqueue');
+var concat = require('gulp-concat');
+
 
 // Lint JavaScript
 gulp.task('jshint', function () {
@@ -48,11 +51,26 @@ gulp.task('uglify', function(){
 //    .pipe($.size({title: 'fonts'}));
 //});
 
-gulp.task('sass', function () {
-  return gulp.src('scss/slebble.scss')
-    .pipe(sass({'outputStyle':'compressed'}))
-    .pipe(gulp.dest('gae-root/webconfig/styles/'))
-    .pipe($.size({title: 'css'}));
+gulp.task('style', function () {
+  return streamqueue({objectMode:true},
+    gulp.src('./style/wsk.scss')
+      .pipe(sass({
+        'outputStyle':'compressed',
+        'includePaths': ['./bower_components/google-web-starter-kit/app/styles/components']
+      })),
+
+    gulp.src('./style/slebble.scss')
+      .pipe(sass({
+        'outputStyle':'compressed'
+      }))
+      .pipe($.autoprefixer({
+        browsers: ['last 2 versions'],
+        cascade: false
+      }))
+    )
+    .pipe(concat('slebble.css'))
+    .pipe(gulp.dest('gae-root/webconfig/styles/'));
+    //.pipe($.size({title: 'css'}));
 });
 
 // Clean Output Directory

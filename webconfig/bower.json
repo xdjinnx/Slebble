@@ -1,7 +1,7 @@
 {
   "name": "slebble-web",
   "version": "0.0.0",
-  "homepage": "https://github.com/xdjinnx/slebble-web",,
+  "homepage": "https://github.com/xdjinnx/slebble",
   "private": true,
   "ignore": [
     "**/.*",
@@ -11,6 +11,7 @@
     "tests"
   ],
   "dependencies": {
-    "purl": "~2.3.1"
+    "purl": "~2.3.1",
+    "google-web-starter-kit": "google/web-starter-kit#v0.5.3"
   }
 }

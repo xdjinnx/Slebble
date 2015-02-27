@@ -1,4 +1,6 @@
-@import 'main';
+$primary-color: #dd0000;
+
+@import "main";
 
 .mglass {
   font-size: 10px;
@@ -9,32 +11,37 @@
   height: 0.5em;
   background-color: #FFFFFF;
 
-  -webkit-transform: rotate(45deg);
-  -moz-transform: rotate(45deg);
-  -o-transform: rotate(45deg);
-  -ms-transform: rotate(45deg);
   transform: rotate(45deg);
   border-bottom-right-radius: 0.3em;
   border-top-right-radius: 0.3em;
+
+  &:before {
+    border: 0.4em solid #FFFFFF;
+    content: "";
+    position: absolute;
+    top: -0.84em;
+    left: -1.7em;
+    display: block;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+  }
 }
 
-.mglass::before {
-  border: 0.4em solid #FFFFFF;
-  content: "";
-  position: absolute;
-  top: -0.84em;
-  left: -1.7em;
-  display: block;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
+.button--primary {
+  background: $primary-color;
+  border: 1px solid darken($primary-color, 10);
+
+  &:hover {
+    background: $primary-color;
+  }
 }
 
 #search-field {
   position: relative;
   top: -27px;
   font-size: 25px;
-  width: 185px;
+  width: 65%;
   height: 46px;
 }
 
@@ -77,24 +84,6 @@
   left: 5px;
 }
 
-@-webkit-keyframes ajax-loader-rotate {
-  0% {
-    -webkit-transform: rotate(0deg);
-  }
-  100% {
-    -webkit-transform: rotate(360deg);
-  }
-}
-
-@-moz-keyframes ajax-loader-rotate {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
 @keyframes ajax-loader-rotate {
   0% {
     transform: rotate(0deg);
@@ -124,8 +113,6 @@
   -.4em 0 0 0 rgba(255, 255, 255, .50),
   -.28em .28em 0 0 rgba(255, 255, 255, .25);
 
-  -webkit-animation: .85s ajax-loader-rotate steps(8) infinite;
-  -moz-animation: .85s ajax-loader-rotate steps(8) infinite;
   animation: .85s ajax-loader-rotate steps(8) infinite;
 }
 
@@ -173,9 +160,15 @@
   }
 }
 
-.app-bar button img {
-  width: 32px;
-  height: 32px;
+.app-bar {
+  .logo {
+    text-align: center;
+  }
+
+  button img {
+    width: 32px;
+    height: 32px;
+  }
 }
 
 .station-filter {
@@ -183,14 +176,4 @@
   input[type="checkbox"] {
     margin-right: 5px;
   }
-}
-
-.news {
-  margin-bottom: -21px;
-  display: block;
-  font-size: 1.3em;
-  padding: 7px;
-  margin-top: 10px;
-  background-color: #008100;
-  color: #fff;
 }

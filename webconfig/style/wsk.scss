@@ -1,9 +1,3 @@
-/**
-*
-* Main Stylesheet For Visual Style Guide
-*
-**/
-
 @import '_utils';
 @import '_normalize';
 @import '_global';
@@ -28,7 +22,7 @@
 @import '_modules/_quote';
 @import '_modules/_article-nav';
 @import '_modules/_did-you-know';
-@import '_modules/_toc';
+//@import '_modules/_toc';
 @import '_modules/_next-lessons';
 
 // Components
@@ -47,10 +41,6 @@
 
 // Themed styles
 @import '_themed';
-
-// Pages
-@import '_pages/_styleguide';
-@import '_pages/_page-resources';
 
 // Make sure this is last to override anything else :)
 @import '_helper';
