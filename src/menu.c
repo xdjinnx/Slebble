@@ -116,6 +116,30 @@ void menu_update(Menu *menu, int size, char *title, int index, char *row_title, 
         menu->data_int = malloc(sizeof(int)*size);
     }
 
+    if(menu->size != size && menu->size != 0) {
+        menu->row_title = realloc(menu->row_title, sizeof(char*)*size);
+        menu->row_subtitle = realloc(menu->row_subtitle, sizeof(char*)*size);
+        menu->data_char = realloc(menu->data_char, sizeof(char*)*size);
+        if(menu->size < size) {
+            for(int i = menu->size; i < size; i++) {
+                menu->row_title[i] = malloc(sizeof(char)*32);
+                menu->row_subtitle[i] = malloc(sizeof(char)*32);
+                menu->data_char[i] = malloc(sizeof(char)*32);
+            }
+        }
+        /**
+        * THIS ELSE CODE CRASHES BECAUSE OF DOUBLE FREEING OF SOME SORT!
+        */ 
+        else {
+            for(int i = size; i < menu->size; i++) {
+                free(menu->row_title[i]);
+                free(menu->row_subtitle[i]);
+                free(menu->data_char[i]);
+            }
+        }
+        menu->data_int = realloc(menu->data_int, sizeof(int)*size);
+    }
+
     menu->size = size;
     memcpy(menu->title, title, 32);
     memcpy(menu->row_title[index], row_title, 32);
