@@ -133,7 +133,7 @@ ol {
   bottom: 0;
   width: 250px;
   height: 100%;
-  background-color: $primary-color;
+  background-color: darken($primary-color,7);
   color: #fefefe;
   -webkit-transform: translate(-250px, 0);
           transform: translate(-250px, 0);
