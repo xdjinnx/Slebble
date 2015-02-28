@@ -1,37 +1,42 @@
 {
-    "appKeys": {},
-    "capabilities": [
-        "location",
-        "configurable"
-    ],
-    "companyName": "Peter Lundberg",
-    "longName": "Slebble",
-    "projectType": "native",
-    "resources": {
-        "media": [
-            {
-                "file": "images/SLEBBLE_BUS_ICON.png",
-                "menuIcon": true,
-                "name": "SLEBBLE_BUS_ICON",
-                "type": "png"
-            },
-            {
-                "file": "images/SLEBBLE_START_BLACK.png",
-                "name": "SLEBBLE_START_BLACK",
-                "type": "png"
-            },
-            {
-                "file": "images/SLEBBLE_LOADING_BLACK.png",
-                "name": "SLEBBLE_LOADING_BLACK",
-                "type": "png"
-            }
-        ]
-    },
-    "shortName": "Slebble",
-    "uuid": "7bd25d0e-ad3c-4e7c-9256-12be89a1a482",
-    "versionCode": 20,
-    "versionLabel": "2.0",
-    "watchapp": {
-        "watchface": false
-    }
+  "appKeys": {},
+  "capabilities": [
+    "location",
+    "configurable"
+  ],
+  "companyName": "Peter Lundberg",
+  "longName": "Slebble",
+  "projectType": "native",
+  "resources": {
+    "media": [
+      {
+        "file": "images/SLEBBLE_BUS_ICON.png",
+        "menuIcon": true,
+        "name": "SLEBBLE_BUS_ICON",
+        "type": "png"
+      },
+      {
+        "file": "images/SLEBBLE_START_BLACK.png",
+        "name": "SLEBBLE_START_BLACK",
+        "type": "png"
+      },
+      {
+        "file": "images/SLEBBLE_LOADING_BLACK.png",
+        "name": "SLEBBLE_LOADING_BLACK",
+        "type": "png"
+      }
+    ]
+  },
+  "shortName": "Slebble",
+  "uuid": "7bd25d0e-ad3c-4e7c-9256-12be89a1a482",
+  "versionCode": 20,
+  "versionLabel": "2.0",
+  "watchapp": {
+    "watchface": false
+  },
+  "targetPlatforms": [
+    "aplite",
+    "basalt"
+  ],
+  "sdkVersion": "3"
 }
