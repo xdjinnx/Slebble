@@ -72,6 +72,9 @@ $primary-color: #dd0000;
 .deleteIcon {
   position: relative;
   left: 25px;
+  color: #000;
+  top: 4px;
+  font-size: 16px;
 }
 
 .busFilterCheckBox {
@@ -136,15 +139,9 @@ $primary-color: #dd0000;
   padding-top: 0;
 
   li {
-    &:before {
-      content: '\e005';
-      font-size: 13px;
-    }
-
     font-weight: 400;
     font-family: 'Roboto Condensed', Helvetica, sans-serif;
     line-height: 1;
-    color: #3372df;
     margin: 9px;
     font-size: 20px;
   }

@@ -85,7 +85,7 @@ var Slebble = (function(){
     }
 
     for(var i = 0; i < _stationJson.length; i++) {
-      _adding.innerHTML += '<li><span class="list__item">' + _stationJson[i].from + '</span><a class="deleteIcon" onclick="Slebble.removeFrom(this)" data-index="'+i+'"><i class="icon icon-close"></i></a></li>';
+      _adding.innerHTML += '<li><span>' + _stationJson[i].from + '</span><a class="deleteIcon" onclick="Slebble.removeFrom(this)" data-index="'+i+'"><i class="icon icon-close"></i></a></li>';
     }
 
     _filterAdding.innerHTML = '';
@@ -219,7 +219,7 @@ var Slebble = (function(){
           var resultList = response.result.reverse();
           for(var i = resultList.length-1; i >= 0; i--) {
             var station = resultList[i];
-            _resultsBox.innerHTML += '<li><a type="button" class="list__item" onclick="Slebble.add(this);" data-id="'+station.id+'">' + station.name + '</a></li>';
+            _resultsBox.innerHTML += '<li><a type="button" onclick="Slebble.add(this);" data-id="'+station.id+'">' + station.name + '</a></li>';
           }
         } else {
           document.querySelector('#results').innerHTML = '<p>Request status: ' + req.status + '<p>';
@@ -255,11 +255,8 @@ var Slebble = (function(){
     _removeClass(prefDisp, 'theme--introduction-to-media');
 
     var depatureRange = document.querySelector('#depature-range');
-    if(parseInt(depatureRange.value) === 15) {
+    if(parseInt(depatureRange.value) <= 15) {
       _addClass(prefDisp, 'theme--user-input');
-    }
-    if(parseInt(depatureRange.value) < 15) {
-      _addClass(prefDisp, 'theme--multi-device-layouts');
     }
     if(parseInt(depatureRange.value) > 15) {
       _addClass(prefDisp, 'theme--introduction-to-media');
