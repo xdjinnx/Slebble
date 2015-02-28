@@ -5,13 +5,6 @@
  * Web Starter Kit team.
  *
  */
-@import '_h5bp';
-
-/*
- * Visual Style Guide styles
- * Remove if you prefer to use a CSS library, like Bootstrap
- */
-@import 'components/components';
 
 html,
 body {
@@ -40,7 +33,7 @@ body.open {
   position: fixed;
   top: 0;
   left: 0;
-  background-color: #dd0000;
+  background-color: $primary-color;
   overflow: hidden;
   z-index: 1;
 }
@@ -113,19 +106,6 @@ body.open {
   width: 24px;
 }
 
-.app-bar button:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-.app-bar button:focus {
-  background-color: rgba(255, 255, 255, 0.2);
-  outline: 0;
-}
-
-.app-bar button:active {
-  background-color: rgba(255, 255, 255, 0.4);
-}
-
 .promote-layer {
   /*
   This may promote the layer to a composited
@@ -153,7 +133,7 @@ ol {
   bottom: 0;
   width: 250px;
   height: 100%;
-  background-color: #bb0000;
+  background-color: $primary-color;
   color: #fefefe;
   -webkit-transform: translate(-250px, 0);
           transform: translate(-250px, 0);
@@ -248,7 +228,7 @@ main {
     max-width: 864px;
     padding: 0 16px;
     box-sizing: border-box;
-    background-color: #dd0000;
+    background-color: $primary-color;
   }
 
   .app-bar .logo {

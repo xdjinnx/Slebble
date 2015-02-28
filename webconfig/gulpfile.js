@@ -18,14 +18,13 @@
  */
 
 'use strict';
-
-// Include Gulp & Tools We'll Use
 var gulp = require('gulp');
 var $ = require('gulp-load-plugins')();
-//var del = require('del');
 var runSequence = require('run-sequence');
-var pagespeed = require('psi');
 var sass = require('gulp-sass');
+var streamqueue = require('streamqueue');
+var concat = require('gulp-concat');
+
 
 // Lint JavaScript
 gulp.task('jshint', function () {
@@ -41,38 +40,38 @@ gulp.task('uglify', function(){
     .pipe($.size({title: 'js'}));
 });
 
-// Copy Web Fonts To Dist
-//gulp.task('fonts', function () {
-//  return gulp.src(['app/fonts/**'])
-//    .pipe(gulp.dest('dist/fonts'))
-//    .pipe($.size({title: 'fonts'}));
-//});
+gulp.task('fonts', function () {
+  return gulp.src(['./bower_components/google-web-starter-kit/app/fonts/**'])
+    .pipe(gulp.dest('gae-root/webconfig/fonts'))
+    .pipe($.size({title: 'fonts'}));
+});
 
-gulp.task('sass', function () {
-  return gulp.src('scss/slebble.scss')
-    .pipe(sass({'outputStyle':'compressed'}))
+gulp.task('style', function () {
+  return streamqueue({objectMode:true},
+    gulp.src('./style/wsk.scss')
+      .pipe(sass({
+        'outputStyle':'compressed',
+        'includePaths': ['./bower_components/google-web-starter-kit/app/styles/components']
+      })),
+
+    gulp.src('./style/slebble.scss')
+      .pipe(sass({
+        'outputStyle':'compressed'
+      }))
+      .pipe($.autoprefixer({
+        browsers: ['last 2 versions'],
+        cascade: false
+      }))
+    )
+    .pipe(concat('slebble.css'))
     .pipe(gulp.dest('gae-root/webconfig/styles/'))
     .pipe($.size({title: 'css'}));
 });
 
-// Clean Output Directory
-//gulp.task('clean', del.bind(null, ['.tmp', 'dist']));
-
 // Build Production Files, the Default Task
 gulp.task('default', function (cb) {
-  runSequence(['uglify', 'sass'], cb);
+  runSequence(['uglify', 'style', 'fonts'], cb);
 });
-
-// Run PageSpeed Insights
-// Update `url` below to the public URL for your site
-//gulp.task('pagespeed', pagespeed.bind(null, {
-//  // By default, we use the PageSpeed Insights
-//  // free (no API key) tier. You can use a Google
-//  // Developer API key if you have one. See
-//  // http://goo.gl/RkN0vE for info key: 'YOUR_API_KEY'
-//  url: 'https://example.com',
-//  strategy: 'mobile'
-//}));
 
 // Load custom tasks from the `tasks` directory
 try { require('require-dir')('tasks'); } catch (err) {}
