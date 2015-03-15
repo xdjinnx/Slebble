@@ -174,3 +174,9 @@ $primary-color: #dd0000;
     margin-right: 5px;
   }
 }
+
+.menu {
+  &:active, &:focus {
+    outline:none;
+  }
+}
