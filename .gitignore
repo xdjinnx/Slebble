@@ -3,3 +3,4 @@ node_modules
 .lock-waf_linux2_build
 .idea
 CMakeLists.txt
+src/js/pebble-js-app.js
