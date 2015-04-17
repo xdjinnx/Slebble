@@ -13,9 +13,9 @@ enum SLKey {
     PACKAGE_KEY = 0x9
 };
 
-int package_key = 0;
+int package_key = -1;
 
-char *event_data_char;
+char *event_data_char = "Favorites";
 void (*update_ptr)(int, char*, int, char*, char*, int, char*);
 
 void event_next_batch() {
@@ -40,7 +40,7 @@ void in_received_handler(DictionaryIterator *iter, void *context) {
 
     Tuple *package_tuple = dict_find(iter, PACKAGE_KEY);
 
-    if(package_key == package_tuple->value->uint8) {
+    if(package_key == package_tuple->value->uint8 || package_key == -1) {
 
         Tuple *path_tuple = dict_find(iter, PATH_KEY);
         Tuple *index_tuple = dict_find(iter, INDEX_KEY);
@@ -67,7 +67,7 @@ void in_received_handler(DictionaryIterator *iter, void *context) {
                 title[31] = '\0';
 
                 //APP_LOG(APP_LOG_LEVEL_INFO, "Startmenu: number of rows %d of %d", loaded_rows, nr_station_variable);
-                update_ptr(size, "Favorites", index, title, "", 0, NULL);
+                update_ptr(size, event_data_char, index, title, "", 0, NULL);
                 break;
 
                 //Receive depatures
@@ -117,8 +117,10 @@ void event_tick_handler(int size, void *data) {
     }
 }
 
-void send_appmessage(int index) {
+void send_appmessage(int index, int step) {
     Tuplet value1 = TupletInteger(1, index);
+    Tuplet value2 = TupletInteger(2, step);
+
 
     DictionaryIterator *iter;
     app_message_outbox_begin(&iter);
@@ -127,6 +129,7 @@ void send_appmessage(int index) {
         return;
 
     dict_write_tuplet(iter, &value1);
+    dict_write_tuplet(iter, &value2);
     dict_write_end(iter);
 
     app_message_outbox_send();

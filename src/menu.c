@@ -102,7 +102,7 @@ void window_unload(Window *window) {
 }
 
 void menu_update(Menu *menu, int size, char *title, int index, char *row_title, char *row_subtitle, int data_int, char *data_char) {
-
+    
     if(menu->size == 0) {
         menu->title = malloc(sizeof(char)*32);
         menu->row_title = malloc(sizeof(char*)*size);

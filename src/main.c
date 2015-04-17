@@ -6,6 +6,9 @@ Menu *menu;
 int updates = 0;
 bool first_tick = false;
 
+/**
+* BATCH PROBLEM. THE PREV BATCH CAN OVERWRITE OLDER BATCHES.
+*/
 
 void view_update(int size, char *title, int index, char *row_title, char *row_subtitle, int data_int, char *data_char) {
     menu_update(menu, size, title, index, row_title, row_subtitle, data_int, data_char);
@@ -37,13 +40,37 @@ void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
 }
 
 void remove_callback_handler(void *data) {
-    event_next_batch();
     Menu* temp = data;
     menu = temp;
     tick_timer_service_unsubscribe();
 }
 
+void select_nearby_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
+    event_next_batch();
+    char *click_data = menu->row_title[cell_index->row];
+    int row_clicked = cell_index->row;
+    
+    event_set_click_data(click_data);
+
+    Menu *temp = menu;
+    menu = menu_create(RESOURCE_ID_SLEBBLE_LOADING_BLACK, (MenuCallbacks) {
+            .select_click = NULL,
+            .remove_callback = &remove_callback_handler,
+    });
+
+    menu->menu = temp;
+
+
+    updates = 0;
+    if (app_comm_get_sniff_interval() == SNIFF_INTERVAL_NORMAL)
+        app_comm_set_sniff_interval(SNIFF_INTERVAL_REDUCED);
+    send_appmessage(row_clicked, 1);
+
+    tick_timer_service_subscribe(MINUTE_UNIT, tick_handler);
+}
+
 void select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
+    event_next_batch();
     char *click_data;
     int row_clicked = cell_index->row + 1;
 
@@ -56,19 +83,28 @@ void select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
     event_set_click_data(click_data);
 
     Menu *temp = menu;
-    menu = menu_create(RESOURCE_ID_SLEBBLE_LOADING_BLACK, (MenuCallbacks) {
-            .select_click = NULL,
-            .remove_callback = &remove_callback_handler,
-    });
+    if(cell_index->section == 0) {
+        menu = menu_create(RESOURCE_ID_SLEBBLE_LOADING_BLACK, (MenuCallbacks) {
+                .select_click = &select_nearby_callback,
+                .remove_callback = &remove_callback_handler,
+        });
+    } else {
+        menu = menu_create(RESOURCE_ID_SLEBBLE_LOADING_BLACK, (MenuCallbacks) {
+                .select_click = NULL,
+                .remove_callback = &remove_callback_handler,
+        });
+    }
+
 
     menu->menu = temp;
 
     updates = 0;
     if (app_comm_get_sniff_interval() == SNIFF_INTERVAL_NORMAL)
         app_comm_set_sniff_interval(SNIFF_INTERVAL_REDUCED);
-    send_appmessage(row_clicked);
+    send_appmessage(row_clicked, 0);
 
-    tick_timer_service_subscribe(MINUTE_UNIT, tick_handler);
+    if(cell_index->section != 0)
+        tick_timer_service_subscribe(MINUTE_UNIT, tick_handler);
 }
 
 int main(void) {
