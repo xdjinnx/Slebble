@@ -4,3 +4,4 @@ node_modules
 .idea
 CMakeLists.txt
 src/js/pebble-js-app.js
+nohup.out
