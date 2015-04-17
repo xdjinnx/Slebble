@@ -314,7 +314,7 @@ module.exports = (function(Pebble, navigator) {
       var stations = [];
       _nearbyStations = [];
       if( Object.prototype.toString.call( response.stationsinzoneresult.location ) === '[object Array]' ) {
-        var batchLength = response.stationsinzoneresult.location.length > 5 ? 5:alldeps.length;
+        var batchLength = response.stationsinzoneresult.location.length > 5 ? 5:response.stationsinzoneresult.location.length;
         for(var i = 0; i < batchLength; i++) {
           var ad = {};
           ad.index = i;
