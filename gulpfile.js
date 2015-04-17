@@ -4,7 +4,7 @@ var gulp = require('gulp'),
     stylish = require('jshint-stylish'),
     webpack = require('gulp-webpack');
 
-gulp.task('webpack', function() {
+gulp.task('webpack', ['lint'], function() {
   return gulp.src('./src/js/main.js')
     .pipe(webpack({
       output: {
@@ -20,7 +20,7 @@ gulp.task('lint', function(){
     .pipe(jshint.reporter(stylish));
 });
 
-gulp.task('build', shell.task([
+gulp.task('build', ['webpack'], shell.task([
   'pebble build'
 ]));
 
