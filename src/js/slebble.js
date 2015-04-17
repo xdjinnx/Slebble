@@ -11,6 +11,7 @@ module.exports = (function(Pebble, navigator) {
   var _queryIndex = 0;
   var _locationOptions = {'timeout': 15000, 'maximumAge': 60000 };
   var _packageKey = 0;
+  var _nearbyStations = [];
 
   // Ride Type Constants
   var RT_BUS = 'B';
@@ -196,7 +197,8 @@ module.exports = (function(Pebble, navigator) {
       alldeps.push(ad);
     }
 
-    alldeps = alldeps.filter(_filterRides);
+    if(_nearbyStations.length === 0)
+      alldeps = alldeps.filter(_filterRides);
 
     // send to watch
     var batchLength  = alldeps.length >_maxDepatures?_maxDepatures:alldeps.length;
@@ -212,7 +214,6 @@ module.exports = (function(Pebble, navigator) {
   var _addRide = function(depatureList, packageKey) {
     if(depatureList.length < 1)
       return;
-
     Pebble.sendAppMessage({
         '0': 2,
         '1': depatureList[0].index,
@@ -289,7 +290,7 @@ module.exports = (function(Pebble, navigator) {
    */
   var _locationSuccess = function(pos) {
     var coordinates = pos.coords;
-    _requestNearbyStation(coordinates.latitude, coordinates.longitude);
+    _requestNearbyStations(coordinates.latitude, coordinates.longitude);
   };
 
   /**
@@ -302,18 +303,37 @@ module.exports = (function(Pebble, navigator) {
     _appMessageError('Location error', 'Can\'t get your location', _packageKey++);
   };
 
-  var _requestNearbyStation = function(latitude, longitude) {
+  var _requestNearbyStations = function(latitude, longitude) {
     _xhr(_url.resrobotGeo(longitude, latitude), _resrobotGeoCallback);
   };
 
   var _resrobotGeoCallback = function(resp) {
+    //console.log(resp);
     if(resp !== '{"stationsinzoneresult":{}}') {
       var response = JSON.parse(resp);
+      var stations = [];
+      _nearbyStations = [];
       if( Object.prototype.toString.call( response.stationsinzoneresult.location ) === '[object Array]' ) {
-        _requestResrobot(response.stationsinzoneresult.location[0]['@id']);
+        var batchLength = response.stationsinzoneresult.location.length > 5 ? 5:alldeps.length;
+        for(var i = 0; i < batchLength; i++) {
+          var ad = {};
+          ad.index = i;
+          ad.from = response.stationsinzoneresult.location[i].name;
+          ad.nr = batchLength;
+          stations.push(ad);
+          _nearbyStations.push(response.stationsinzoneresult.location[i]['@id']);
+        }
       } else {
-        _requestResrobot(response.stationsinzoneresult.location['@id']);
+        var ad = {};
+        ad.index = 0;
+        ad.from = response.stationsinzoneresult.location.name;
+        ad.nr = 1;
+        stations.push(ad);
+        _nearbyStations = [response.stationsinzoneresult.location['@id']];
       }
+
+      api.addStation(stations, _packageKey++);
+    
     } else {
       _appMessageError('No nearby stations', '', _packageKey++);
     }
@@ -326,7 +346,8 @@ module.exports = (function(Pebble, navigator) {
   api._test = {};
   api._test.slTimeSort = _slTimeSort;
 
-  api.addStation = function(stations) {
+  api.addStation = function(stations, packageKey) {
+    //console.log(packageKey);
     if(stations.length < 1)
       return;
     Pebble.sendAppMessage({
@@ -334,14 +355,14 @@ module.exports = (function(Pebble, navigator) {
         '1': stations[0].index,
         '2': stations[0].from,
         '5': stations[0].nr,
-        '9': 0
+        '9': packageKey
       },
       function() {
         stations.shift();
-        api.addStation(stations);
+        api.addStation(stations, packageKey);
       },
       function() {
-        api.addStation(stations);
+        api.addStation(stations, packageKey);
       }
     );
   };
@@ -350,10 +371,15 @@ module.exports = (function(Pebble, navigator) {
    * Request rides
    * @param index Station index
    */
-  api.requestRides = function(index) {
+  api.requestRides = function(index, step) {
     _queryIndex = index;
-    var id = _config.route[index].locationid;
-    if (_provider === 'sl') {
+    if(step === 0) {
+      var id = _config.route[index].locationid;
+      _nearbyStations = [];
+    }
+    else
+      var id = _nearbyStations[index];
+    if (_provider === 'sl' && step === 0) {
       _requestSLRealtime(id);
     } else if (_provider === 'resrobot') {
       _requestResrobot(id);

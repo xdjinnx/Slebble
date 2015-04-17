@@ -17,14 +17,14 @@ Pebble.addEventListener('ready',
                   ad.nr = response.route.length;
                   stations.push(ad);
                 }
-                Slebble.addStation(stations);
+                Slebble.addStation(stations, 0);
               } else {
                 var ad = {};
                 ad.index = 0;
                 ad.from = 'No configuration';
                 ad.nr = 1;
                 ad = [ad];
-                Slebble.addStation(ad);
+                Slebble.addStation(ad, 0);
               }
             });
 
@@ -58,7 +58,7 @@ Pebble.addEventListener('webviewclosed',
                     stations.push(ad);
                   }
                   
-                  Slebble.addStation(stations);
+                  Slebble.addStation(stations, 0);
 
                 }
               }
@@ -66,11 +66,17 @@ Pebble.addEventListener('webviewclosed',
 
 Pebble.addEventListener('appmessage',
             function(e) {
-              if(e.payload[1] !== 0) {
+              if(e.payload[2] == 0) {
+                if(e.payload[1] !== 0) {
+                  var response = JSON.parse(localStorage.getItem('data'));
+                  Slebble.loadConfig(response);
+                  Slebble.requestRides(e.payload[1]-1, 0);
+                } else {
+                  Slebble.requestGeoRides();
+                }
+              } else {
                 var response = JSON.parse(localStorage.getItem('data'));
                 Slebble.loadConfig(response);
-                Slebble.requestRides(e.payload[1]-1);
-              } else {
-                Slebble.requestGeoRides();
+                Slebble.requestRides(e.payload[1], 1);
               }
             });
