@@ -2,7 +2,7 @@
 
 uint16_t menu_get_num_sections_callback(MenuLayer *menu_layer, void *data) {
     Menu* menu = data;
-    if(menu->nearby)
+    if(menu->id == 0)
         return 2;
     else
         return 1;
@@ -10,7 +10,7 @@ uint16_t menu_get_num_sections_callback(MenuLayer *menu_layer, void *data) {
 
 uint16_t menu_get_num_rows_callback(MenuLayer *menu_layer, uint16_t section_index, void *data) {
     Menu *menu = data;
-    if (menu->nearby) {
+    if (menu->id == 0) {
         if(section_index == 0)
             return 1;
         else
@@ -26,7 +26,7 @@ int16_t menu_get_header_height_callback(MenuLayer *menu_layer, uint16_t section_
 
 void menu_draw_header_callback(GContext* ctx, const Layer *cell_layer, uint16_t section_index, void *data) {
     Menu* menu = data;
-    if(menu->nearby) {
+    if(menu->id == 0) {
         if (section_index == 0)
             menu_cell_basic_header_draw(ctx, cell_layer, "Stations");
         else
@@ -37,7 +37,7 @@ void menu_draw_header_callback(GContext* ctx, const Layer *cell_layer, uint16_t 
 
 void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data) {
     Menu* menu = data;
-    if(menu->nearby) {
+    if(menu->id == 0) {
         if(cell_index->section == 0)
             menu_cell_basic_draw(ctx, cell_layer, "Nearby Station", "", NULL);
         else
@@ -158,13 +158,13 @@ void menu_hide_load_image(Menu *menu) {
     menu_layer_set_click_config_onto_window(menu->layer, menu->window);
 }
 
-Menu* menu_create(uint32_t load_image_resource_id, MenuCallbacks callbacks) {
+Menu* menu_create(int id, uint32_t load_image_resource_id, MenuCallbacks callbacks) {
     Menu* menu = malloc(sizeof(Menu));
     menu->window = window_create();
     menu->load_image_resource_id = load_image_resource_id;
     menu->callbacks = callbacks;
     menu->size = 0;
-    menu->nearby = false;
+    menu->id = id;
 
     window_set_user_data(menu->window, menu);
 

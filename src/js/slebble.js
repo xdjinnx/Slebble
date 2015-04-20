@@ -10,7 +10,7 @@ module.exports = (function(Pebble, navigator) {
   var _maxDepatures = 15;
   var _queryIndex = 0;
   var _locationOptions = {'timeout': 15000, 'maximumAge': 60000 };
-  var _packageKey = 0;
+  var _packageKey = 1;
   var _nearbyStations = [];
 
   // Ride Type Constants

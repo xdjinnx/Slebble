@@ -13,16 +13,10 @@ enum SLKey {
     PACKAGE_KEY = 0x9
 };
 
-int package_key = -1;
-
 char *event_data_char = "Favorites";
-void (*update_ptr)(int, char*, int, char*, char*, int, char*);
+void (*update_ptr)(int, int, char*, int, char*, char*, int, char*);
 
-void event_next_batch() {
-    package_key++;
-}
-
-void event_set_view_update(void (*update)(int, char*, int, char*, char*, int, char*)) {
+void event_set_view_update(void (*update)(int, int, char*, int, char*, char*, int, char*)) {
     update_ptr = update;
 }
 
@@ -39,71 +33,67 @@ void in_received_handler(DictionaryIterator *iter, void *context) {
     //APP_LOG(APP_LOG_LEVEL_INFO, "Appmessage recived");
 
     Tuple *package_tuple = dict_find(iter, PACKAGE_KEY);
+    Tuple *path_tuple = dict_find(iter, PATH_KEY);
+    Tuple *index_tuple = dict_find(iter, INDEX_KEY);
+    Tuple *station_tuple = dict_find(iter, STATION_KEY);
+    Tuple *ride_tuple = dict_find(iter, RIDE_KEY);
+    Tuple *to_tuple = dict_find(iter, TO_KEY);
+    Tuple *nr_tuple = dict_find(iter, NR_KEY);
+    Tuple *min_tuple = dict_find(iter, MIN_KEY);
+    Tuple *error_title_tuple = dict_find(iter, ERROR_TITLE_KEY);
+    Tuple *error_subtitle_tuple = dict_find(iter, ERROR_SUBTITLE_KEY);
 
-    if(package_key == package_tuple->value->uint8 || package_key == -1) {
+    int index = index_tuple->value->uint8;
+    int size = nr_tuple->value->uint8;
 
-        Tuple *path_tuple = dict_find(iter, PATH_KEY);
-        Tuple *index_tuple = dict_find(iter, INDEX_KEY);
-        Tuple *station_tuple = dict_find(iter, STATION_KEY);
-        Tuple *ride_tuple = dict_find(iter, RIDE_KEY);
-        Tuple *to_tuple = dict_find(iter, TO_KEY);
-        Tuple *nr_tuple = dict_find(iter, NR_KEY);
-        Tuple *min_tuple = dict_find(iter, MIN_KEY);
-        Tuple *error_title_tuple = dict_find(iter, ERROR_TITLE_KEY);
-        Tuple *error_subtitle_tuple = dict_find(iter, ERROR_SUBTITLE_KEY);
+    char title[32];
+    char subtitle[32];
+    char data_char[32];
 
-        int index = index_tuple->value->uint8;
-        int size = nr_tuple->value->uint8;
+    switch(path_tuple->value->uint8) {
+        //Receive stations
+        case 1:
 
-        char title[32];
-        char subtitle[32];
-        char data_char[32];
+            memcpy(title, station_tuple->value->cstring, station_tuple->length);
+            title[31] = '\0';
 
-        switch(path_tuple->value->uint8) {
-            //Receive stations
-            case 1:
+            //APP_LOG(APP_LOG_LEVEL_INFO, "Startmenu: number of rows %d of %d", loaded_rows, nr_station_variable);
+            update_ptr(package_tuple->value->uint8, size, event_data_char, index, title, "", 0, NULL);
+            break;
 
-                memcpy(title, station_tuple->value->cstring, station_tuple->length);
-                title[31] = '\0';
+            //Receive depatures
+        case 2:
+        
+            memcpy(data_char, ride_tuple->value->cstring, ride_tuple->length);
 
-                //APP_LOG(APP_LOG_LEVEL_INFO, "Startmenu: number of rows %d of %d", loaded_rows, nr_station_variable);
-                update_ptr(size, event_data_char, index, title, "", 0, NULL);
-                break;
+            if(min_tuple->value->uint8 > 0) {
+                snprintf(title, 32, "%dmin - %s", min_tuple->value->uint8, data_char);
+            } else {
+                snprintf(title, 32, "Nu - %s", data_char);
+            }
+            title[31] = '\0';
 
-                //Receive depatures
-            case 2:
+            memcpy(subtitle, to_tuple->value->cstring, to_tuple->length);
+            subtitle[31] = '\0';
             
-                memcpy(data_char, ride_tuple->value->cstring, ride_tuple->length);
+            //APP_LOG(APP_LOG_LEVEL_INFO, "Station: number of rows %d of %d", loaded_rows, nr_ride_variable);
+            update_ptr(package_tuple->value->uint8, size, event_data_char, index, title, subtitle, min_tuple->value->uint8, data_char);
+            
+            break;
 
-                if(min_tuple->value->uint8 > 0) {
-                    snprintf(title, 32, "%dmin - %s", min_tuple->value->uint8, data_char);
-                } else {
-                    snprintf(title, 32, "Nu - %s", data_char);
-                }
-                title[31] = '\0';
+            //Receive Error message in depature screen
+        case 3:
+            memcpy(title, error_title_tuple->value->cstring, error_title_tuple->length);
+            title[31] = '\0';
 
-                memcpy(subtitle, to_tuple->value->cstring, to_tuple->length);
-                subtitle[31] = '\0';
-                
-                //APP_LOG(APP_LOG_LEVEL_INFO, "Station: number of rows %d of %d", loaded_rows, nr_ride_variable);
-                update_ptr(size, event_data_char, index, title, subtitle, min_tuple->value->uint8, data_char);
-                
-                break;
+            memcpy(subtitle, error_subtitle_tuple->value->cstring, error_subtitle_tuple->length);
+            subtitle[31] = '\0';
 
-                //Receive Error message in depature screen
-            case 3:
-                memcpy(title, error_title_tuple->value->cstring, error_title_tuple->length);
-                title[31] = '\0';
+            tick_timer_service_unsubscribe();
+            update_ptr(package_tuple->value->uint8, 1, "Error", 0, title, subtitle, 0, NULL);
 
-                memcpy(subtitle, error_subtitle_tuple->value->cstring, error_subtitle_tuple->length);
-                subtitle[31] = '\0';
+            break;
 
-                tick_timer_service_unsubscribe();
-                update_ptr(1, "Error", 0, title, subtitle, 0, NULL);
-
-                break;
-
-        }
     }
 
 }
