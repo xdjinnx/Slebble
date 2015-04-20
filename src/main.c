@@ -5,7 +5,6 @@
 Menu *menu;
 int updates = 0;
 bool first_tick = false;
-int id = 0;
 
 void view_update(int incoming_id, int size, char *title, int index, char *row_title, char *row_subtitle, int data_int, char *data_char) {
     if(menu->id == incoming_id) {
@@ -51,11 +50,10 @@ void select_nearby_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *
     event_set_click_data(click_data);
 
     Menu *temp = menu;
-    menu = menu_create(id, RESOURCE_ID_SLEBBLE_LOADING_BLACK, (MenuCallbacks) {
+    menu = menu_create(RESOURCE_ID_SLEBBLE_LOADING_BLACK, (MenuCallbacks) {
             .select_click = NULL,
             .remove_callback = &remove_callback_handler,
     });
-    id++;
 
     menu->menu = temp;
 
@@ -82,18 +80,17 @@ void select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
 
     Menu *temp = menu;
     if(cell_index->section == 0) {
-        menu = menu_create(id, RESOURCE_ID_SLEBBLE_LOADING_BLACK, (MenuCallbacks) {
+        menu = menu_create(RESOURCE_ID_SLEBBLE_LOADING_BLACK, (MenuCallbacks) {
                 .select_click = &select_nearby_callback,
                 .remove_callback = &remove_callback_handler,
         });
     } else {
-        menu = menu_create(id, RESOURCE_ID_SLEBBLE_LOADING_BLACK, (MenuCallbacks) {
+        menu = menu_create(RESOURCE_ID_SLEBBLE_LOADING_BLACK, (MenuCallbacks) {
                 .select_click = NULL,
                 .remove_callback = &remove_callback_handler,
         });
     }
 
-    id++;
     menu->menu = temp;
 
     updates = 0;
@@ -110,11 +107,10 @@ int main(void) {
     app_message_register_inbox_received(in_received_handler);
     app_message_register_inbox_dropped(in_dropped_handler);
 
-    menu = menu_create(id, RESOURCE_ID_SLEBBLE_START_BLACK, (MenuCallbacks){
+    menu = menu_create(RESOURCE_ID_SLEBBLE_START_BLACK, (MenuCallbacks){
             .select_click = &select_callback,
             .remove_callback = &remove_callback_handler,
     });
-    id++;
 
     event_set_view_update(&view_update);
 

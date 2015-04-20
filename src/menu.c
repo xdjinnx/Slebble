@@ -1,5 +1,7 @@
 #include "menu.h"
 
+int new_id = 0;
+
 uint16_t menu_get_num_sections_callback(MenuLayer *menu_layer, void *data) {
     Menu* menu = data;
     if(menu->id == 0)
@@ -158,13 +160,13 @@ void menu_hide_load_image(Menu *menu) {
     menu_layer_set_click_config_onto_window(menu->layer, menu->window);
 }
 
-Menu* menu_create(int id, uint32_t load_image_resource_id, MenuCallbacks callbacks) {
+Menu* menu_create(uint32_t load_image_resource_id, MenuCallbacks callbacks) {
     Menu* menu = malloc(sizeof(Menu));
     menu->window = window_create();
     menu->load_image_resource_id = load_image_resource_id;
     menu->callbacks = callbacks;
     menu->size = 0;
-    menu->id = id;
+    menu->id = new_id++;
 
     window_set_user_data(menu->window, menu);
 
