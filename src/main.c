@@ -73,7 +73,7 @@ void select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
     int row_clicked = cell_index->row + 1;
 
     if (cell_index->section == 0) {
-        click_data = "Nearby Station";
+        click_data = "Nearby Stations";
         row_clicked--;
     } else
         click_data = menu->row_title[cell_index->row];

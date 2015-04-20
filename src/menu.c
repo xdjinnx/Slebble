@@ -39,7 +39,7 @@ void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuIndex *c
     Menu* menu = data;
     if(menu->id == 0) {
         if(cell_index->section == 0)
-            menu_cell_basic_draw(ctx, cell_layer, "Nearby Station", "", NULL);
+            menu_cell_basic_draw(ctx, cell_layer, "Nearby Stations", "", NULL);
         else
             menu_cell_basic_draw(ctx, cell_layer, menu->row_title[cell_index->row], menu->row_subtitle[cell_index->row], NULL);
     } else
