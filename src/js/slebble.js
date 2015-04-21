@@ -44,7 +44,7 @@ module.exports = (function(Pebble, navigator) {
       },
       function() {},
       function() {
-        _appMessageError(title, subtitle, packageKey);
+        setTimeout(function(){ _appMessageError(title, subtitle, packageKey); }, 100);
       }
     );
   };
@@ -228,7 +228,7 @@ module.exports = (function(Pebble, navigator) {
         _addRide(depatureList, packageKey);
       },
       function() {
-        _addRide(depatureList, packageKey);
+        setTimeout(function(){ _addRide(depatureList, packageKey); }, 100);
       }
     );
   };
@@ -362,7 +362,7 @@ module.exports = (function(Pebble, navigator) {
         api.addStation(stations, packageKey);
       },
       function() {
-        api.addStation(stations, packageKey);
+        setTimeout(function(){ api.addStation(stations, packageKey); }, 100);
       }
     );
   };
