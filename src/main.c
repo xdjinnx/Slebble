@@ -13,7 +13,6 @@ void view_update(int incoming_id, int size, char *title, int index, char *row_ti
         if(updates >= size) {
             updates = 0;
             menu_hide_load_image(menu);
-            vibes_short_pulse();
         }
     }
 }

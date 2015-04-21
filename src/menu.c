@@ -155,9 +155,12 @@ void menu_update(Menu *menu, int size, char *title, int index, char *row_title, 
 }
 
 void menu_hide_load_image(Menu *menu) {
-    menu_layer_reload_data(menu->layer);
-    layer_set_hidden(bitmap_layer_get_layer(menu->load_layer), true);
-    menu_layer_set_click_config_onto_window(menu->layer, menu->window);
+    if(!layer_get_hidden(bitmap_layer_get_layer(menu->load_layer))) {
+        menu_layer_reload_data(menu->layer);
+        layer_set_hidden(bitmap_layer_get_layer(menu->load_layer), true);
+        menu_layer_set_click_config_onto_window(menu->layer, menu->window);
+        vibes_short_pulse();
+    }
 }
 
 Menu* menu_create(uint32_t load_image_resource_id, MenuCallbacks callbacks) {

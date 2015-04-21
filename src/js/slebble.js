@@ -8,7 +8,8 @@ module.exports = (function(Pebble, navigator) {
   var _provider = '';
   var _config = {};
   var _maxDepatures = 15;
-  var _queryIndex = 0;
+  var _queryIndex = 0
+  var _queryId = 0;
   var _locationOptions = {'timeout': 15000, 'maximumAge': 60000 };
   var _packageKey = 1;
   var _nearbyStations = [];
@@ -55,14 +56,17 @@ module.exports = (function(Pebble, navigator) {
    * @param  {Function} callback Function to be called if xhr end with status 200
    * @private
    */
-  var _xhr = function(url, callback) {
+  var _xhr = function(url, callback, packageKey) {
     console.log('Requesting '+url);
     var xhr = new XMLHttpRequest();
     xhr.open('GET', url, false);
     xhr.onload = function(e) {
       if (xhr.readyState === 4) {
         if (xhr.status === 200) {
-          callback(xhr.responseText);
+          if(typeof packageKey === 'undefined')
+            callback(xhr.responseText);
+          else
+            callback(xhr.responseText, packageKey);
         } else {
           console.log('XHR Error');
           console.log(xhr.status);
@@ -73,11 +77,14 @@ module.exports = (function(Pebble, navigator) {
     xhr.send();
   };
 
-  var _requestSLRealtime = function(siteid) {
-    _xhr(_url.slReal3(siteid), _SLRealtimeCallback);
+  var _requestSLRealtime = function(siteid, packageKey) {
+    if(typeof packageKey === 'undefined')
+      _xhr(_url.slReal3(siteid), _SLRealtimeCallback);
+    else
+      _xhr(_url.slReal3(siteid), _SLRealtimeCallback, packageKey);
   };
 
-  var _SLRealtimeCallback = function(resp) {
+  var _SLRealtimeCallback = function(resp, packageKey) {
     //console.log('sl callback');
     var response = JSON.parse(resp);
     var alldeps = [];
@@ -109,8 +116,6 @@ module.exports = (function(Pebble, navigator) {
       else
         ad.ridetype = RT_UNKNOWN;
       alldeps.push(ad);
-      //console.log(i + " Before if: " + deps[i].DisplayTime);
-      //console.log(i + " After if: " + ad.displayTime);
     }
 
     alldeps = alldeps.filter(_filterRides);
@@ -127,7 +132,19 @@ module.exports = (function(Pebble, navigator) {
       alldeps[j].nr = numberToAdd;
     }
 
-    _addRide(alldeps.slice(0, numberToAdd), _packageKey++);
+
+
+    if(typeof packageKey === 'undefined')
+      packageKey = _packageKey++;
+    _addRide(alldeps.slice(0, numberToAdd), packageKey);
+
+
+    setTimeout(function () {
+      if(packageKey === _packageKey-1) {
+        _requestSLRealtime(_queryId, packageKey);
+      }
+    }, 120000);
+
   };
 
   var _slTimeSort = function(a, b){
@@ -164,11 +181,14 @@ module.exports = (function(Pebble, navigator) {
     }
   };
 
-  var _requestResrobot = function(siteid) {
-    _xhr(_url.resrobot(siteid), _resrobotCallback);
+  var _requestResrobot = function(siteid, packageKey) {
+    if(typeof packageKey === 'undefined')
+      _xhr(_url.resrobot(siteid), _resrobotCallback);
+    else
+      _xhr(_url.resrobot(siteid), _resrobotCallback, packageKey);
   };
 
-  var _resrobotCallback = function(resp) {
+  var _resrobotCallback = function(resp, packageKey) {
     // check for empty response
     if (resp === '{"getdeparturesresult":{}}') {
       _appMessageError('No rides available', 'Try again later', _packageKey++);
@@ -206,7 +226,15 @@ module.exports = (function(Pebble, navigator) {
       alldeps[j].nr = batchLength;
     }
 
-    _addRide(alldeps.slice(0, batchLength), _packageKey++);
+    if(typeof packageKey === 'undefined')
+      packageKey = _packageKey++;
+    _addRide(alldeps.slice(0, batchLength), packageKey);
+
+    setTimeout(function () {
+      if(packageKey === _packageKey-1) {
+        _requestResrobot(_queryId, packageKey);
+      }
+    }, 120000);
 
   };
 
@@ -374,17 +402,17 @@ module.exports = (function(Pebble, navigator) {
   api.requestRides = function(index, step) {
     _queryIndex = index;
     if(step === 0) {
-      var id = _config.route[index].locationid;
+      _queryId = _config.route[index].locationid;
       _nearbyStations = [];
     }
     else
-      var id = _nearbyStations[index];
+      _queryId = _nearbyStations[index];
     if (_provider === 'sl' && step === 0) {
-      _requestSLRealtime(id);
+      _requestSLRealtime(_queryId);
     } else if (_provider === 'resrobot') {
-      _requestResrobot(id);
+      _requestResrobot(_queryId);
     } else { // fallback for old users
-      _requestResrobot(id);
+      _requestResrobot(_queryId);
     }
   };
 
