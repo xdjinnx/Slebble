@@ -9,6 +9,12 @@
 ![Screenshot3](https://assets.getpebble.com/api/file/o5aoCGuRuuVVP7oTHneQ/convert?cache=true&w=144&h=168&fit=)
 ![Screenshot4](https://assets.getpebble.com/api/file/KxSn79xGRnSZl8YXahUi/convert?cache=true&w=144&h=168&fit=)
 
+## Build & Install
+You will need to download and install the Pebble SDK that you could be found on the [Pebble developer website](https://developer.getpebble.com/sdk/install/). I also recommend follow the instructions found on the website.
+
+### No Pebble watch needed
+There is an emulator available to use within the Pebble SDK.
+
 ## License
 
 	The MIT License (MIT)
