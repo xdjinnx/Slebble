@@ -12,6 +12,7 @@ void view_update(int incoming_id, int size, char *title, int index, char *row_ti
         updates++;
         if(updates >= size) {
             updates = 0;
+            menu_layer_reload_data(menu->layer);
             menu_hide_load_image(menu);
         }
     }
@@ -32,6 +33,10 @@ void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
             menu_update(menu, menu->size, menu->title, i, buf, menu->row_subtitle[i], ((int*)menu->data_int)[i], ((char**)menu->data_char)[i]);
         }
         menu_layer_reload_data(menu->layer);
+        
+        if(tick_time->tm_min % 2 == 0)
+            update_appmessage();
+        
     }
     first_tick = true;
 }
@@ -62,6 +67,7 @@ void select_nearby_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *
         app_comm_set_sniff_interval(SNIFF_INTERVAL_REDUCED);
     send_appmessage(row_clicked, 1);
 
+    first_tick = false;
     tick_timer_service_subscribe(MINUTE_UNIT, tick_handler);
 }
 
@@ -97,8 +103,10 @@ void select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
         app_comm_set_sniff_interval(SNIFF_INTERVAL_REDUCED);
     send_appmessage(row_clicked, 0);
 
-    if(cell_index->section != 0)
+    if(cell_index->section != 0) {
+        first_tick = false;
         tick_timer_service_subscribe(MINUTE_UNIT, tick_handler);
+    }
 }
 
 int main(void) {

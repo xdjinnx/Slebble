@@ -13,6 +13,7 @@ module.exports = (function(Pebble, navigator) {
   var _locationOptions = {'timeout': 15000, 'maximumAge': 60000 };
   var _packageKey = 1;
   var _nearbyStations = [];
+  var _lastRequest;
 
   // Ride Type Constants
   var RT_BUS = 'B';
@@ -139,11 +140,7 @@ module.exports = (function(Pebble, navigator) {
     _addRide(alldeps.slice(0, numberToAdd), packageKey);
 
 
-    setTimeout(function () {
-      if(packageKey === _packageKey-1) {
-        _requestSLRealtime(_queryId, packageKey);
-      }
-    }, 120000);
+    _lastRequest = _requestSLRealtime;
 
   };
 
@@ -230,12 +227,7 @@ module.exports = (function(Pebble, navigator) {
       packageKey = _packageKey++;
     _addRide(alldeps.slice(0, batchLength), packageKey);
 
-    setTimeout(function () {
-      if(packageKey === _packageKey-1) {
-        _requestResrobot(_queryId, packageKey);
-      }
-    }, 120000);
-
+    _lastRequest = _requestResrobot;
   };
 
 
@@ -407,6 +399,7 @@ module.exports = (function(Pebble, navigator) {
     }
     else
       _queryId = _nearbyStations[index];
+
     if (_provider === 'sl' && step === 0) {
       _requestSLRealtime(_queryId);
     } else if (_provider === 'resrobot') {
@@ -414,7 +407,12 @@ module.exports = (function(Pebble, navigator) {
     } else { // fallback for old users
       _requestResrobot(_queryId);
     }
+    
   };
+
+  api.requestUpdate = function() {
+    _lastRequest(_queryId, _packageKey-1);
+  }
 
   /**
    * Load config object

@@ -3,6 +3,7 @@
 #include "pebble.h"
 
 extern void send_appmessage(int index, int step);
+extern void update_appmessage();
 extern void event_set_click_data(char* data);
 extern void event_set_view_update(void (*update)(int, int, char*, int, char*, char*, int, char*));
 extern void event_tick_handler(int size, void *data);

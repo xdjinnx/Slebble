@@ -66,17 +66,15 @@ Pebble.addEventListener('webviewclosed',
 
 Pebble.addEventListener('appmessage',
             function(e) {
-              if(e.payload[2] == 0) {
+              if(e.payload[2] === 0) {
                 if(e.payload[1] !== 0) {
-                  var response = JSON.parse(localStorage.getItem('data'));
-                  Slebble.loadConfig(response);
                   Slebble.requestRides(e.payload[1]-1, 0);
                 } else {
                   Slebble.requestGeoRides();
                 }
+              } else if(e.payload[2] === 1){
+                Slebble.requestRides(e.payload[1], e.payload[2]);
               } else {
-                var response = JSON.parse(localStorage.getItem('data'));
-                Slebble.loadConfig(response);
-                Slebble.requestRides(e.payload[1], 1);
+                Slebble.requestUpdate();
               }
             });

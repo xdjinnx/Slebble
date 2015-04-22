@@ -111,7 +111,6 @@ void send_appmessage(int index, int step) {
     Tuplet value1 = TupletInteger(1, index);
     Tuplet value2 = TupletInteger(2, step);
 
-
     DictionaryIterator *iter;
     app_message_outbox_begin(&iter);
 
@@ -119,6 +118,21 @@ void send_appmessage(int index, int step) {
         return;
 
     dict_write_tuplet(iter, &value1);
+    dict_write_tuplet(iter, &value2);
+    dict_write_end(iter);
+
+    app_message_outbox_send();
+}
+
+void update_appmessage() {
+    Tuplet value2 = TupletInteger(2, 2);
+
+    DictionaryIterator *iter;
+    app_message_outbox_begin(&iter);
+
+    if (iter == NULL)
+        return;
+
     dict_write_tuplet(iter, &value2);
     dict_write_end(iter);
 
