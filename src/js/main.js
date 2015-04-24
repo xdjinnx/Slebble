@@ -4,7 +4,7 @@ Pebble.addEventListener('ready',
             function(e) {
               //console.log('ready');
               var response = localStorage.data;
-              if (response !== undefined && response !== '') {
+              if (response !== '' && typeof response === 'string') {
                 //console.log('has data');
                 response = JSON.parse(localStorage.data);
                 //console.log('saved data'+JSON.stringify(response));
