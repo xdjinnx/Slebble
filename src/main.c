@@ -3,8 +3,10 @@
 #include "event.h"
 
 Menu *menu;
+AppTimer *scroll_timer;
 int updates = 0;
 bool first_tick = false;
+
 
 void view_update(int incoming_id, int size, char *title, int index, char *row_title, char *row_subtitle, int data_int, char *data_char) {
     if(menu->id == incoming_id) {
@@ -40,6 +42,19 @@ void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
     }
     first_tick = true;
 }
+
+/*
+void text_scroll_handler(void *data) {
+    if(menu->id == 0) {
+        MenuIndex selected_item = menu_layer_get_selected_index(menu->layer);
+        if(selected_item.section == 1)
+            text_scroll++;
+        menu_layer_reload_data(menu->layer);
+    }
+
+    scroll_timer = app_timer_register(500, &text_scroll_handler, NULL);
+}
+*/
 
 void remove_callback_handler(void *data) {
     Menu* temp = data;
@@ -120,6 +135,8 @@ int main(void) {
     });
 
     event_set_view_update(&view_update);
+
+    //scroll_timer = app_timer_register(500, &text_scroll_handler, NULL);
 
     app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
     app_comm_set_sniff_interval(SNIFF_INTERVAL_REDUCED);

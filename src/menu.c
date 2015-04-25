@@ -1,6 +1,8 @@
 #include "menu.h"
 
 int new_id = 0;
+int text_scroll = 0;
+
 
 uint16_t menu_get_num_sections_callback(MenuLayer *menu_layer, void *data) {
     Menu* menu = data;
@@ -39,11 +41,16 @@ void menu_draw_header_callback(GContext* ctx, const Layer *cell_layer, uint16_t 
 
 void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data) {
     Menu* menu = data;
+    MenuIndex selected_item = menu_layer_get_selected_index(menu->layer);
     if(menu->id == 0) {
         if(cell_index->section == 0)
             menu_cell_basic_draw(ctx, cell_layer, "Nearby Stations", "", NULL);
-        else
-            menu_cell_basic_draw(ctx, cell_layer, menu->row_title[cell_index->row], menu->row_subtitle[cell_index->row], NULL);
+        else {
+            if(selected_item.row == cell_index->row && selected_item.section != 0)
+                menu_cell_basic_draw(ctx, cell_layer, menu->row_title[cell_index->row]+(text_scroll*sizeof(char)), menu->row_subtitle[cell_index->row], NULL);
+            else 
+                menu_cell_basic_draw(ctx, cell_layer, menu->row_title[cell_index->row], menu->row_subtitle[cell_index->row], NULL);
+        }
     } else
         menu_cell_basic_draw(ctx, cell_layer, menu->row_title[cell_index->row], menu->row_subtitle[cell_index->row], NULL);
 }
