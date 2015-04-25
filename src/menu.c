@@ -2,6 +2,7 @@
 
 int new_id = 0;
 uint text_scroll = 0;
+uint prev_index = 0;
 
 
 uint16_t menu_get_num_sections_callback(MenuLayer *menu_layer, void *data) {
@@ -47,11 +48,21 @@ void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuIndex *c
 }
 
 void selection_changed_callback(struct MenuLayer *menu_layer, MenuIndex new_index, MenuIndex old_index, void *data) {
-    if(new_index.row == old_index.row || new_index.section == old_index.section)
+    
+    Menu* menu = data;
+    if(new_index.row != prev_index) {
+        prev_index = new_index.row;
         text_scroll = 0;
+    }
+    if(menu->id == 0 && new_index.section == 0)
+        text_scroll = 0;
+        
 }
 
 void window_load(Window *window) {
+    prev_index = 0;
+    text_scroll = 0;
+
     Menu* menu = window_get_user_data(window);
 
     Layer *window_layer = window_get_root_layer(window);
@@ -83,6 +94,11 @@ void window_unload(Window *window) {
     Menu* menu = window_get_user_data(window);
 
     Menu *ret = menu->menu;
+
+    if(ret != NULL)
+        prev_index = menu_layer_get_selected_index(ret->layer).row;
+    text_scroll = 0;
+
     menu->callbacks.remove_callback(ret);
 
     window_stack_remove(window, true);
