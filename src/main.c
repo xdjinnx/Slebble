@@ -27,10 +27,8 @@ void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
             char buf[32];
             if(((int*)menu->data_int)[i] > 0) {
                 snprintf(buf, 32, "%dmin - %s", ((int*)menu->data_int)[i], ((char**)menu->data_char)[i]);
-                buf[31] = '\0';
             } else {
                 snprintf(buf, 32, "Nu - %s", ((char**)menu->data_char)[i]);
-                buf[31] = '\0';
             }
             menu_update(menu, menu->size, menu->title, i, buf, menu->row_subtitle[i], ((int*)menu->data_int)[i], ((char**)menu->data_char)[i]);
         }
@@ -43,18 +41,21 @@ void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
     first_tick = true;
 }
 
-/*
+
 void text_scroll_handler(void *data) {
     if(menu->id == 0) {
         MenuIndex selected_item = menu_layer_get_selected_index(menu->layer);
-        if(selected_item.section == 1)
+        if(selected_item.section == 1) {
             text_scroll++;
+            if(text_scroll > strlen(menu->row_title[selected_item.row]) - 17)
+                text_scroll = 0;
+        }
         menu_layer_reload_data(menu->layer);
     }
 
     scroll_timer = app_timer_register(500, &text_scroll_handler, NULL);
 }
-*/
+
 
 void remove_callback_handler(void *data) {
     Menu* temp = data;
@@ -136,7 +137,7 @@ int main(void) {
 
     event_set_view_update(&view_update);
 
-    //scroll_timer = app_timer_register(500, &text_scroll_handler, NULL);
+    scroll_timer = app_timer_register(500, &text_scroll_handler, NULL);
 
     app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
     app_comm_set_sniff_interval(SNIFF_INTERVAL_REDUCED);

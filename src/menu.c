@@ -1,7 +1,7 @@
 #include "menu.h"
 
 int new_id = 0;
-int text_scroll = 0;
+uint text_scroll = 0;
 
 
 uint16_t menu_get_num_sections_callback(MenuLayer *menu_layer, void *data) {
@@ -14,12 +14,9 @@ uint16_t menu_get_num_sections_callback(MenuLayer *menu_layer, void *data) {
 
 uint16_t menu_get_num_rows_callback(MenuLayer *menu_layer, uint16_t section_index, void *data) {
     Menu *menu = data;
-    if (menu->id == 0) {
-        if(section_index == 0)
-            return 1;
-        else
-            return menu->size;
-    } else
+    if (menu->id == 0 && section_index == 0)
+        return 1;
+    else
         return menu->size;
 }
 
@@ -30,29 +27,28 @@ int16_t menu_get_header_height_callback(MenuLayer *menu_layer, uint16_t section_
 
 void menu_draw_header_callback(GContext* ctx, const Layer *cell_layer, uint16_t section_index, void *data) {
     Menu* menu = data;
-    if(menu->id == 0) {
-        if (section_index == 0)
-            menu_cell_basic_header_draw(ctx, cell_layer, "Stations");
-        else
-            menu_cell_basic_header_draw(ctx, cell_layer, menu->title);
-    } else
+    if(menu->id == 0 && section_index == 0)
+        menu_cell_basic_header_draw(ctx, cell_layer, "Stations");
+    else
         menu_cell_basic_header_draw(ctx, cell_layer, menu->title);
 }
 
 void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data) {
     Menu* menu = data;
     MenuIndex selected_item = menu_layer_get_selected_index(menu->layer);
-    if(menu->id == 0) {
-        if(cell_index->section == 0)
-            menu_cell_basic_draw(ctx, cell_layer, "Nearby Stations", "", NULL);
-        else {
-            if(selected_item.row == cell_index->row && selected_item.section != 0)
-                menu_cell_basic_draw(ctx, cell_layer, menu->row_title[cell_index->row]+(text_scroll*sizeof(char)), menu->row_subtitle[cell_index->row], NULL);
-            else 
-                menu_cell_basic_draw(ctx, cell_layer, menu->row_title[cell_index->row], menu->row_subtitle[cell_index->row], NULL);
-        }
-    } else
-        menu_cell_basic_draw(ctx, cell_layer, menu->row_title[cell_index->row], menu->row_subtitle[cell_index->row], NULL);
+    if(menu->id == 0 && cell_index->section == 0)
+        menu_cell_basic_draw(ctx, cell_layer, "Nearby Stations", "", NULL);
+    else {
+        if(selected_item.row == cell_index->row)
+            menu_cell_basic_draw(ctx, cell_layer, menu->row_title[cell_index->row]+(text_scroll*sizeof(char)), menu->row_subtitle[cell_index->row], NULL);
+        else 
+            menu_cell_basic_draw(ctx, cell_layer, menu->row_title[cell_index->row], menu->row_subtitle[cell_index->row], NULL);
+    }
+}
+
+void selection_changed_callback(struct MenuLayer *menu_layer, MenuIndex new_index, MenuIndex old_index, void *data) {
+    if(new_index.row == old_index.row || new_index.section == old_index.section)
+        text_scroll = 0;
 }
 
 void window_load(Window *window) {
@@ -70,6 +66,7 @@ void window_load(Window *window) {
             .draw_header = menu_draw_header_callback,
             .draw_row = menu_draw_row_callback,
             .select_click = menu->callbacks.select_click,
+            .selection_changed = selection_changed_callback,
     });
 
     menu->load_image = gbitmap_create_with_resource(menu->load_image_resource_id);

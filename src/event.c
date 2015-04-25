@@ -55,7 +55,6 @@ void in_received_handler(DictionaryIterator *iter, void *context) {
         case 1:
 
             memcpy(title, station_tuple->value->cstring, station_tuple->length);
-            title[31] = '\0';
 
             //APP_LOG(APP_LOG_LEVEL_INFO, "Startmenu: number of rows %d of %d", loaded_rows, nr_station_variable);
             update_ptr(package_tuple->value->uint8, size, event_data_char, index, title, "", 0, NULL);
@@ -71,10 +70,8 @@ void in_received_handler(DictionaryIterator *iter, void *context) {
             } else {
                 snprintf(title, 32, "Nu - %s", data_char);
             }
-            title[31] = '\0';
 
             memcpy(subtitle, to_tuple->value->cstring, to_tuple->length);
-            subtitle[31] = '\0';
             
             //APP_LOG(APP_LOG_LEVEL_INFO, "Station: number of rows %d of %d", loaded_rows, nr_ride_variable);
             update_ptr(package_tuple->value->uint8, size, event_data_char, index, title, subtitle, min_tuple->value->uint8, data_char);
@@ -84,10 +81,8 @@ void in_received_handler(DictionaryIterator *iter, void *context) {
             //Receive Error message in depature screen
         case 3:
             memcpy(title, error_title_tuple->value->cstring, error_title_tuple->length);
-            title[31] = '\0';
 
             memcpy(subtitle, error_subtitle_tuple->value->cstring, error_subtitle_tuple->length);
-            subtitle[31] = '\0';
 
             tick_timer_service_unsubscribe();
             update_ptr(package_tuple->value->uint8, 1, "Error", 0, title, subtitle, 0, NULL);
