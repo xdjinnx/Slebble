@@ -34,8 +34,7 @@ void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
         }
         menu_layer_reload_data(menu->layer);
         
-        if(tick_time->tm_min % 2 == 0)
-            update_appmessage();
+        update_appmessage();
         
     }
     first_tick = true;
