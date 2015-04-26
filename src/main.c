@@ -44,10 +44,20 @@ void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
 void text_scroll_handler(void *data) {
     
     MenuIndex selected_item = menu_layer_get_selected_index(menu->layer);
+
+    if(menu->size > 0) {
+        char current_char = *(menu->row_title[selected_item.row]+((uint)text_scroll*sizeof(char)));
+        //Fixes åäö edge case
+        if(current_char == 195)
+            text_scroll++;
+    }
+    
     if(!(menu->id == 0 && selected_item.section == 0))
         text_scroll++;
+    
     if(menu->size > 0 && text_scroll > ((int)strlen(menu->row_title[selected_item.row])) - 17)
         text_scroll = -2;
+
     
     menu_layer_reload_data(menu->layer);
     scroll_timer = app_timer_register(500, &text_scroll_handler, NULL);
