@@ -1,7 +1,7 @@
 #include "menu.h"
 
 int new_id = 0;
-uint text_scroll = 0;
+int text_scroll = -2;
 uint prev_index = 0;
 
 
@@ -40,8 +40,8 @@ void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuIndex *c
     if(menu->id == 0 && cell_index->section == 0)
         menu_cell_basic_draw(ctx, cell_layer, "Nearby Stations", "", NULL);
     else {
-        if(selected_item.row == cell_index->row)
-            menu_cell_basic_draw(ctx, cell_layer, menu->row_title[cell_index->row]+(text_scroll*sizeof(char)), menu->row_subtitle[cell_index->row], NULL);
+        if(selected_item.row == cell_index->row && text_scroll >= 0)
+            menu_cell_basic_draw(ctx, cell_layer, menu->row_title[cell_index->row]+((uint)text_scroll*sizeof(char)), menu->row_subtitle[cell_index->row], NULL);
         else 
             menu_cell_basic_draw(ctx, cell_layer, menu->row_title[cell_index->row], menu->row_subtitle[cell_index->row], NULL);
     }
@@ -52,16 +52,16 @@ void selection_changed_callback(struct MenuLayer *menu_layer, MenuIndex new_inde
     Menu* menu = data;
     if(new_index.row != prev_index) {
         prev_index = new_index.row;
-        text_scroll = 0;
+        text_scroll = -2;
     }
     if(menu->id == 0 && new_index.section == 0)
-        text_scroll = 0;
+        text_scroll = -2;
         
 }
 
 void window_load(Window *window) {
     prev_index = 0;
-    text_scroll = 0;
+    text_scroll = -2;
 
     Menu* menu = window_get_user_data(window);
 
@@ -97,7 +97,7 @@ void window_unload(Window *window) {
 
     if(ret != NULL)
         prev_index = menu_layer_get_selected_index(ret->layer).row;
-    text_scroll = 0;
+    text_scroll = -2;
 
     menu->callbacks.remove_callback(ret);
 

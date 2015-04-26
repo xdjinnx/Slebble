@@ -46,10 +46,8 @@ void text_scroll_handler(void *data) {
     MenuIndex selected_item = menu_layer_get_selected_index(menu->layer);
     if(!(menu->id == 0 && selected_item.section == 0))
         text_scroll++;
-    if(menu->size > 0)
-        APP_LOG(APP_LOG_LEVEL_INFO, "%d : %d", menu->size, strlen(menu->row_title[selected_item.row]));
-    if(menu->size > 0 && (int)text_scroll > ((int)strlen(menu->row_title[selected_item.row])) - 17)
-        text_scroll = 0;
+    if(menu->size > 0 && text_scroll > ((int)strlen(menu->row_title[selected_item.row])) - 17)
+        text_scroll = -2;
     
     menu_layer_reload_data(menu->layer);
     scroll_timer = app_timer_register(500, &text_scroll_handler, NULL);
