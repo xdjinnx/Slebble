@@ -118,7 +118,26 @@ var Slebble = (function(){
     log(e);
     var ele = e.srcElement;
     var index = ele.getAttribute('data-index');
-    _stationJson[index].filter = ele.value.split(', ');
+
+    // parse and strip array
+    var filterList = ele.value.split(/\s*,\s*/);
+
+    // filter out empty items
+    filterList = filterList.filter(function (item) {
+      if (item.length > 0)
+        return true;
+    });
+
+    _stationJson[index].filter = filterList;
+
+    // print formatted array
+    var filter = '';
+    for (var i = 0; i < _stationJson[index].filter.length; i++ ) {
+      filter += _stationJson[index].filter[i]+', ';
+    }
+    filter = filter.substr(0, filter.length-2);
+    log(filter);
+    ele.value = filter;
   };
 
   var _filterEnabledHandler = function(e) {
