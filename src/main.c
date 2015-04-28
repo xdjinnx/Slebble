@@ -4,21 +4,7 @@
 
 Menu *menu;
 AppTimer *scroll_timer;
-int updates = 0;
 bool first_tick = false;
-
-
-void view_update(int incoming_id, int size, char *title, int index, char *row_title, char *row_subtitle, int data_int, char *data_char) {
-    if(menu->id == incoming_id) {
-        menu_update(menu, size, title, index, row_title, row_subtitle, data_int, data_char);
-        updates++;
-        if(updates >= size) {
-            updates = 0;
-            menu_layer_reload_data(menu->layer);
-            menu_hide_load_image(menu);
-        }
-    }
-}
 
 void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
     if(first_tick) {
@@ -30,7 +16,7 @@ void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
             } else {
                 snprintf(buf, 32, "Nu - %s", ((char**)menu->data_char)[i]);
             }
-            menu_update(menu, menu->size, menu->title, i, buf, menu->row_subtitle[i], ((int*)menu->data_int)[i], ((char**)menu->data_char)[i]);
+            menu_update(menu, menu->id, menu->size, menu->title, i, buf, menu->row_subtitle[i], ((int*)menu->data_int)[i], ((char**)menu->data_char)[i]);
         }
         menu_layer_reload_data(menu->layer);
         
@@ -85,8 +71,6 @@ void select_nearby_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *
 
     menu->menu = temp;
 
-
-    updates = 0;
     if (app_comm_get_sniff_interval() == SNIFF_INTERVAL_NORMAL)
         app_comm_set_sniff_interval(SNIFF_INTERVAL_REDUCED);
     send_appmessage(row_clicked, 1);
@@ -122,7 +106,6 @@ void select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
 
     menu->menu = temp;
 
-    updates = 0;
     if (app_comm_get_sniff_interval() == SNIFF_INTERVAL_NORMAL)
         app_comm_set_sniff_interval(SNIFF_INTERVAL_REDUCED);
     send_appmessage(row_clicked, 0);
@@ -143,7 +126,7 @@ int main(void) {
             .remove_callback = &remove_callback_handler,
     });
 
-    event_set_view_update(&view_update);
+    event_set_view_update(&menu, &menu_update);
 
     scroll_timer = app_timer_register(500, &text_scroll_handler, NULL);
 

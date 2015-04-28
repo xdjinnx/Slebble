@@ -1,5 +1,6 @@
 #include "menu.h"
 
+int updates = 0;
 int new_id = 0;
 int text_scroll = -2;
 uint prev_index = 0;
@@ -60,6 +61,7 @@ void selection_changed_callback(struct MenuLayer *menu_layer, MenuIndex new_inde
 }
 
 void window_load(Window *window) {
+    updates = 0;
     prev_index = 0;
     text_scroll = -2;
 
@@ -123,55 +125,67 @@ void window_unload(Window *window) {
     free(menu);
 }
 
-void menu_update(Menu *menu, int size, char *title, int index, char *row_title, char *row_subtitle, int data_int, char *data_char) {
+void menu_update(void *menu_void, int incoming_id, int size, char *title, int index, char *row_title, char *row_subtitle, int data_int, char *data_char) {
+    Menu *menu = (Menu*)menu_void;
     
-    if(menu->size == 0) {
-        menu->title = malloc(sizeof(char)*32);
-        menu->row_title = malloc(sizeof(char*)*size);
-        menu->row_subtitle = malloc(sizeof(char*)*size);
-        menu->data_char = malloc(sizeof(char*)*size);
-        for(int i = 0; i < size; i++) {
-            menu->row_title[i] = malloc(sizeof(char)*32);
-            menu->row_subtitle[i] = malloc(sizeof(char)*32);
-            menu->data_char[i] = malloc(sizeof(char)*32);
-        }
-        menu->data_int = malloc(sizeof(int)*size);
-    }
+    if(menu->id == incoming_id) {
 
-    if(menu->size != size && menu->size != 0) {
-        if(menu->size > size) {
-            for(int i = size; i < menu->size; i++) {
-                free(menu->row_title[i]);
-                free(menu->row_subtitle[i]);
-                free(menu->data_char[i]);
-            }
-        }
-        
-        menu->row_title = realloc(menu->row_title, sizeof(char*)*size);
-        menu->row_subtitle = realloc(menu->row_subtitle, sizeof(char*)*size);
-        menu->data_char = realloc(menu->data_char, sizeof(char*)*size);
-
-        if(menu->size < size) {
-            for(int i = menu->size; i < size; i++) {
+        if(menu->size == 0) {
+            menu->title = malloc(sizeof(char)*32);
+            menu->row_title = malloc(sizeof(char*)*size);
+            menu->row_subtitle = malloc(sizeof(char*)*size);
+            menu->data_char = malloc(sizeof(char*)*size);
+            for(int i = 0; i < size; i++) {
                 menu->row_title[i] = malloc(sizeof(char)*32);
                 menu->row_subtitle[i] = malloc(sizeof(char)*32);
                 menu->data_char[i] = malloc(sizeof(char)*32);
             }
+            menu->data_int = malloc(sizeof(int)*size);
         }
 
-        menu->data_int = realloc(menu->data_int, sizeof(int)*size);
+        if(menu->size != size && menu->size != 0) {
+            if(menu->size > size) {
+                for(int i = size; i < menu->size; i++) {
+                    free(menu->row_title[i]);
+                    free(menu->row_subtitle[i]);
+                    free(menu->data_char[i]);
+                }
+            }
+            
+            menu->row_title = realloc(menu->row_title, sizeof(char*)*size);
+            menu->row_subtitle = realloc(menu->row_subtitle, sizeof(char*)*size);
+            menu->data_char = realloc(menu->data_char, sizeof(char*)*size);
+
+            if(menu->size < size) {
+                for(int i = menu->size; i < size; i++) {
+                    menu->row_title[i] = malloc(sizeof(char)*32);
+                    menu->row_subtitle[i] = malloc(sizeof(char)*32);
+                    menu->data_char[i] = malloc(sizeof(char)*32);
+                }
+            }
+
+            menu->data_int = realloc(menu->data_int, sizeof(int)*size);
+        }
+
+        menu->size = size;
+        memcpy(menu->title, title, 32);
+        memcpy(menu->row_title[index], row_title, 32);
+        memcpy(menu->row_subtitle[index], row_subtitle, 32);
+        
+        if(data_char != NULL)
+            memcpy(menu->data_char[index], data_char, 32);
+
+        int *temp = menu->data_int;
+        temp[index] = data_int;
+
+
+        updates++;
+        if(updates >= size) {
+            updates = 0;
+            menu_layer_reload_data(menu->layer);
+            menu_hide_load_image(menu);
+        }
     }
-
-    menu->size = size;
-    memcpy(menu->title, title, 32);
-    memcpy(menu->row_title[index], row_title, 32);
-    memcpy(menu->row_subtitle[index], row_subtitle, 32);
-    
-    if(data_char != NULL)
-        memcpy(menu->data_char[index], data_char, 32);
-
-    int *temp = menu->data_int;
-    temp[index] = data_int;
 }
 
 void menu_hide_load_image(Menu *menu) {

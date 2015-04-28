@@ -14,9 +14,11 @@ enum SLKey {
 };
 
 char *event_data_char = "Favorites";
-void (*update_ptr)(int, int, char*, int, char*, char*, int, char*);
+void (*update_ptr)(void*, int, int, char*, int, char*, char*, int, char*);
+void **view_ptr;
 
-void event_set_view_update(void (*update)(int, int, char*, int, char*, char*, int, char*)) {
+void event_set_view_update(void *view, void (*update)(void*, int, int, char*, int, char*, char*, int, char*)) {
+    view_ptr = view;
     update_ptr = update;
 }
 
@@ -57,7 +59,7 @@ void in_received_handler(DictionaryIterator *iter, void *context) {
             memcpy(title, station_tuple->value->cstring, station_tuple->length);
 
             //APP_LOG(APP_LOG_LEVEL_INFO, "Startmenu: number of rows %d of %d", loaded_rows, nr_station_variable);
-            update_ptr(package_tuple->value->uint8, size, event_data_char, index, title, "", 0, NULL);
+            update_ptr(*view_ptr, package_tuple->value->uint8, size, event_data_char, index, title, "", 0, NULL);
             break;
 
             //Receive depatures
@@ -74,7 +76,7 @@ void in_received_handler(DictionaryIterator *iter, void *context) {
             memcpy(subtitle, to_tuple->value->cstring, to_tuple->length);
             
             //APP_LOG(APP_LOG_LEVEL_INFO, "Station: number of rows %d of %d", loaded_rows, nr_ride_variable);
-            update_ptr(package_tuple->value->uint8, size, event_data_char, index, title, subtitle, min_tuple->value->uint8, data_char);
+            update_ptr(*view_ptr, package_tuple->value->uint8, size, event_data_char, index, title, subtitle, min_tuple->value->uint8, data_char);
             
             break;
 
@@ -85,7 +87,7 @@ void in_received_handler(DictionaryIterator *iter, void *context) {
             memcpy(subtitle, error_subtitle_tuple->value->cstring, error_subtitle_tuple->length);
 
             tick_timer_service_unsubscribe();
-            update_ptr(package_tuple->value->uint8, 1, "Error", 0, title, subtitle, 0, NULL);
+            update_ptr(*view_ptr, package_tuple->value->uint8, 1, "Error", 0, title, subtitle, 0, NULL);
 
             break;
 
