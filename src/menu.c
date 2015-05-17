@@ -60,8 +60,8 @@ void selection_changed_callback(struct MenuLayer *menu_layer, MenuIndex new_inde
         
 }
 
-void menu_load_persistent(Menu *menu) {
-    if(persist_exists(0) && persist_read_int(0) > 0) {
+bool load_persistent(Menu *menu) {
+    if(menu->id == 0 && persist_exists(0) && persist_read_int(0) > 0) {
         int size = persist_read_int(0);
         
         menu->title = malloc(sizeof(char)*32);
@@ -83,10 +83,9 @@ void menu_load_persistent(Menu *menu) {
             menu->size = size;
         } 
 
-        menu_layer_reload_data(menu->layer);
-        menu_hide_load_image(menu);
-
-    }  
+        return true;
+    } 
+    return false;
 }
 
 void store_persistent(Menu *menu) {
@@ -160,6 +159,16 @@ void window_unload(Window *window) {
     free(menu);
 }
 
+void hide_load_image(Menu *menu, bool vibe) {
+    if(!layer_get_hidden(bitmap_layer_get_layer(menu->load_layer))) {
+        menu_layer_reload_data(menu->layer);
+        layer_set_hidden(bitmap_layer_get_layer(menu->load_layer), true);
+        menu_layer_set_click_config_onto_window(menu->layer, menu->window);
+        if(vibe)
+            vibes_short_pulse();
+    }
+}
+
 void menu_update(void *menu_void, int incoming_id, int size, char *title, int index, char *row_title, char *row_subtitle, int data_int, char *data_char) {
     Menu *menu = (Menu*)menu_void;
     
@@ -218,20 +227,11 @@ void menu_update(void *menu_void, int incoming_id, int size, char *title, int in
         if(updates >= size) {
             updates = 0;
             menu_layer_reload_data(menu->layer);
-            menu_hide_load_image(menu);
+            hide_load_image(menu, true);
             if(menu->id == 0)
                 store_persistent(menu);
         }
 
-    }
-}
-
-void menu_hide_load_image(Menu *menu) {
-    if(!layer_get_hidden(bitmap_layer_get_layer(menu->load_layer))) {
-        menu_layer_reload_data(menu->layer);
-        layer_set_hidden(bitmap_layer_get_layer(menu->load_layer), true);
-        menu_layer_set_click_config_onto_window(menu->layer, menu->window);
-        vibes_short_pulse();
     }
 }
 
@@ -243,6 +243,8 @@ Menu* menu_create(uint32_t load_image_resource_id, MenuCallbacks callbacks) {
     menu->size = 0;
     menu->id = new_id++;
 
+    bool loaded_persistant = load_persistent(menu);
+
     window_set_user_data(menu->window, menu);
 
     window_set_window_handlers(menu->window, (WindowHandlers) {
@@ -251,6 +253,8 @@ Menu* menu_create(uint32_t load_image_resource_id, MenuCallbacks callbacks) {
     });
 
     window_stack_push(menu->window, true);
+    if(loaded_persistant)
+        hide_load_image(menu, false);    
 
     return menu;
 }

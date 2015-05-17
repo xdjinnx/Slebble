@@ -130,8 +130,6 @@ int main(void) {
 
     scroll_timer = app_timer_register(500, &text_scroll_handler, NULL);
 
-    menu_load_persistent(menu);
-
     app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
     app_comm_set_sniff_interval(SNIFF_INTERVAL_REDUCED);
 
