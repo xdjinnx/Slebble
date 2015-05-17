@@ -60,6 +60,40 @@ void selection_changed_callback(struct MenuLayer *menu_layer, MenuIndex new_inde
         
 }
 
+void menu_load_persistent(Menu *menu) {
+    if(persist_exists(0) && persist_read_int(0) > 0) {
+        int size = persist_read_int(0);
+        
+        menu->title = malloc(sizeof(char)*32);
+        menu->row_title = malloc(sizeof(char*)*size);
+        menu->row_subtitle = malloc(sizeof(char*)*size);
+        menu->data_char = malloc(sizeof(char*)*size);
+        for(int i = 0; i < size; i++) {
+            menu->row_title[i] = malloc(sizeof(char)*32);
+            menu->row_subtitle[i] = malloc(sizeof(char)*32);
+            menu->data_char[i] = malloc(sizeof(char)*32);
+        }
+        menu->data_int = malloc(sizeof(int)*size);
+
+
+        for(int i = 1; persist_exists(i); i++) {
+            persist_read_string(i, menu->row_title[i], 32);
+            snprintf(menu->title, 32, "%s", "Favorites");
+            snprintf(menu->row_subtitle[i], 32, "%s", "");
+        } 
+
+        menu_layer_reload_data(menu->layer);
+        menu_hide_load_image(menu);
+
+    }  
+}
+
+void menu_store_persistent(Menu *menu) {
+    persist_write_int(0, menu->size);
+    for(int i = 0; i < menu->size; i++)
+        persist_write_string(i+1, menu->row_title[i]);
+}
+
 void window_load(Window *window) {
     updates = 0;
     prev_index = 0;
@@ -185,6 +219,8 @@ void menu_update(void *menu_void, int incoming_id, int size, char *title, int in
             menu_layer_reload_data(menu->layer);
             menu_hide_load_image(menu);
         }
+        if(menu->id == 0)
+            menu_store_persistent(menu);
     }
 }
 
