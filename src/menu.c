@@ -77,9 +77,10 @@ void menu_load_persistent(Menu *menu) {
 
 
         for(int i = 1; persist_exists(i); i++) {
-            persist_read_string(i, menu->row_title[i], 32);
+            persist_read_string(i, menu->row_title[i-1], 32);
             snprintf(menu->title, 32, "%s", "Favorites");
-            snprintf(menu->row_subtitle[i], 32, "%s", "");
+            snprintf(menu->row_subtitle[i-1], 32, "%s", "");
+            menu->size = size;
         } 
 
         menu_layer_reload_data(menu->layer);
@@ -88,7 +89,7 @@ void menu_load_persistent(Menu *menu) {
     }  
 }
 
-void menu_store_persistent(Menu *menu) {
+void store_persistent(Menu *menu) {
     persist_write_int(0, menu->size);
     for(int i = 0; i < menu->size; i++)
         persist_write_string(i+1, menu->row_title[i]);
@@ -218,9 +219,10 @@ void menu_update(void *menu_void, int incoming_id, int size, char *title, int in
             updates = 0;
             menu_layer_reload_data(menu->layer);
             menu_hide_load_image(menu);
+            if(menu->id == 0)
+                store_persistent(menu);
         }
-        if(menu->id == 0)
-            menu_store_persistent(menu);
+
     }
 }
 

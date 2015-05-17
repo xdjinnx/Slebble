@@ -31,7 +31,6 @@ extern Menu* menu_create(uint32_t load_image_resource_id, MenuCallbacks callback
 extern void menu_update(void *menu, int incoming_id, int size, char *title, int index, char *row_title, char *row_subtitle, int data_int, char *data_char);
 extern void menu_hide_load_image(Menu *menu);
 extern void menu_load_persistent(Menu *menu);
-extern void menu_store_persistent(Menu *menu);
 
 
 extern int text_scroll;
