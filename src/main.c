@@ -134,4 +134,6 @@ int main(void) {
     app_comm_set_sniff_interval(SNIFF_INTERVAL_REDUCED);
 
     app_event_loop();
+    
+    app_message_deregister_callbacks();
 }

@@ -170,8 +170,11 @@ void hide_load_image(Menu *menu, bool vibe) {
 }
 
 void menu_update(void *menu_void, int incoming_id, int size, char *title, int index, char *row_title, char *row_subtitle, int data_int, char *data_char) {
+    if(menu_void == NULL)
+        return;
+
     Menu *menu = (Menu*)menu_void;
-    
+
     if(menu->id == incoming_id) {
 
         if(menu->size == 0) {
