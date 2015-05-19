@@ -2,6 +2,7 @@
 
 int updates = 0;
 int new_id = 0;
+AppTimer *scroll_timer;
 int text_scroll = -2;
 uint prev_index = 0;
 
@@ -48,16 +49,34 @@ void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuIndex *c
     }
 }
 
-void selection_changed_callback(struct MenuLayer *menu_layer, MenuIndex new_index, MenuIndex old_index, void *data) {
+void text_scroll_handler(void *data) {
+    Menu* menu = *((Menu**)data);
+    MenuIndex selected_item = menu_layer_get_selected_index(menu->layer);
+
+    if(menu->size > 0) {
+        char current_char = *(menu->row_title[selected_item.row]+((uint)text_scroll*sizeof(char)));
+        //Fixes åäö edge case
+        if(current_char == 195)
+            text_scroll++;
+    }
     
-    Menu* menu = data;
-    if(new_index.row != prev_index) {
-        prev_index = new_index.row;
+    if(!(menu->id == 0 && selected_item.section == 0))
+        text_scroll++;
+    
+    if(menu->size > 0 && text_scroll > ((int)strlen(menu->row_title[selected_item.row])) - 17)
+        text_scroll = -2;
+
+    if(menu->id == 0 && selected_item.section == 0)
+        text_scroll = -2;
+
+    if(selected_item.row != prev_index) {
+        prev_index = selected_item.row;
         text_scroll = -2;
     }
-    if(menu->id == 0 && new_index.section == 0)
-        text_scroll = -2;
-        
+
+    menu_layer_reload_data(menu->layer);
+    scroll_timer = app_timer_register(500, &text_scroll_handler, data);
+    
 }
 
 bool load_persistent(Menu *menu) {
@@ -96,8 +115,6 @@ void store_persistent(Menu *menu) {
 
 void window_load(Window *window) {
     updates = 0;
-    prev_index = 0;
-    text_scroll = -2;
 
     Menu* menu = window_get_user_data(window);
 
@@ -113,7 +130,6 @@ void window_load(Window *window) {
             .draw_header = menu_draw_header_callback,
             .draw_row = menu_draw_row_callback,
             .select_click = menu->callbacks.select_click,
-            .selection_changed = selection_changed_callback,
     });
 
     menu->load_image = gbitmap_create_with_resource(menu->load_image_resource_id);
@@ -161,6 +177,8 @@ void window_unload(Window *window) {
 
 void hide_load_image(Menu *menu, bool vibe) {
     if(!layer_get_hidden(bitmap_layer_get_layer(menu->load_layer))) {
+        prev_index = 0;
+        text_scroll = -2;
         menu_layer_reload_data(menu->layer);
         layer_set_hidden(bitmap_layer_get_layer(menu->load_layer), true);
         menu_layer_set_click_config_onto_window(menu->layer, menu->window);
@@ -236,6 +254,13 @@ void menu_update(void *menu_void, int incoming_id, int size, char *title, int in
         }
 
     }
+}
+
+void menu_init_text_scroll(Menu **menu) {
+    scroll_timer = app_timer_register(500, &text_scroll_handler, menu);
+}
+void menu_deinit_text_scroll() {
+    app_timer_cancel(scroll_timer);
 }
 
 Menu* menu_create(uint32_t load_image_resource_id, MenuCallbacks callbacks) {

@@ -3,7 +3,6 @@
 #include "event.h"
 
 Menu *menu;
-AppTimer *scroll_timer;
 bool first_tick = false;
 
 void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
@@ -24,30 +23,6 @@ void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
         
     }
     first_tick = true;
-}
-
-
-void text_scroll_handler(void *data) {
-    
-    MenuIndex selected_item = menu_layer_get_selected_index(menu->layer);
-
-    if(menu->size > 0) {
-        char current_char = *(menu->row_title[selected_item.row]+((uint)text_scroll*sizeof(char)));
-        //Fixes åäö edge case
-        if(current_char == 195)
-            text_scroll++;
-    }
-    
-    if(!(menu->id == 0 && selected_item.section == 0))
-        text_scroll++;
-    
-    if(menu->size > 0 && text_scroll > ((int)strlen(menu->row_title[selected_item.row])) - 17)
-        text_scroll = -2;
-
-    
-    menu_layer_reload_data(menu->layer);
-    scroll_timer = app_timer_register(500, &text_scroll_handler, NULL);
-    
 }
 
 
@@ -128,7 +103,7 @@ int main(void) {
 
     event_set_view_update(&menu, &menu_update);
 
-    scroll_timer = app_timer_register(500, &text_scroll_handler, NULL);
+    menu_init_text_scroll(&menu);
 
     app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
     app_comm_set_sniff_interval(SNIFF_INTERVAL_REDUCED);
@@ -136,4 +111,5 @@ int main(void) {
     app_event_loop();
     
     app_message_deregister_callbacks();
+    menu_deinit_text_scroll();
 }
