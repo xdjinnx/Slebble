@@ -136,4 +136,5 @@ int main(void) {
     app_event_loop();
     
     app_message_deregister_callbacks();
+    app_timer_cancel(scroll_timer);
 }
