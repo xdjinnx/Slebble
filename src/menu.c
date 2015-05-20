@@ -49,6 +49,18 @@ void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuIndex *c
     }
 }
 
+void selection_changed_callback(struct MenuLayer *menu_layer, MenuIndex new_index, MenuIndex old_index, void *data) {
+    
+    Menu* menu = data;
+    if(new_index.row != prev_index) {
+        prev_index = new_index.row;
+        text_scroll = -2;
+    }
+    if(menu->id == 0 && new_index.section == 0)
+        text_scroll = -2;
+        
+}
+
 void text_scroll_handler(void *data) {
     Menu* menu = *((Menu**)data);
     MenuIndex selected_item = menu_layer_get_selected_index(menu->layer);
@@ -65,14 +77,6 @@ void text_scroll_handler(void *data) {
     
     if(menu->size > 0 && text_scroll > ((int)strlen(menu->row_title[selected_item.row])) - 17)
         text_scroll = -2;
-
-    if(menu->id == 0 && selected_item.section == 0)
-        text_scroll = -2;
-
-    if(selected_item.row != prev_index) {
-        prev_index = selected_item.row;
-        text_scroll = -2;
-    }
 
     menu_layer_reload_data(menu->layer);
     scroll_timer = app_timer_register(500, &text_scroll_handler, data);
@@ -130,6 +134,7 @@ void window_load(Window *window) {
             .draw_header = menu_draw_header_callback,
             .draw_row = menu_draw_row_callback,
             .select_click = menu->callbacks.select_click,
+            .selection_changed = selection_changed_callback,
     });
 
     menu->load_image = gbitmap_create_with_resource(menu->load_image_resource_id);
