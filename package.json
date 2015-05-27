@@ -1,7 +1,7 @@
 {
-  "name": "Slebble2",
-  "version": "1.0.0",
-  "description": "Slebble",
+  "name": "Slebble",
+  "version": "2.2",
+  "description": "Public transportation watchapp for Pebble smartwatch",
   "devDependencies": {
     "chai": "^2.2.0",
     "gulp": "^3.8.11",
@@ -21,7 +21,7 @@
     "url": "https://github.com/xdjinnx/Slebble.git"
   },
   "author": "",
-  "license": "GPLv3",
+  "license": "GPLv2",
   "bugs": {
     "url": "https://github.com/xdjinnx/Slebble/issues"
   },
