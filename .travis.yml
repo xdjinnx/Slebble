@@ -1,0 +1,18 @@
+language: python
+
+script:
+- pebble-dev/${PEBBLE_SDK}/bin/pebble build
+
+before_install:
+- wget http://assets.getpebble.com.s3-website-us-east-1.amazonaws.com/sdk2/${PEBBLE_SDK}.tar.gz -O PebbleSDK.tar.gz
+- wget http://assets.getpebble.com.s3-website-us-east-1.amazonaws.com/sdk/arm-cs-tools-ubuntu-universal.tar.gz
+- mkdir pebble-dev
+- tar -zxf PebbleSDK.tar.gz -C pebble-dev
+- tar -zxf arm-cs-tools-ubuntu-universal.tar.gz -C pebble-dev/${PEBBLE_SDK}
+
+install:
+- "pip install -r pebble-dev/${PEBBLE_SDK}/requirements.txt"
+
+env:
+  global:
+  - PEBBLE_SDK=PebbleSDK-3.0-beta12
