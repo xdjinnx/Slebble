@@ -1,6 +1,6 @@
 {
   "name": "Slebble",
-  "version": "2.2",
+  "version": "2.2.0",
   "description": "Public transportation watchapp for Pebble smartwatch",
   "devDependencies": {
     "chai": "^2.2.0",
