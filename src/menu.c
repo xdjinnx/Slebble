@@ -6,6 +6,9 @@ AppTimer *scroll_timer;
 int text_scroll = -2;
 uint prev_index = 0;
 
+#ifdef PBL_SDK_3
+StatusBarLayer *status_bar;
+#endif
 
 uint16_t menu_get_num_sections_callback(MenuLayer *menu_layer, void *data) {
     Menu* menu = data;
@@ -125,7 +128,17 @@ void window_load(Window *window) {
     Layer *window_layer = window_get_root_layer(window);
     GRect bounds = layer_get_frame(window_layer);
 
+#ifdef PBL_SDK_3
+    GRect menu_bounds = GRect(
+            bounds.origin.x,
+            bounds.origin.y + STATUS_BAR_LAYER_HEIGHT,
+            bounds.size.w,
+            bounds.size.h - STATUS_BAR_LAYER_HEIGHT
+    );
+    menu->layer = menu_layer_create(menu_bounds);
+#else
     menu->layer = menu_layer_create(bounds);
+#endif
 
     menu_layer_set_callbacks(menu->layer, menu, (MenuLayerCallbacks){
             .get_num_sections = menu_get_num_sections_callback,
@@ -145,6 +158,11 @@ void window_load(Window *window) {
     layer_add_child(window_layer, menu_layer_get_layer(menu->layer));
     layer_add_child(window_layer, bitmap_layer_get_layer(menu->load_layer));
 
+#ifdef PBL_SDK_3
+    // Set up the status bar last to ensure it is on top of other Layers
+    status_bar = status_bar_layer_create();
+    layer_add_child(window_layer, status_bar_layer_get_layer(status_bar));
+#endif
 }
 
 void window_unload(Window *window) {
@@ -178,6 +196,9 @@ void window_unload(Window *window) {
     }
 
     free(menu);
+#ifdef PBL_SDK_3
+    free(status_bar);
+#endif
 }
 
 void hide_load_image(Menu *menu, bool vibe) {
