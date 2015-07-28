@@ -15,9 +15,9 @@ install:
 - pip install -r pebble-dev/${PEBBLE_SDK}/requirements.txt
 - npm install
 - export PATH=$(pwd)/pebble-dev/${PEBBLE_SDK}/bin:$PATH
-
+- touch pebble-dev/NO_TRACKING
 
 
 env:
   global:
-  - PEBBLE_SDK=PebbleSDK-3.0-beta12
+  - PEBBLE_SDK=PebbleSDK-3.2
