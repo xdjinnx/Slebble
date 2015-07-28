@@ -1,5 +1,8 @@
 language: python
 
+# adding this meanwhile to build with containers http://docs.travis-ci.com/user/migrating-from-legacy
+sudo: false
+
 script:
 - ./node_modules/.bin/gulp
 
