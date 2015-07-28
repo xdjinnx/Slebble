@@ -136,8 +136,10 @@ void window_load(Window *window) {
             bounds.size.h - STATUS_BAR_LAYER_HEIGHT
     );
     menu->layer = menu_layer_create(menu_bounds);
+    menu->load_layer = bitmap_layer_create(menu_bounds);
 #else
     menu->layer = menu_layer_create(bounds);
+    menu->load_layer = bitmap_layer_create(bounds);
 #endif
 
     menu_layer_set_callbacks(menu->layer, menu, (MenuLayerCallbacks){
@@ -151,18 +153,12 @@ void window_load(Window *window) {
     });
 
     menu->load_image = gbitmap_create_with_resource(menu->load_image_resource_id);
-    menu->load_layer = bitmap_layer_create(bounds);
     bitmap_layer_set_background_color(menu->load_layer, GColorWhite);
     bitmap_layer_set_bitmap(menu->load_layer, menu->load_image);
 
     layer_add_child(window_layer, menu_layer_get_layer(menu->layer));
     layer_add_child(window_layer, bitmap_layer_get_layer(menu->load_layer));
 
-#ifdef PBL_SDK_3
-    // Set up the status bar last to ensure it is on top of other Layers
-    status_bar = status_bar_layer_create();
-    layer_add_child(window_layer, status_bar_layer_get_layer(status_bar));
-#endif
 }
 
 void window_unload(Window *window) {
@@ -194,10 +190,20 @@ void window_unload(Window *window) {
         free(menu->data_int);
         free(menu->data_char);
     }
+    
+#ifdef PBL_SDK_3
+    if(ret == NULL)
+        status_bar_layer_destroy(status_bar);
+#endif
 
     free(menu);
+}
+
+void window_appear(Window *window) {
 #ifdef PBL_SDK_3
-    free(status_bar);
+    if(status_bar == NULL)
+        status_bar = status_bar_layer_create();
+    layer_add_child(window_get_root_layer(window), status_bar_layer_get_layer(status_bar));
 #endif
 }
 
@@ -304,7 +310,10 @@ Menu* menu_create(uint32_t load_image_resource_id, MenuCallbacks callbacks) {
     window_set_window_handlers(menu->window, (WindowHandlers) {
             .load = window_load,
             .unload = window_unload,
+            .appear = window_appear,
     });
+
+    //window_set_background_color(menu->window, GColorClear);
 
     window_stack_push(menu->window, true);
     if(loaded_persistant)
