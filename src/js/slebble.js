@@ -1,5 +1,7 @@
-module.exports = (function(Pebble, navigator) {
+module.exports = (function(navigator) {
   'use strict';
+
+  var appmessage = require("./appmessage.js");
 
   var _key = {};
   _key.slReal3 = '190079364ffe4e278f7e27dabd6dce6c';
@@ -34,21 +36,15 @@ module.exports = (function(Pebble, navigator) {
     return 'https://api.trafiklab.se/samtrafiken/resrobot/StationsInZone.json?key=' + _key.resrobot + '&centerX=' + long + '&centerY=' + lat + '&radius=500&coordSys=WGS84&apiVersion=2.1';
   };
 
-  var _appMessageError = function(title, subtitle, packageKey) {
-    console.log('sending error '+title+' '+subtitle);
-    Pebble.sendAppMessage({
-        '0': 3,
-        '1': 0,
-        '5': 1,
-        '7': title,
-        '8': subtitle,
-        '9': packageKey
-      },
-      function() {},
-      function() {
-        setTimeout(function(){ _appMessageError(title, subtitle, packageKey); }, 100);
-      }
-    );
+  /**
+   * Load config object
+   * @param config Json object
+   */
+  var _loadConfig = function(config) {
+    console.log('Loading config..');
+    _config = config;
+    _provider = config.provider;
+    _maxDepatures = parseInt(config.maxDepatures);
   };
 
   /**
@@ -71,18 +67,11 @@ module.exports = (function(Pebble, navigator) {
         } else {
           console.log('XHR Error');
           console.log(xhr.status);
-          _appMessageError('ERROR', xhr.status, _packageKey++);
+          appmessage.appMessageError('ERROR', xhr.status, _packageKey++);
         }
       }
     };
     xhr.send();
-  };
-
-  var _requestSLRealtime = function(siteid, packageKey) {
-    if(typeof packageKey === 'undefined')
-      _xhr(_url.slReal3(siteid), _SLRealtimeCallback);
-    else
-      _xhr(_url.slReal3(siteid), _SLRealtimeCallback, packageKey);
   };
 
   var _SLRealtimeCallback = function(resp, packageKey) {
@@ -123,7 +112,7 @@ module.exports = (function(Pebble, navigator) {
     alldeps = alldeps.sort(_slTimeSort);
 
     if (alldeps.length < 1){
-      _appMessageError('No rides available', 'Try again later', _packageKey++);
+      appmessage.appMessageError('No rides available', 'Try again later', _packageKey++);
       return;
     }
 
@@ -137,8 +126,7 @@ module.exports = (function(Pebble, navigator) {
 
     if(typeof packageKey === 'undefined')
       packageKey = _packageKey++;
-    _addRide(alldeps.slice(0, numberToAdd), packageKey);
-
+    appmessage.addRide(alldeps.slice(0, numberToAdd), packageKey);
 
     _lastRequest = _requestSLRealtime;
 
@@ -149,8 +137,7 @@ module.exports = (function(Pebble, navigator) {
       return 0;
     if(a.displayTime < b.displayTime)
       return -1;
-    else
-      return 1;
+    return 1;
   };
 
   /**
@@ -173,22 +160,14 @@ module.exports = (function(Pebble, navigator) {
           return true;
       }
       return false;
-    } else {
-      return true;
     }
-  };
-
-  var _requestResrobot = function(siteid, packageKey) {
-    if(typeof packageKey === 'undefined')
-      _xhr(_url.resrobot(siteid), _resrobotCallback);
-    else
-      _xhr(_url.resrobot(siteid), _resrobotCallback, packageKey);
+    return true;
   };
 
   var _resrobotCallback = function(resp, packageKey) {
     // check for empty response
     if (resp === '{"getdeparturesresult":{}}') {
-      _appMessageError('No rides available', 'Try again later', _packageKey++);
+      appmessage.appMessageError('No rides available', 'Try again later', _packageKey++);
       return;
     }
 
@@ -225,32 +204,41 @@ module.exports = (function(Pebble, navigator) {
 
     if(typeof packageKey === 'undefined')
       packageKey = _packageKey++;
-    _addRide(alldeps.slice(0, batchLength), packageKey);
+    appmessage.addRide(alldeps.slice(0, batchLength), packageKey);
 
     _lastRequest = _requestResrobot;
   };
 
-
-  var _addRide = function(depatureList, packageKey) {
-    if(depatureList.length < 1)
-      return;
-    Pebble.sendAppMessage({
-        '0': 2,
-        '1': depatureList[0].index,
-        '3': depatureList[0].time,
-        '4': depatureList[0].number + ' ' + depatureList[0].destination,
-        '5': depatureList[0].nr,
-        '6': depatureList[0].displayTime,
-        '9': packageKey
-      },
-      function() {
-        depatureList.shift();
-        _addRide(depatureList, packageKey);
-      },
-      function() {
-        setTimeout(function(){ _addRide(depatureList, packageKey); }, 100);
+  var _resrobotGeoCallback = function(resp) {
+    //console.log(resp);
+    if(resp !== '{"stationsinzoneresult":{}}') {
+      var response = JSON.parse(resp);
+      var stations = [];
+      _nearbyStations = [];
+      if( Object.prototype.toString.call( response.stationsinzoneresult.location ) === '[object Array]' ) {
+        var batchLength = response.stationsinzoneresult.location.length > 5 ? 5:response.stationsinzoneresult.location.length;
+        for(var i = 0; i < batchLength; i++) {
+          var ad = {};
+          ad.index = i;
+          ad.from = response.stationsinzoneresult.location[i].name;
+          ad.nr = batchLength;
+          stations.push(ad);
+          _nearbyStations.push(response.stationsinzoneresult.location[i]['@id']);
+        }
+      } else {
+        var ad = {};
+        ad.index = 0;
+        ad.from = response.stationsinzoneresult.location.name;
+        ad.nr = 1;
+        stations.push(ad);
+        _nearbyStations = [response.stationsinzoneresult.location['@id']];
       }
-    );
+
+      appmessage.addStation(stations, _packageKey++);
+    
+    } else {
+      appmessage.appMessageError('No nearby stations', '', _packageKey++);
+    }
   };
 
   /**
@@ -303,6 +291,53 @@ module.exports = (function(Pebble, navigator) {
 
   }
 
+  var _requestSLRealtime = function(siteid, packageKey) {
+    if(typeof packageKey === 'undefined')
+      _xhr(_url.slReal3(siteid), _SLRealtimeCallback);
+    else
+      _xhr(_url.slReal3(siteid), _SLRealtimeCallback, packageKey);
+  };
+
+  var _requestResrobot = function(siteid, packageKey) {
+    if(typeof packageKey === 'undefined')
+      _xhr(_url.resrobot(siteid), _resrobotCallback);
+    else
+      _xhr(_url.resrobot(siteid), _resrobotCallback, packageKey);
+  };
+
+  var _requestNearbyStations = function(latitude, longitude) {
+    _xhr(_url.resrobotGeo(longitude, latitude), _resrobotGeoCallback);
+  };
+
+  /**
+   * Request rides
+   * @param index Station index
+   */
+   var _requestRides = function(index, step) {
+    _queryIndex = index;
+    if(step === 0) {
+      _queryId = _config.route[index].locationid;
+      _nearbyStations = [];
+    }
+    else
+      _queryId = _nearbyStations[index];
+
+    if (_provider === 'sl' && step === 0) {
+      _requestSLRealtime(_queryId);
+    }
+    else
+      _requestResrobot(_queryId);
+    
+  };
+
+  var _requestUpdate = function() {
+    _lastRequest(_queryId, _packageKey-1);
+  }
+
+  var _requestGeoRides = function() {
+    navigator.geolocation.getCurrentPosition(_locationSuccess, _locationError, _locationOptions);
+  };
+
   /**
    * Callback from location service on success
    * @param pos
@@ -320,116 +355,15 @@ module.exports = (function(Pebble, navigator) {
    */
   var _locationError = function(err) {
     console.warn('location error (' + err.code + '): ' + err.message);
-    _appMessageError('Location error', 'Can\'t get your location', _packageKey++);
+    appmessage.appMessageError('Location error', 'Can\'t get your location', _packageKey++);
   };
 
-  var _requestNearbyStations = function(latitude, longitude) {
-    _xhr(_url.resrobotGeo(longitude, latitude), _resrobotGeoCallback);
+  return  {
+    addStation: appmessage.addStation,
+    requestRides: _requestRides,
+    requestUpdate: _requestUpdate,
+    loadConfig: _loadConfig,
+    requestGeoRides: _requestGeoRides
   };
 
-  var _resrobotGeoCallback = function(resp) {
-    //console.log(resp);
-    if(resp !== '{"stationsinzoneresult":{}}') {
-      var response = JSON.parse(resp);
-      var stations = [];
-      _nearbyStations = [];
-      if( Object.prototype.toString.call( response.stationsinzoneresult.location ) === '[object Array]' ) {
-        var batchLength = response.stationsinzoneresult.location.length > 5 ? 5:response.stationsinzoneresult.location.length;
-        for(var i = 0; i < batchLength; i++) {
-          var ad = {};
-          ad.index = i;
-          ad.from = response.stationsinzoneresult.location[i].name;
-          ad.nr = batchLength;
-          stations.push(ad);
-          _nearbyStations.push(response.stationsinzoneresult.location[i]['@id']);
-        }
-      } else {
-        var ad = {};
-        ad.index = 0;
-        ad.from = response.stationsinzoneresult.location.name;
-        ad.nr = 1;
-        stations.push(ad);
-        _nearbyStations = [response.stationsinzoneresult.location['@id']];
-      }
-
-      api.addStation(stations, _packageKey++);
-    
-    } else {
-      _appMessageError('No nearby stations', '', _packageKey++);
-    }
-  };
-
-  // Public api declaration
-  var api = {};
-
-  // export private methods for testability
-  api._test = {};
-  api._test.slTimeSort = _slTimeSort;
-
-  api.addStation = function(stations, packageKey) {
-    //console.log(packageKey);
-    if(stations.length < 1)
-      return;
-    Pebble.sendAppMessage({
-        '0': 1,
-        '1': stations[0].index,
-        '2': stations[0].from,
-        '5': stations[0].nr,
-        '9': packageKey
-      },
-      function() {
-        stations.shift();
-        api.addStation(stations, packageKey);
-      },
-      function() {
-        setTimeout(function(){ api.addStation(stations, packageKey); }, 100);
-      }
-    );
-  };
-
-  /**
-   * Request rides
-   * @param index Station index
-   */
-  api.requestRides = function(index, step) {
-    _queryIndex = index;
-    if(step === 0) {
-      _queryId = _config.route[index].locationid;
-      _nearbyStations = [];
-    }
-    else
-      _queryId = _nearbyStations[index];
-
-    if (_provider === 'sl' && step === 0) {
-      _requestSLRealtime(_queryId);
-    } else if (_provider === 'resrobot') {
-      _requestResrobot(_queryId);
-    } else { // fallback for old users
-      _requestResrobot(_queryId);
-    }
-    
-  };
-
-  api.requestUpdate = function() {
-    _lastRequest(_queryId, _packageKey-1);
-  }
-
-  /**
-   * Load config object
-   * @param config Json object
-   */
-  api.loadConfig = function(config) {
-    console.log('Loading config..');
-    _config = config;
-    _provider = config.provider;
-    _maxDepatures = parseInt(config.maxDepatures);
-  };
-
-  api.requestGeoRides = function() {
-    navigator.geolocation.getCurrentPosition(_locationSuccess, _locationError, _locationOptions);
-  };
-
-  console.log('Slebble js init');
-  return api;
-
-})(Pebble, navigator);
+})(navigator);
