@@ -2,39 +2,24 @@ module.exports = (function(navigator) {
   'use strict';
 
   var appmessage = require("./appmessage.js");
-
-  var _key = {};
-  _key.slReal3 = '190079364ffe4e278f7e27dabd6dce6c';
-  _key.resrobot = 'UacUcP0MlG9fZ0j82r1k5he6KXQ6koSS';
+  var api = require("./api.js");
 
   var _provider = '';
   var _config = {};
   var _maxDepatures = 15;
-  var _queryIndex = 0
+  var _queryIndex = 0;
   var _queryId = 0;
   var _locationOptions = {'timeout': 15000, 'maximumAge': 60000 };
   var _packageKey = 1;
   var _nearbyStations = [];
   var _lastRequest;
+  var _lastCallback;
 
   // Ride Type Constants
   var RT_BUS = 'B';
   var RT_TRAIN = 'J';
   var RT_METRO = 'U';
   var RT_UNKNOWN = '?';
-
-  var _url = {};
-  _url.slReal3 = function(locationid) {
-    //return 'https://api.sl.se/api2/realtimedepartures.json?key=' + _key.slReal3 + '&siteid=' + locationid + '&timewindow=120';
-    // sl has spoky cert?
-    return 'http://api.sl.se/api2/realtimedepartures.json?key=' + _key.slReal3 + '&siteid=' + locationid + '&timewindow=120';
-  };
-  _url.resrobot = function(locationid) {
-    return 'https://api.trafiklab.se/samtrafiken/resrobotstops/GetDepartures.json?key=' + _key.resrobot + '&apiVersion=2.2&locationId=' + locationid + '&coordSys=RT90&timeSpan=120';
-  };
-  _url.resrobotGeo = function(long, lat) {
-    return 'https://api.trafiklab.se/samtrafiken/resrobot/StationsInZone.json?key=' + _key.resrobot + '&centerX=' + long + '&centerY=' + lat + '&radius=500&coordSys=WGS84&apiVersion=2.1';
-  };
 
   /**
    * Load config object
@@ -45,33 +30,6 @@ module.exports = (function(navigator) {
     _config = config;
     _provider = config.provider;
     _maxDepatures = parseInt(config.maxDepatures);
-  };
-
-  /**
-   * Send a GET request to URL with Callback
-   * @param  {string}   url      Url to request
-   * @param  {Function} callback Function to be called if xhr end with status 200
-   * @private
-   */
-  var _xhr = function(url, callback, packageKey) {
-    console.log('Requesting '+url);
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', url, false);
-    xhr.onload = function(e) {
-      if (xhr.readyState === 4) {
-        if (xhr.status === 200) {
-          if(typeof packageKey === 'undefined')
-            callback(xhr.responseText);
-          else
-            callback(xhr.responseText, packageKey);
-        } else {
-          console.log('XHR Error');
-          console.log(xhr.status);
-          appmessage.appMessageError('ERROR', xhr.status, _packageKey++);
-        }
-      }
-    };
-    xhr.send();
   };
 
   var _SLRealtimeCallback = function(resp, packageKey) {
@@ -128,7 +86,8 @@ module.exports = (function(navigator) {
       packageKey = _packageKey++;
     appmessage.addRide(alldeps.slice(0, numberToAdd), packageKey);
 
-    _lastRequest = _requestSLRealtime;
+    _lastRequest = api.requestSLRealtime;
+    _lastCallback = _SLRealtimeCallback;
 
   };
 
@@ -206,7 +165,8 @@ module.exports = (function(navigator) {
       packageKey = _packageKey++;
     appmessage.addRide(alldeps.slice(0, batchLength), packageKey);
 
-    _lastRequest = _requestResrobot;
+    _lastRequest = api.requestResrobot;
+    _lastCallback = _resrobotCallback;
   };
 
   var _resrobotGeoCallback = function(resp) {
@@ -289,24 +249,6 @@ module.exports = (function(navigator) {
 
       return realHour + ":" + zero + realMin;
 
-  }
-
-  var _requestSLRealtime = function(siteid, packageKey) {
-    if(typeof packageKey === 'undefined')
-      _xhr(_url.slReal3(siteid), _SLRealtimeCallback);
-    else
-      _xhr(_url.slReal3(siteid), _SLRealtimeCallback, packageKey);
-  };
-
-  var _requestResrobot = function(siteid, packageKey) {
-    if(typeof packageKey === 'undefined')
-      _xhr(_url.resrobot(siteid), _resrobotCallback);
-    else
-      _xhr(_url.resrobot(siteid), _resrobotCallback, packageKey);
-  };
-
-  var _requestNearbyStations = function(latitude, longitude) {
-    _xhr(_url.resrobotGeo(longitude, latitude), _resrobotGeoCallback);
   };
 
   /**
@@ -323,16 +265,16 @@ module.exports = (function(navigator) {
       _queryId = _nearbyStations[index];
 
     if (_provider === 'sl' && step === 0) {
-      _requestSLRealtime(_queryId);
+      api.requestSLRealtime(_queryId, _SLRealtimeCallback);
     }
     else
-      _requestResrobot(_queryId);
+      api.requestResrobot(_queryId, _resrobotCallback);
     
   };
 
   var _requestUpdate = function() {
-    _lastRequest(_queryId, _packageKey-1);
-  }
+    _lastRequest(_queryId, _lastCallback, _packageKey-1);
+  };
 
   var _requestGeoRides = function() {
     navigator.geolocation.getCurrentPosition(_locationSuccess, _locationError, _locationOptions);
@@ -345,7 +287,7 @@ module.exports = (function(navigator) {
    */
   var _locationSuccess = function(pos) {
     var coordinates = pos.coords;
-    _requestNearbyStations(coordinates.latitude, coordinates.longitude);
+    api.requestNearbyStations(coordinates.latitude, coordinates.longitude, _resrobotGeoCallback);
   };
 
   /**
