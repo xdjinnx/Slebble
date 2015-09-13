@@ -1,9 +1,6 @@
 module.exports = (function(Pebble) {
   'use strict';
 
-/**
-* BUG, only one message sent. Pebble waiting for more.
-**/
   var _addStation = function(stations, packageKey) {
     if(stations.length < 1)
       return;
@@ -15,9 +12,8 @@ module.exports = (function(Pebble) {
         '9': packageKey
       },
       function() {
-        console.log("acc");
         stations.shift();
-        api.addStation(stations, packageKey);
+        _addStation(stations, packageKey);
       },
       function() {
         setTimeout(function(){ api.addStation(stations, packageKey); }, 100);
