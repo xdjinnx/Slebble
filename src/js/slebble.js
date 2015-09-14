@@ -1,4 +1,4 @@
-module.exports = (function(navigator) {
+module.exports = (function() {
   'use strict';
 
   var appmessage = require("./appmessage.js");
@@ -300,7 +300,7 @@ module.exports = (function(navigator) {
     appmessage.appMessageError('Location error', 'Can\'t get your location', _packageKey++);
   };
 
-  return  {
+  var open = {
     addStation: appmessage.addStation,
     requestRides: _requestRides,
     requestUpdate: _requestUpdate,
@@ -308,4 +308,11 @@ module.exports = (function(navigator) {
     requestGeoRides: _requestGeoRides
   };
 
-})(navigator);
+  /* test-block */
+  open.__testonly__ = {};
+  open.__testonly__._slTimeSort = _slTimeSort;
+  /* end-test-block */
+
+  return open;
+
+})();

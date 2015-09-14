@@ -1,4 +1,4 @@
-module.exports = (function(Pebble) {
+module.exports = (function() {
   'use strict';
 
   var _addStation = function(stations, packageKey) {
@@ -66,4 +66,4 @@ module.exports = (function(Pebble) {
   	appMessageError: _appMessageError
   };
 
-})(Pebble);
+})();

@@ -22,6 +22,9 @@ Before you can build the application you need to run [gulp](http://gulpjs.com/).
 
 The most important part of the gulp execution is the [webpack](https://webpack.github.io/) operation that concatinates the js files.
 
+## Testing
+[Jest](https://facebook.github.io/jest/). How we are testing private functions in Slebbles js can be found [here](http://philipwalton.com/articles/how-to-unit-test-private-functions-in-javascript/).
+
 ## License
 
 	Copyright (C) 2014 - 2015  Peter Lundberg

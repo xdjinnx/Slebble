@@ -5,6 +5,7 @@ sudo: false
 
 script:
 - ./node_modules/.bin/gulp
+- npm test
 
 before_install:
 - wget http://assets.getpebble.com.s3-website-us-east-1.amazonaws.com/sdk2/${PEBBLE_SDK}.tar.gz -O PebbleSDK.tar.gz

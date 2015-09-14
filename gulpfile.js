@@ -2,9 +2,10 @@ var gulp = require('gulp'),
     jshint = require('gulp-jshint'),
     shell = require('gulp-shell'),
     stylish = require('jshint-stylish'),
-    webpack = require('gulp-webpack');
+    webpack = require('gulp-webpack'),
+    stripCode = require('gulp-strip-code');
 
-gulp.task('webpack', ['lint'], function() {
+gulp.task('webpack', function() {
   return gulp.src('./src/js/main.js')
     .pipe(webpack({
       output: {
@@ -14,15 +15,24 @@ gulp.task('webpack', ['lint'], function() {
     .pipe(gulp.dest('./src/js/'));
 });
 
-gulp.task('lint', function(){
+gulp.task('lint', ['webpack'],function(){
   return gulp.src('./src/js/pebble-js-app.js')
     .pipe(jshint())
     .pipe(jshint.reporter(stylish));
 });
 
-gulp.task('build', ['webpack'], shell.task([
+gulp.task('strip', ['webpack'],function(){
+  return gulp.src(['./src/js/pebble-js-app.js'])
+    .pipe(stripCode({
+      start_comment: "test-block",
+      end_comment: "end-test-block"
+    }))
+    .pipe(gulp.dest('./src/js'));
+});
+
+gulp.task('build', ['strip'], shell.task([
   'pebble build'
 ]));
 
 // define tasks here
-gulp.task('default', ['webpack', 'lint', 'build']);
+gulp.task('default', ['webpack', 'lint', 'strip', 'build']);
