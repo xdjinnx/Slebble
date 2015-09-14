@@ -17,6 +17,8 @@ before_install:
 install:
 - pip install --install-option="--no-cython-compile" cython
 - pip install -r pebble-dev/${PEBBLE_SDK}/requirements.txt
+- npm install n
+- n stable
 - npm install
 - export PATH=$(pwd)/pebble-dev/${PEBBLE_SDK}/bin:$PATH
 - touch pebble-dev/NO_TRACKING
