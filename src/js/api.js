@@ -22,12 +22,12 @@ module.exports = (function() {
 
   /**
    * Send a GET request to URL with Callback
-   * @param  {string}   url      Url to request
-   * @param  {Function} callback Function to be called if xhr end with status 200
-   * @private
+   * @param  {string}   url        Url to request
+   * @param  {Function} callback   Function to be called if xhr end with status 200
+   * @param  {number}	  packageKey A unique key that a set of messages should have
    */
   var _xhr = function(url, callback, packageKey) {
-    console.log('Requesting '+url);
+    //console.log('Requesting '+url);
     var xhr = new XMLHttpRequest();
     xhr.open('GET', url, false);
     xhr.onload = function(e) {
@@ -47,6 +47,13 @@ module.exports = (function() {
     xhr.send();
   };
 
+  /**
+   * Get depatures from SLReal3 api
+   *
+   * @param {number}   siteid     The unique id for a station
+   * @param {Function} callback   The callback that should handle the response from the api
+   * @param {number}   packageKey A unique key that a set of messages should have
+   */
   var requestSLRealtime = function(siteid, callback, packageKey) {
     if(typeof packageKey === 'undefined')
       _xhr(url.slReal3(siteid), callback);
@@ -54,6 +61,13 @@ module.exports = (function() {
       _xhr(url.slReal3(siteid), callback, packageKey);
   };
 
+  /**
+   * Get depatures from Resrobot stolptidstabeller api
+   *
+   * @param {number}   siteid     The unique id for a station
+   * @param {Function} callback   The callback that should handle the response from the api
+   * @param {number}   packageKey A unique key that a set of messages should have
+   */
   var requestResrobot = function(siteid, callback, packageKey) {
     if(typeof packageKey === 'undefined')
       _xhr(url.resrobot(siteid), callback);
@@ -61,6 +75,12 @@ module.exports = (function() {
       _xhr(url.resrobot(siteid), callback, packageKey);
   };
 
+  /**
+   * Get stations with coordinates from Resrobot api
+   * @param {number} latitude   Latitude coordinate for station
+   * @param {number} longitude  Longitude coordinate for station
+   * @param {Function} callback The callback that should handle the response from the api
+   */
   var requestNearbyStations = function(latitude, longitude, callback) {
     _xhr(url.resrobotGeo(longitude, latitude), callback);
   };
