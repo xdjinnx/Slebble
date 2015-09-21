@@ -1,7 +1,8 @@
-module.exports = (function() {
-  'use strict';
+'use strict';
 
-  var appmessage = require("./appmessage.js");
+var appmessage = require("./appmessage.js");
+
+module.exports = (function() {
 
   var key = {};
   key.slReal3 = '190079364ffe4e278f7e27dabd6dce6c';
@@ -38,9 +39,10 @@ module.exports = (function() {
           else
             callback(xhr.responseText, packageKey);
         } else {
-          console.log('XHR Error');
-          console.log(xhr.status);
+          //console.log('XHR Error');
+          //console.log(xhr.status);
           appmessage.appMessageError('ERROR', xhr.status, packageKey++);
+          console.log(appmessage);
         }
       }
     };
@@ -91,4 +93,4 @@ module.exports = (function() {
   	requestNearbyStations: requestNearbyStations
   };
 
-})();
+}());

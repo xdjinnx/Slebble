@@ -1,8 +1,8 @@
-jest.dontMock('../src/js/slebble.js');
+jest.dontMock('../slebble.js');
+var slebble = require('../slebble.js');
 
 describe('slebble', function() {
- it('check if 1 is less then 2', function() {
-   var slebble = require('../src/js/slebble.js');
+ it('tests a test', function() {
    var a = {displayTime: 1};
    var b = {displayTime: 2};
    expect(slebble.__testonly__._slTimeSort(a, b)).toBe(-1);
