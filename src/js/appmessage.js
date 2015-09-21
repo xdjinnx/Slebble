@@ -16,7 +16,7 @@ module.exports = (function() {
         _addStation(stations, packageKey);
       },
       function() {
-        setTimeout(function(){ api.addStation(stations, packageKey); }, 100);
+        setTimeout(function(){ _addStation(stations, packageKey); }, 100);
       }
     );
   };
