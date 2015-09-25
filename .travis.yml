@@ -14,7 +14,7 @@ before_install:
 - tar -zxf arm-cs-tools-ubuntu-universal.tar.gz -C pebble-dev/${PEBBLE_SDK}
 
 install:
-- nvm install 4.0
+- nvm install 4.1
 - pip install --install-option="--no-cython-compile" cython
 - pip install -r pebble-dev/${PEBBLE_SDK}/requirements.txt
 - npm install
@@ -24,4 +24,4 @@ install:
 
 env:
   global:
-  - PEBBLE_SDK=PebbleSDK-3.2
+  - PEBBLE_SDK=PebbleSDK-3.4

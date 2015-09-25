@@ -14,8 +14,8 @@
 ## Build & Install
 You will need to download and install the Pebble SDK found on the [official Pebble developer website](https://developer.getpebble.com/sdk/install/). It's also recommended that you follow the instructions found on the website.
 
-### No Pebble watch needed (in theory)
-There is an emulator available to use within the Pebble SDK, the only problem is that the config page doesn't work on emulator.
+### No Pebble watch needed
+There is an emulator available to use within the Pebble SDK. Instruction on how to use the emulator can be found [here](https://developer.getpebble.com/guides/publishing-tools/pebble-tool/#installing-watchapps) and how to use the settings page can be found [here](https://developer.getpebble.com/guides/pebble-apps/pebblekit-js/app-configuration/#testing-in-the-sdk-emulator).
 
 ### Gulp
 Before you can build the application you need to run [gulp](http://gulpjs.com/). Gulp installation instructions can be found [here](https://github.com/gulpjs/gulp/blob/master/docs/getting-started.md).
@@ -23,7 +23,9 @@ Before you can build the application you need to run [gulp](http://gulpjs.com/).
 The most important part of the gulp execution is the [webpack](https://webpack.github.io/) operation that concatinates the js files.
 
 ## Testing
-[Jest](https://facebook.github.io/jest/). How we are testing private functions in Slebbles js can be found [here](http://philipwalton.com/articles/how-to-unit-test-private-functions-in-javascript/).
+The Slebble js is tested using the [Jest](https://facebook.github.io/jest/) testing framework. Which practices we are using when testing the private functions in the Slebble js can be found [here](http://philipwalton.com/articles/how-to-unit-test-private-functions-in-javascript/).
+
+Testing of the C code is for now absent. The framework that should be used to test the code is undecided. Two examples of frameworks that could be used is [Check](http://check.sourceforge.net/) and [cmocka](https://cmocka.org/).
 
 ## License
 
