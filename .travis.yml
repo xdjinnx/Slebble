@@ -4,11 +4,9 @@ language: python
 
 script:
 - ./node_modules/.bin/gulp
+- cmake -DTRAVIS=ON .. && make
 - npm test
-- cd build
-- cmake -DTRAVIS=ON ..
-- make
-- make test
+- ctest -V
 
 before_install:
 - wget http://assets.getpebble.com.s3-website-us-east-1.amazonaws.com/sdk2/${PEBBLE_SDK}.tar.gz -O PebbleSDK.tar.gz
@@ -18,15 +16,15 @@ before_install:
 - tar -zxf arm-cs-tools-ubuntu-universal.tar.gz -C pebble-dev/${PEBBLE_SDK}
 - wget https://cmocka.org/files/1.0/cmocka-1.0.1.tar.xz
 - tar -xvf cmocka-1.0.1.tar.xz
-- cd cmocka-1.0.1
-- mkdir build
-- cd build
+- mkdir cmocka-1.0.1/build
+- cd cmocka-1.0.1/build
 - cmake -DCMAKE_INSTALL_PREFIX=/home/travis/build/xdjinnx/Slebble/cmocka -DCMAKE_BUILD_TYPE=Debug ..
-- make
-- make install
 - cd ../..
 
 install:
+- cd cmocka-1.0.1/build
+- make && make install
+- cd ../..
 - nvm install 4.1
 - pip install --install-option="--no-cython-compile" cython
 - pip install -r pebble-dev/${PEBBLE_SDK}/requirements.txt
