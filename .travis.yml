@@ -5,7 +5,6 @@ language: python
 script:
 - ./node_modules/.bin/gulp
 - npm test
-- mkdir build
 - cd build
 - cmake -DTRAVIS=ON ..
 - make
@@ -24,7 +23,6 @@ before_install:
 - cd build
 - cmake -DCMAKE_INSTALL_PREFIX=/home/travis/build/xdjinnx/Slebble/cmocka -DCMAKE_BUILD_TYPE=Debug ..
 - make
-#- pwd
 - make install
 - cd ../..
 
