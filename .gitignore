@@ -2,6 +2,13 @@ build
 node_modules
 .lock-waf_linux2_build
 .idea
-CMakeLists.txt
 src/js/pebble-js-app.js
 nohup.out
+
+CMakeFiles
+cmake_install.cmake
+CTestTestfile.cmake
+Makefile
+test_test
+CMakeCache.txt
+Testing
