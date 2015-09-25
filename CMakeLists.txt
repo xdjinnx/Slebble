@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.7)
 project(Slebble)
-set(CMAKE_C_FLAGS "-Wall -Werror -Wpedantic -std=c11")
+set(CMAKE_C_FLAGS "-Wall -Werror")
 option(TRAVIS "Build tests." OFF)
 
 if(TRAVIS)
