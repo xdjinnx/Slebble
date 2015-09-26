@@ -18,9 +18,9 @@ void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
             menu_update(menu, menu->id, menu->size, menu->title, i, buf, menu->row_subtitle[i], ((int*)menu->data_int)[i], ((char**)menu->data_char)[i]);
         }
         menu_layer_reload_data(menu->layer);
-        
+
         update_appmessage();
-        
+
     }
     first_tick = true;
 }
@@ -35,7 +35,7 @@ void remove_callback_handler(void *data) {
 void select_nearby_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
     char *click_data = menu->row_title[cell_index->row];
     int row_clicked = cell_index->row;
-    
+
     event_set_click_data(click_data);
 
     Menu *temp = menu;
@@ -93,23 +93,17 @@ void select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
 
 int main(void) {
 
-    app_message_register_inbox_received(in_received_handler);
-    app_message_register_inbox_dropped(in_dropped_handler);
-
     menu = menu_create(RESOURCE_ID_SLEBBLE_START_BLACK, (MenuCallbacks){
             .select_click = &select_callback,
             .remove_callback = &remove_callback_handler,
     });
 
     event_set_view_update(&menu, &menu_update);
-
     menu_init_text_scroll(&menu);
-
-    app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
-    app_comm_set_sniff_interval(SNIFF_INTERVAL_REDUCED);
+    event_register_app_message();
 
     app_event_loop();
-    
+
     app_message_deregister_callbacks();
     menu_deinit_text_scroll();
 }

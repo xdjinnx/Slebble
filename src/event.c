@@ -64,7 +64,7 @@ void in_received_handler(DictionaryIterator *iter, void *context) {
 
             //Receive depatures
         case 2:
-        
+
             memcpy(data_char, ride_tuple->value->cstring, ride_tuple->length);
 
             if(min_tuple->value->uint8 > 0) {
@@ -74,10 +74,10 @@ void in_received_handler(DictionaryIterator *iter, void *context) {
             }
 
             memcpy(subtitle, to_tuple->value->cstring, to_tuple->length);
-            
+
             //APP_LOG(APP_LOG_LEVEL_INFO, "Station: number of rows %d of %d", loaded_rows, nr_ride_variable);
             update_view(*view_ptr, package_tuple->value->uint8, size, event_data_char, index, title, subtitle, min_tuple->value->uint8, data_char);
-            
+
             break;
 
             //Receive Error message in depature screen
@@ -95,6 +95,13 @@ void in_received_handler(DictionaryIterator *iter, void *context) {
 
 }
 
+void event_register_app_message() {
+  app_message_register_inbox_received(in_received_handler);
+  app_message_register_inbox_dropped(in_dropped_handler);
+
+  app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
+  app_comm_set_sniff_interval(SNIFF_INTERVAL_REDUCED);
+}
 
 void event_tick_handler(int size, void *data) {
     int *min_left = data;
