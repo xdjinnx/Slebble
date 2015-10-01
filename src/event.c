@@ -1,15 +1,12 @@
 #include "event.h"
 
 enum SLKey {
-    PATH_KEY = 0x0,
-    LAST_KEY = 0x1,
-    STATION_KEY = 0x2,
-    RIDE_KEY = 0x3,
-    TO_KEY = 0x4,
-    MIN_KEY = 0x6,
-    ERROR_TITLE_KEY = 0x7,
-    ERROR_SUBTITLE_KEY = 0x8,
-    PACKAGE_KEY = 0x9
+    PACKAGE_KEY = 0x0,
+    TITLE_KEY = 0x1,
+    SUBTITLE_KEY = 0x2,
+    INT_KEY = 0x3,
+    STRING_KEY = 0x4,
+    LAST_KEY = 0x5
 };
 
 int queue_size = 0;
@@ -37,59 +34,20 @@ void in_received_handler(DictionaryIterator *iter, void *context) {
     //APP_LOG(APP_LOG_LEVEL_INFO, "Appmessage recived");
 
     Tuple *package_tuple = dict_find(iter, PACKAGE_KEY);
-    Tuple *path_tuple = dict_find(iter, PATH_KEY);
+    Tuple *title_tuple = dict_find(iter, TITLE_KEY);
+    Tuple *subtitle_tuple = dict_find(iter, SUBTITLE_KEY);
+    Tuple *int_tuple = dict_find(iter, INT_KEY);
+    Tuple *string_tuple = dict_find(iter, STRING_KEY);
     Tuple *last_tuple = dict_find(iter, LAST_KEY);
-    Tuple *station_tuple = dict_find(iter, STATION_KEY);
-    Tuple *ride_tuple = dict_find(iter, RIDE_KEY);
-    Tuple *to_tuple = dict_find(iter, TO_KEY);
-    Tuple *min_tuple = dict_find(iter, MIN_KEY);
-    Tuple *error_title_tuple = dict_find(iter, ERROR_TITLE_KEY);
-    Tuple *error_subtitle_tuple = dict_find(iter, ERROR_SUBTITLE_KEY);
 
     if(package_tuple->value->uint8 >= expected_package_key) {
-        switch(path_tuple->value->uint8) {
-            //Receive stations
-            case 1:
 
-                memcpy(queue[queue_size].title, station_tuple->value->cstring, station_tuple->length);
-                char *temp = "";
-                memcpy(queue[queue_size].subtitle, temp, 32);
-                queue[queue_size].data_int = 0;
-                queue_size++;
+        memcpy(queue[queue_size].title, title_tuple->value->cstring, title_tuple->length);
+        memcpy(queue[queue_size].subtitle, subtitle_tuple->value->cstring, subtitle_tuple->length);
+        queue[queue_size].data_int = int_tuple->value->int8;
+        memcpy(queue[queue_size].data_char, string_tuple->value->cstring, string_tuple->length);
 
-                //APP_LOG(APP_LOG_LEVEL_INFO, "Startmenu: number of rows %d of %d", loaded_rows, nr_station_variable);
-                break;
-
-            //Receive depatures
-            case 2:
-
-                memcpy(queue[queue_size].data_char, ride_tuple->value->cstring, ride_tuple->length);
-
-                if(min_tuple->value->uint8 > 0) {
-                    snprintf(queue[queue_size].title, 32, "%dmin - %s", min_tuple->value->uint8, queue[queue_size].data_char);
-                } else {
-                    snprintf(queue[queue_size].title, 32, "Nu - %s", queue[queue_size].data_char);
-                }
-
-                memcpy(queue[queue_size].subtitle, to_tuple->value->cstring, to_tuple->length);
-                queue[queue_size].data_int = min_tuple->value->uint8;
-
-                queue_size++;
-
-                //APP_LOG(APP_LOG_LEVEL_INFO, "Station: number of rows %d of %d", loaded_rows, nr_ride_variable);
-                break;
-
-                //Receive Error message in depature screen
-            case 3:
-                memcpy(queue[queue_size].title, error_title_tuple->value->cstring, error_title_tuple->length);
-                memcpy(queue[queue_size].subtitle, error_subtitle_tuple->value->cstring, error_subtitle_tuple->length);
-                queue[queue_size].data_int = 0;
-                event_data_char = "Error";
-
-                queue_size++;
-                tick_timer_service_unsubscribe();
-                break;
-        }
+        queue_size++;
 
         if(last_tuple->value->int8) {
             add_view(*view_ptr, event_data_char, queue, queue_size);
