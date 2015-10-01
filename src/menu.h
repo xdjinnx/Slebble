@@ -29,7 +29,7 @@ typedef struct Menu {
 } Menu;
 
 extern Menu* menu_create(uint32_t load_image_resource_id, MenuCallbacks callbacks);
-extern void menu_add_row(void *menu, char *title, Event_Row *queue, int queue_size);
+extern void menu_add_rows(void *menu, char *title, Event_Row *queue, int queue_size);
 extern void menu_update_row(void *menu, int index, char *title, int data_int);
 
 extern void menu_init_text_scroll(Menu **menu);

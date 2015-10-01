@@ -254,7 +254,7 @@ void hide_load_image(Menu *menu, bool vibe) {
     }
 }
 
-void menu_add_row(void *menu_void, char *title, Event_Row* queue, int queue_size) {
+void menu_add_rows(void *menu_void, char *title, Event_Row* queue, int queue_size) {
     if(menu_void == NULL)
         return;
 
@@ -264,7 +264,17 @@ void menu_add_row(void *menu_void, char *title, Event_Row* queue, int queue_size
 
     for(int i = 0; i < queue_size; i++) {
         memcpy(menu->title, title, 32);
-        memcpy(menu->row_title[i], queue[i].title, 32);
+
+        if(0 < strlen(queue[i].title))
+            memcpy(menu->row_title[i], queue[i].title, 32);
+        else {
+            if(queue[i].data_int > 0) {
+                snprintf(menu->row_title[i], 32, "%dmin - %s", queue[i].data_int, queue[i].data_char);
+            } else {
+                snprintf(menu->row_title[i], 32, "Nu - %s", queue[i].data_char);
+            }
+        }
+
         memcpy(menu->row_subtitle[i], queue[i].subtitle, 32);
 
         if(queue[i].data_char != NULL)

@@ -36,7 +36,8 @@ var _addRide = function(depatureList, packageKey) {
     return;
   Pebble.sendAppMessage({
       '0': packageKey,
-      '1': depatureList[0].displayTime == 0 ? "Nu - " + depatureList[0].time : depatureList[0].displayTime + "min - " + depatureList[0].time,
+      //'1': depatureList[0].displayTime == 0 ? "Nu - " + depatureList[0].time : depatureList[0].displayTime + "min - " + depatureList[0].time,
+      '1': "",
       '2': depatureList[0].number + ' ' + depatureList[0].destination,
       '3': depatureList[0].displayTime,
       '4': depatureList[0].time,

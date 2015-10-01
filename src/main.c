@@ -98,7 +98,7 @@ int main(void) {
             .remove_callback = &remove_callback_handler,
     });
 
-    event_set_view_func(&menu, &menu_add_row);
+    event_set_view_func(&menu, &menu_add_rows);
     menu_init_text_scroll(&menu);
     event_register_app_message();
 
