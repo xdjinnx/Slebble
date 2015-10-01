@@ -12,17 +12,13 @@ Pebble.addEventListener('ready',
                 var stations = [];
                 for(var i = 0; i < response.route.length; i++) {
                   var ad = {};
-                  ad.index = i;
                   ad.from = response.route[i].from.replace(/\053/g, ' ');
-                  ad.nr = response.route.length;
                   stations.push(ad);
                 }
                 Slebble.addStation(stations, 0);
               } else {
                 var ad = {};
-                ad.index = 0;
                 ad.from = 'No configuration';
-                ad.nr = 1;
                 ad = [ad];
                 Slebble.addStation(ad, 0);
               }
@@ -52,12 +48,10 @@ Pebble.addEventListener('webviewclosed',
                   var stations = [];
                   for(var i = 0; i < response.route.length; i++) {
                     var ad = {};
-                    ad.index = i;
                     ad.from = response.route[i].from.replace(/\053/g, ' ');
-                    ad.nr = response.route.length;
                     stations.push(ad);
                   }
-                  
+
                   Slebble.addStation(stations, 0);
 
                 }

@@ -254,38 +254,44 @@ void hide_load_image(Menu *menu, bool vibe) {
     }
 }
 
-void menu_update(void *menu_void, int incoming_id, int size, char *title, int index, char *row_title, char *row_subtitle, int data_int, char *data_char) {
+void menu_add_row(void *menu_void, char *title, Event_Row* queue, int queue_size) {
     if(menu_void == NULL)
         return;
 
     Menu *menu = (Menu*)menu_void;
 
-    if(menu->id == incoming_id) {
+    menu_allocation(menu, queue_size);
 
-        menu_allocation(menu, size);
-
+    for(int i = 0; i < queue_size; i++) {
         memcpy(menu->title, title, 32);
-        memcpy(menu->row_title[index], row_title, 32);
-        memcpy(menu->row_subtitle[index], row_subtitle, 32);
+        memcpy(menu->row_title[i], queue[i].title, 32);
+        memcpy(menu->row_subtitle[i], queue[i].subtitle, 32);
 
-        if(data_char != NULL)
-            memcpy(menu->data_char[index], data_char, 32);
+        if(queue[i].data_char != NULL)
+            memcpy(menu->data_char[i], queue[i].data_char, 32);
 
         int *temp = menu->data_int;
-        temp[index] = data_int;
-
-
-        updates++;
-        if(updates >= size) {
-            updates = 0;
-            menu_layer_reload_data(menu->layer);
-            hide_load_image(menu, true);
-            if(menu->id == 0)
-                store_persistent(menu);
-        }
+            temp[i] = queue[i].data_int;
 
     }
+
+    menu_layer_reload_data(menu->layer);
+    hide_load_image(menu, true);
+    if(menu->id == 0)
+        store_persistent(menu);
 }
+
+void menu_update_row(void *menu_void, int index, char *title, int data_int) {
+    if(menu_void == NULL)
+        return;
+
+    Menu *menu = (Menu*)menu_void;
+
+    memcpy(menu->row_title[index], title, 32);
+    int *temp = menu->data_int;
+        temp[index] = data_int;
+}
+
 
 void menu_init_text_scroll(Menu **menu) {
     scroll_timer = app_timer_register(500, &text_scroll_handler, menu);

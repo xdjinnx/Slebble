@@ -1,6 +1,7 @@
 #pragma once
 
 #include "pebble.h"
+#include "event.h"
 
 typedef struct MenuCallbacks {
     void (*select_click)(MenuLayer*, MenuIndex*, void*);
@@ -28,7 +29,8 @@ typedef struct Menu {
 } Menu;
 
 extern Menu* menu_create(uint32_t load_image_resource_id, MenuCallbacks callbacks);
-extern void menu_update(void *menu, int incoming_id, int size, char *title, int index, char *row_title, char *row_subtitle, int data_int, char *data_char);
+extern void menu_add_row(void *menu, char *title, Event_Row *queue, int queue_size);
+extern void menu_update_row(void *menu, int index, char *title, int data_int);
 
 extern void menu_init_text_scroll(Menu **menu);
 extern void menu_deinit_text_scroll();

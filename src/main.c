@@ -15,7 +15,7 @@ void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
             } else {
                 snprintf(buf, 32, "Nu - %s", ((char**)menu->data_char)[i]);
             }
-            menu_update(menu, menu->id, menu->size, menu->title, i, buf, menu->row_subtitle[i], ((int*)menu->data_int)[i], ((char**)menu->data_char)[i]);
+            menu_update_row(menu, i, buf, ((int*)menu->data_int)[i]);
         }
         menu_layer_reload_data(menu->layer);
 
@@ -98,7 +98,7 @@ int main(void) {
             .remove_callback = &remove_callback_handler,
     });
 
-    event_set_view_update(&menu, &menu_update);
+    event_set_view_func(&menu, &menu_add_row);
     menu_init_text_scroll(&menu);
     event_register_app_message();
 

@@ -7,7 +7,7 @@ describe('addStation', function() {
     Pebble = new PebbleMock();
     nack = 4;
 
-    appmessage.addStation([{index: 0, from: 'place', nr: 1}, {index: 1, from: 'sec place', nr: 2}], 12345);
+    appmessage.addStation([{from: 'place'}, {from: 'sec place', last: true}], 12345);
 
     expect(Pebble.sendAppMessage.mock.calls.length).toBe(6);
   });
@@ -18,8 +18,8 @@ describe('addRide', function() {
     Pebble = new PebbleMock();
     nack = 4;
 
-    appmessage.addRide([{index: 0, nr: 1, number: 1, destination: 'somewhere', time: '22:22', displayTime: 2},
-    {index: 1, nr: 2, number: 2, destination: 'somewhere', time: '22:24', displayTime: 3}], 12345);
+    appmessage.addRide([{number: 1, destination: 'somewhere', time: '22:22', displayTime: 2},
+    {number: 2, destination: 'somewhere', time: '22:24', displayTime: 3, last: true}], 12345);
 
     expect(Pebble.sendAppMessage.mock.calls.length).toBe(6);
   });

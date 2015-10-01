@@ -57,7 +57,7 @@ module.exports = (function() {
         ad.time = deps[i].DisplayTime.substring(deps[i].DisplayTime.length-3, deps[i].DisplayTime.length) !== 'min'?deps[i].DisplayTime:_determineTime(ad.displayTime);
       }
       ad.destination = deps[i].Destination;
-      
+
 
       if (deps[i].TransportMode === 'BUS')
         ad.ridetype = RT_BUS;
@@ -74,16 +74,10 @@ module.exports = (function() {
       return;
     }
 
-    var numberToAdd = alldeps.length>_maxDepatures?_maxDepatures:alldeps.length;
-    for (var j = 0; j < numberToAdd; j++) {
-      alldeps[j].index = j;
-      alldeps[j].nr = numberToAdd;
-    }
-
-
-
     if(typeof packageKey === 'undefined')
       packageKey = _packageKey++;
+
+    var numberToAdd = alldeps.length>_maxDepatures?_maxDepatures:alldeps.length;
     appmessage.addRide(alldeps.slice(0, numberToAdd), packageKey);
 
     _lastRequest = api.requestSLRealtime;
@@ -109,7 +103,7 @@ module.exports = (function() {
     // only filter if filter is actually active
     if (_config.route[_queryIndex].busFilterActive === 'true'){
       var filter = _config.route[_queryIndex].filter;
-      
+
       if(ride.ridetype !== RT_BUS)
         return true;
 
@@ -139,7 +133,6 @@ module.exports = (function() {
 
     for (var i = 0; i < deps.length; i++){
       var ad = {};
-      ad.index = i;
       ad.number = deps[i].segmentid.carrier.number;
       ad.destination = deps[i].direction;
       ad.time = deps[i].departure.datetime.substring(11);
@@ -155,14 +148,10 @@ module.exports = (function() {
     if(_nearbyStations.length === 0)
       alldeps = alldeps.filter(_filterRides);
 
-    // send to watch
-    var batchLength  = alldeps.length >_maxDepatures?_maxDepatures:alldeps.length;
-    for(var j = 0; j < batchLength; j++) {
-      alldeps[j].nr = batchLength;
-    }
-
     if(typeof packageKey === 'undefined')
       packageKey = _packageKey++;
+
+    var batchLength  = alldeps.length >_maxDepatures?_maxDepatures:alldeps.length;
     appmessage.addRide(alldeps.slice(0, batchLength), packageKey);
 
     _lastRequest = api.requestResrobot;
@@ -179,23 +168,19 @@ module.exports = (function() {
         var batchLength = response.stationsinzoneresult.location.length > 5 ? 5:response.stationsinzoneresult.location.length;
         for(var i = 0; i < batchLength; i++) {
           var ad = {};
-          ad.index = i;
           ad.from = response.stationsinzoneresult.location[i].name;
-          ad.nr = batchLength;
           stations.push(ad);
           _nearbyStations.push(response.stationsinzoneresult.location[i]['@id']);
         }
       } else {
         var ad = {};
-        ad.index = 0;
         ad.from = response.stationsinzoneresult.location.name;
-        ad.nr = 1;
         stations.push(ad);
         _nearbyStations = [response.stationsinzoneresult.location['@id']];
       }
 
       appmessage.addStation(stations, _packageKey++);
-    
+
     } else {
       appmessage.appMessageError('No nearby stations', '', _packageKey++);
     }
@@ -269,7 +254,7 @@ module.exports = (function() {
     }
     else
       api.requestResrobot(_queryId, _resrobotCallback);
-    
+
   };
 
   var _requestUpdate = function() {

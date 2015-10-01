@@ -10,9 +10,8 @@ var _addStation = function(stations, packageKey) {
     return;
   Pebble.sendAppMessage({
       '0': 1,
-      '1': stations[0].index,
+      '1': stations.length == 1,
       '2': stations[0].from,
-      '5': stations[0].nr,
       '9': packageKey
     },
     function() {
@@ -35,10 +34,9 @@ var _addRide = function(depatureList, packageKey) {
     return;
   Pebble.sendAppMessage({
       '0': 2,
-      '1': depatureList[0].index,
+      '1': depatureList.length == 1,
       '3': depatureList[0].time,
       '4': depatureList[0].number + ' ' + depatureList[0].destination,
-      '5': depatureList[0].nr,
       '6': depatureList[0].displayTime,
       '9': packageKey
     },
@@ -62,8 +60,7 @@ var _appMessageError = function(title, subtitle, packageKey) {
   //console.log('sending error '+title+' '+subtitle);
   Pebble.sendAppMessage({
       '0': 3,
-      '1': 0,
-      '5': 1,
+      '1': true,
       '7': title,
       '8': subtitle,
       '9': packageKey
