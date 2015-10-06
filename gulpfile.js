@@ -1,24 +1,30 @@
+/* eslint strict: 0 */
 var gulp = require('gulp'),
-    jshint = require('gulp-jshint'),
     shell = require('gulp-shell'),
-    stylish = require('jshint-stylish'),
-    webpack = require('gulp-webpack'),
-    stripCode = require('gulp-strip-code');
+    webpack = require('webpack-stream'),
+    stripCode = require('gulp-strip-code'),
+    eslint = require('gulp-eslint');
 
-gulp.task('webpack', function() {
+gulp.task('webpack', ['lint'], function() {
   return gulp.src('./src/js/main.js')
     .pipe(webpack({
       output: {
         filename: 'pebble-js-app.js'
+      },
+      module: {
+        loaders: [{
+          loader: 'babel-loader'
+        }]
       }
     }))
     .pipe(gulp.dest('./src/js/'));
 });
 
-gulp.task('lint', ['webpack'],function(){
-  return gulp.src('./src/js/pebble-js-app.js')
-    .pipe(jshint())
-    .pipe(jshint.reporter(stylish));
+gulp.task('lint', function(){
+  return gulp.src(['./src/js/*.js', '!./src/js/pebble-js-app.js'])
+        .pipe(eslint())
+        .pipe(eslint.format())
+        .pipe(eslint.failAfterError());
 });
 
 gulp.task('strip', ['webpack'],function(){

@@ -1,0 +1,20 @@
+{
+    "parser": "babel-eslint",
+    "env": {
+        "browser": true,
+        "node": true
+    },
+    "rules": {
+        "quotes": [1, "single", "avoid-escape"],
+        "curly": [1, "multi-line"],
+        "strict": [2, "function"],
+        "no-extra-strict": 0,
+        "no-underscore-dangle": 0,
+        "no-unused-vars": [2, {"vars": "local", "args": "after-used"}]
+
+    },
+    "ecmaFeatures": {
+        "arrowFunctions": true
+    },
+    "extends": "eslint:recommended"
+}
