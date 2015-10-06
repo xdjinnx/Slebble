@@ -1,4 +1,5 @@
 /* eslint strict: 0 */
+
 var cnst = require('./const.js');
 
 export var determineTime = function(timeleft) {

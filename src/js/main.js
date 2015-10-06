@@ -1,7 +1,9 @@
-var Slebble = require("./slebble.js");
+/* eslint strict: 0 */
+
+var Slebble = require('./slebble.js');
 
 Pebble.addEventListener('ready',
-            function(e) {
+            function() {
               //console.log('ready');
               var response = localStorage.data;
               if (response !== '' && typeof response === 'string') {
@@ -11,13 +13,13 @@ Pebble.addEventListener('ready',
                 Slebble.loadConfig(response);
                 var stations = [];
                 for(var i = 0; i < response.route.length; i++) {
-                  var ad = {};
+                  let ad = {};
                   ad.from = response.route[i].from.replace(/\053/g, ' ');
                   stations.push(ad);
                 }
                 Slebble.addStation(stations, 0);
               } else {
-                var ad = {};
+                let ad = {};
                 ad.from = 'No configuration';
                 ad = [ad];
                 Slebble.addStation(ad, 0);
@@ -26,7 +28,7 @@ Pebble.addEventListener('ready',
 
 
 Pebble.addEventListener('showConfiguration',
-            function(e) {
+            function() {
               if (localStorage.data) {
                 Pebble.openURL('http://diesel-ability-711.appspot.com/webconfig/index.html?version=2.0' + '&setting=' + localStorage.data);
               }else {
