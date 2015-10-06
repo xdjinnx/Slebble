@@ -142,30 +142,6 @@ var _SLRealtimeCallback = function(resp, packageKey) {
 
 };
 
-/**
- * Get depatures from Resrobot stolptidstabeller api
- *
- * @param {number}   siteid     The unique id for a station
- * @param {Function} callback   The callback that should handle the response from the api
- * @param {number}   packageKey A unique key that a set of messages should have
- */
-var requestResrobot = function(siteid, callback, packageKey) {
-  if (typeof packageKey === 'undefined')
-    _xhr(url.resrobot(siteid), callback);
-  else
-    _xhr(url.resrobot(siteid), callback, packageKey);
-};
-
-
-/**
- * Get stations with coordinates from Resrobot api
- * @param {number} latitude   Latitude coordinate for station
- * @param {number} longitude  Longitude coordinate for station
- * @param {Function} callback The callback that should handle the response from the api
- */
-var requestNearbyStations = function(latitude, longitude, callback) {
-  _xhr(url.resrobotGeo(longitude, latitude), callback);
-};
 
 module.exports = {
 	requestSLRealtime: requestSLRealtime,

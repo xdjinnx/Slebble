@@ -8,7 +8,6 @@ var Slebble = require('../slebble.js');
 
 var key = {};
 key.slReal3 = '190079364ffe4e278f7e27dabd6dce6c';
-key.resrobot = 'UacUcP0MlG9fZ0j82r1k5he6KXQ6koSS';
 
 var urlSlReal3 = (locationid) => {
     //return 'https://api.sl.se/api2/realtimedepartures.json?key=' + _key.slReal3 + '&siteid=' + locationid + '&timewindow=120';
@@ -51,7 +50,7 @@ export var realtime = (siteid, options = {busFilterActive: false, packageKey: -1
     } else {
         fetch(urlSlReal3(siteid))
         .then(response => _realtimeReponse(response, options.busFilterActive, options.filter, options.maxDepatures, options.packageKey))
-        .catch(error => appmessage.appMessageError('ERROR', error, packageKey++));
+        .catch(error => appmessage.appMessageError('ERROR', error, options.packageKey++));
     }
 };
 

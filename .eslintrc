@@ -16,5 +16,9 @@
     "ecmaFeatures": {
         "arrowFunctions": true
     },
-    "extends": "eslint:recommended"
+    "extends": "eslint:recommended",
+    ,
+    "globals": {
+        "Pebble": true
+    },
 }

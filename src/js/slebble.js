@@ -3,7 +3,8 @@ module.exports = (function() {
 
   var appmessage = require('./appmessage.js');
   var api = require('./api.js');
-  var slApi = require('apis/sl.js');
+  var slApi = require('./apis/sl.js');
+  var resrobot = require('./apis/resrobot.js');
 
   var _provider = '';
   var _config = {};
@@ -35,98 +36,7 @@ module.exports = (function() {
   };
 
 
-  /**
-   * Filter function for rides to be used with array.filter
-   * @param ride        A ride object, se sample in _SLRealtimeCallback
-   * @returns {boolean} Returns true if ride is to be included
-   * @private
-   */
-  var _filterRides = function(ride){
-    // only filter if filter is actually active
-    if (_config.route[_queryIndex].busFilterActive === 'true'){
-      var filter = _config.route[_queryIndex].filter;
 
-      if(ride.ridetype !== RT_BUS)
-        return true;
-
-      for (var i = filter.length - 1; i >= 0; i--) {
-        // only filter buses, else always include
-        if(filter[i] === ride.number)
-          return true;
-      }
-      return false;
-    }
-    return true;
-  };
-
-  var _resrobotCallback = function(resp, packageKey) {
-    // check for empty response
-    if (resp === '{"getdeparturesresult":{}}') {
-      appmessage.appMessageError('No rides available', 'Try again later', _packageKey++);
-      return;
-    }
-
-    var response = JSON.parse(resp);
-    var deps = response.getdeparturesresult.departuresegment;
-    var alldeps = [];
-
-    if (!Array.isArray(deps))
-      deps = [deps];
-
-    for (var i = 0; i < deps.length; i++){
-      var ad = {};
-      ad.number = deps[i].segmentid.carrier.number;
-      ad.destination = deps[i].direction;
-      ad.time = deps[i].departure.datetime.substring(11);
-      ad.displayTime = _determineTimeLeft(ad.time);
-
-      if (deps[i].segmentid.mot['@displaytype'] === 'B')
-        ad.ridetype = RT_BUS;
-      else
-        ad.ridetype = RT_UNKNOWN;
-      alldeps.push(ad);
-    }
-
-    if(_nearbyStations.length === 0)
-      alldeps = alldeps.filter(_filterRides);
-
-    if(typeof packageKey === 'undefined')
-      packageKey = _packageKey++;
-
-    var batchLength  = alldeps.length >_maxDepatures?_maxDepatures:alldeps.length;
-    appmessage.addRide(alldeps.slice(0, batchLength), packageKey);
-
-    _lastRequest = api.requestResrobot;
-    _lastCallback = _resrobotCallback;
-  };
-
-  var _resrobotGeoCallback = function(resp) {
-    //console.log(resp);
-    if(resp !== '{"stationsinzoneresult":{}}') {
-      var response = JSON.parse(resp);
-      var stations = [];
-      _nearbyStations = [];
-      if( Object.prototype.toString.call( response.stationsinzoneresult.location ) === '[object Array]' ) {
-        var batchLength = response.stationsinzoneresult.location.length > 5 ? 5:response.stationsinzoneresult.location.length;
-        for(var i = 0; i < batchLength; i++) {
-          var ad = {};
-          ad.from = response.stationsinzoneresult.location[i].name;
-          stations.push(ad);
-          _nearbyStations.push(response.stationsinzoneresult.location[i]['@id']);
-        }
-      } else {
-        var ad = {};
-        ad.from = response.stationsinzoneresult.location.name;
-        stations.push(ad);
-        _nearbyStations = [response.stationsinzoneresult.location['@id']];
-      }
-
-      appmessage.addStation(stations, _packageKey++);
-
-    } else {
-      appmessage.appMessageError('No nearby stations', '', _packageKey++);
-    }
-  };
 
   /**
    * Parse time left for resrobot times
@@ -177,7 +87,11 @@ module.exports = (function() {
         maxDepatures: _maxDepatures
       });
     } else {
-      api.requestResrobot(_queryId, _resrobotCallback);
+      resrobot.stolptid(_queryId,{
+        busFilterActive: _config.route[_queryIndex].busFilterActive,
+        filter: _config.route[_queryIndex].filter,
+        maxDepatures: _maxDepatures
+      });
     }
 
   };
