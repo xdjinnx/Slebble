@@ -1,6 +1,7 @@
-'use strict';
+/* eslint strict: 0 */
 
-var appmessage = require("./appmessage.js");
+var appmessage = require('./appmessage.js');
+var fetch = require('./fetch.js').fetch;
 
 var key = {};
 key.slReal3 = '190079364ffe4e278f7e27dabd6dce6c';
@@ -53,11 +54,92 @@ var _xhr = function(url, callback, packageKey) {
  * @param {Function} callback   The callback that should handle the response from the api
  * @param {number}   packageKey A unique key that a set of messages should have
  */
-var requestSLRealtime = function(siteid, callback, packageKey) {
-  if(typeof packageKey === 'undefined')
-    _xhr(url.slReal3(siteid), callback);
-  else
-    _xhr(url.slReal3(siteid), callback, packageKey);
+var requestSLRealtime = (siteid, packageKey) => {
+  if (typeof packageKey === 'undefined') {
+    fetch(url.slReal3(siteid))
+    .then(response => _SLRealtimeCallback(response));
+  } else {
+    fetch(url.slReal3(siteid))
+    .then(response => _SLRealtimeCallback(response))
+    .catch((error) => {
+      appmessage.appMessageError('ERROR', error, packageKey++);
+    });
+  }
+};
+
+var _SLRealtimeCallback = function(resp, packageKey) {
+    //console.log('sl callback');
+    var response = JSON.parse(resp);
+    var alldeps = [];
+    var deps = [];
+
+    if (Array.isArray(response.ResponseData.Metros)) {
+      Array.prototype.push.apply(deps, response.ResponseData.Metros);
+    }
+    if (Array.isArray(response.ResponseData.Buses)) {
+      Array.prototype.push.apply(deps, response.ResponseData.Buses);
+    }
+    if (Array.isArray(response.ResponseData.Trains)) {
+      Array.prototype.push.apply(deps, response.ResponseData.Trains);
+    }
+
+    for (var i = 0; i < deps.length; i++){
+      var ad = {};
+      ad.number = deps[i].LineNumber;
+      if(deps[i].DisplayTime === 'Nu') {
+        ad.displayTime = 0;
+        ad.time = _determineTime(0);
+      }
+      else {
+        ad.displayTime = deps[i].DisplayTime.substring(deps[i].DisplayTime.length-3, deps[i].DisplayTime.length) !== 'min'?_determineTimeLeft(deps[i].DisplayTime):parseInt(deps[i].DisplayTime.substring(0, deps[i].DisplayTime.length - 4));
+        ad.time = deps[i].DisplayTime.substring(deps[i].DisplayTime.length-3, deps[i].DisplayTime.length) !== 'min'?deps[i].DisplayTime:_determineTime(ad.displayTime);
+      }
+      ad.destination = deps[i].Destination;
+
+
+      if (deps[i].TransportMode === 'BUS') {
+        ad.ridetype = RT_BUS;
+      } else {
+        ad.ridetype = RT_UNKNOWN;
+      }
+      alldeps.push(ad);
+    }
+
+    alldeps = alldeps.filter(_filterRides);
+    alldeps = alldeps.sort(_slTimeSort);
+
+    if (alldeps.length < 1){
+      appmessage.appMessageError('No rides available', 'Try again later', _packageKey++);
+      return;
+    }
+
+    if (typeof packageKey === 'undefined') packageKey = _packageKey++;
+
+    var numberToAdd = alldeps.length>_maxDepatures?_maxDepatures:alldeps.length;
+    appmessage.addRide(alldeps.slice(0, numberToAdd), packageKey);
+
+    _lastRequest = api.requestSLRealtime;
+    _lastCallback = _SLRealtimeCallback;
+
+  };
+
+  var _determineTime = function(timeleft) {
+    var date = new Date();
+    var realHour = date.getHours();
+    var realMin = date.getMinutes();
+    var zero = '';
+
+    realMin = realMin + timeleft;
+
+    realHour = realHour + Math.floor(realMin / 60);
+    realMin = realMin % 60;
+
+    realHour = realHour % 24;
+
+    if (realMin < 10) zero = '0';
+
+    return realHour + ':' + zero + realMin;
+
 };
 
 /**
@@ -68,11 +150,12 @@ var requestSLRealtime = function(siteid, callback, packageKey) {
  * @param {number}   packageKey A unique key that a set of messages should have
  */
 var requestResrobot = function(siteid, callback, packageKey) {
-  if(typeof packageKey === 'undefined')
+  if (typeof packageKey === 'undefined')
     _xhr(url.resrobot(siteid), callback);
   else
     _xhr(url.resrobot(siteid), callback, packageKey);
 };
+
 
 /**
  * Get stations with coordinates from Resrobot api

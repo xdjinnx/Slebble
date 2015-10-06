@@ -1,12 +1,12 @@
-'use strict';
+/* eslint strict: 0 */
 
 /**
  * Send a set of stations to the pebble watch
  * @param {Object[]} stations Set of station objects
  * @param {number} packageKey A unique key that a set of messages should have
  */
-var _addStation = function(stations, packageKey) {
-  if(stations.length < 1)
+export var addStation = function(stations, packageKey) {
+  if (stations.length < 1)
     return;
   Pebble.sendAppMessage({
       '0': packageKey,
@@ -31,7 +31,7 @@ var _addStation = function(stations, packageKey) {
  * @param {Object[]} depatureList Set of ride objects
  * @param {number} packageKey A unique key that a set of messages should have
  */
-var _addRide = function(depatureList, packageKey) {
+export var addRide = function(depatureList, packageKey) {
   if(depatureList.length < 1)
     return;
   Pebble.sendAppMessage({
@@ -59,7 +59,7 @@ var _addRide = function(depatureList, packageKey) {
  * @param {string} subtitle The subtitle of the message or smaller text
  * @param {number} packageKey A unique key that a set of messages should have
  */
-var _appMessageError = function(title, subtitle, packageKey) {
+export var appMessageError = function(title, subtitle, packageKey) {
   //console.log('sending error '+title+' '+subtitle);
   Pebble.sendAppMessage({
       '0': packageKey,
@@ -74,10 +74,4 @@ var _appMessageError = function(title, subtitle, packageKey) {
       setTimeout(function(){ _appMessageError(title, subtitle, packageKey); }, 100);
     }
   );
-};
-
-module.exports = {
-	addStation: _addStation,
-	addRide: _addRide,
-	appMessageError: _appMessageError
 };
