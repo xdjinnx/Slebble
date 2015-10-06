@@ -31,7 +31,7 @@ export var addStation = function(stations, packageKey) {
  * @param {number} packageKey A unique key that a set of messages should have
  */
 export var addRide = function(depatureList, packageKey) {
-    if(depatureList.length < 1) return;
+    if (depatureList.length < 1) return;
     Pebble.sendAppMessage({
             '0': packageKey,
             //'1': depatureList[0].displayTime == 0 ? "Nu - " + depatureList[0].time : depatureList[0].displayTime + "min - " + depatureList[0].time,

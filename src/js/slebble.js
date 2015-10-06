@@ -13,8 +13,7 @@ module.exports = (function() {
     var _locationOptions = {'timeout': 15000, 'maximumAge': 60000 };
     var _packageKey = 1;
     var _nearbyStations = [];
-    var _lastRequest;
-    var _lastOptions = {};
+    var _lastQueryId;
 
     /**
      * Load config object
@@ -31,7 +30,7 @@ module.exports = (function() {
      * Request rides
      * @param index Station index
      */
-     var _requestRides = (index, step) => {
+     var _requestRides = (index, step = 0) => {
         _queryIndex = index;
         if (step === 0) {
             _queryId = _config.route[index].locationid;
@@ -40,25 +39,31 @@ module.exports = (function() {
             _queryId = _nearbyStations[index];
         }
 
-        if (_provider === 'sl' && step === 0) {
+        if (_provider === 'sl') {
             slApi.realtime(_queryId, {
                 busFilterActive: _config.route[_queryIndex].busFilterActive,
                 filter: _config.route[_queryIndex].filter,
                 maxDepatures: _maxDepatures
-            });
+            }).then((rides) => {
+                _lastQueryId = _queryId;
+                appmessage.addRide(rides, _packageKey);
+            }).catch(() => appmessage.appMessageError('No rides available', 'Try again later', _packageKey++));
         } else {
             resrobot.stolptid(_queryId,{
                 busFilterActive: _config.route[_queryIndex].busFilterActive,
                 filter: _config.route[_queryIndex].filter,
                 maxDepatures: _maxDepatures
-            });
+            }).then((rides) => {
+                _lastQueryId = _queryId;
+                appmessage.addRide(rides, _packageKey);
+            }).catch(() => appmessage.appMessageError('No rides available', 'Try again later', _packageKey++));
         }
 
     };
 
     var _requestUpdate = () => {
-        _lastOptions.packageKey = _packageKey - 1;
-        _lastRequest(_lastOptions);
+        _requestRides(_lastQueryId);
+        // _lastOptions.packageKey = _packageKey - 1;
     };
 
     var _requestGeoRides = () => {
@@ -85,22 +90,12 @@ module.exports = (function() {
         appmessage.appMessageError('Location error', 'Can\'t get your location', _packageKey++);
     };
 
-    var setLastRequest = (method) => {
-        _lastRequest = method;
-    }
-
-    var setLastOptions = (options) => {
-        _lastOptions = options;
-    }
-
     var open = {
         addStation: appmessage.addStation,
         requestRides: _requestRides,
         requestUpdate: _requestUpdate,
         loadConfig: _loadConfig,
-        requestGeoRides: _requestGeoRides,
-        setLastOptions: setLastOptions,
-        setLastRequest: setLastRequest
+        requestGeoRides: _requestGeoRides
     };
 
     /* test-block */

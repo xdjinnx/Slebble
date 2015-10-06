@@ -1,10 +1,8 @@
 /* eslint strict: 0 */
 
-var appmessage = require('./appmessage.js');
-var fetch = require('./fetch.js').fetch;
+var fetch = require('../fetch.js').fetch;
 var util = require('../util.js');
 var cnst = require('../const.js');
-var Slebble = require('../slebble.js');
 
 var key = {};
 key.slReal3 = '190079364ffe4e278f7e27dabd6dce6c';
@@ -43,18 +41,21 @@ var _formatTime = (departure, ad) => {
  * @param {Function} callback   The callback that should handle the response from the api
  * @param {number}   packageKey A unique key that a set of messages should have
  */
-export var realtime = (siteid, options = {busFilterActive: false, packageKey: -1, filter: []}) => {
-    if (options.packageKey === -1) {
+export var realtime = (siteid, options = {busFilterActive: false, filter: []}) => {
+    return new Promise((resolve, reject) => {
         fetch(urlSlReal3(siteid))
-        .then(response => _realtimeReponse(response, options.busFilterActive, options.filter, options.maxDepatures));
-    } else {
-        fetch(urlSlReal3(siteid))
-        .then(response => _realtimeReponse(response, options.busFilterActive, options.filter, options.maxDepatures, options.packageKey))
-        .catch(error => appmessage.appMessageError('ERROR', error, options.packageKey++));
-    }
+        .then(response => {
+            var rides = _realtimeReponse(response, options.busFilterActive, options.filter, options.maxDepatures);
+            if (rides === -1) {
+                reject();
+            } else {
+                resolve(rides);
+            }
+        });
+    });
 };
 
-var _realtimeReponse = function(resp, busFilterActive, filter, maxDepatures, packageKey = -1) {
+var _realtimeReponse = (resp, busFilterActive, filter, maxDepatures) => {
     //console.log('sl callback');
     var response = JSON.parse(resp);
     var alldeps = [];
@@ -98,27 +99,15 @@ var _realtimeReponse = function(resp, busFilterActive, filter, maxDepatures, pac
     }
 
     alldeps = alldeps.sort((a, b) => {
-        if(a.displayTime === b.displayTime) return 0;
-        if(a.displayTime < b.displayTime) return -1;
+        if (a.displayTime === b.displayTime) return 0;
+        if (a.displayTime < b.displayTime) return -1;
         return 1;
     });
 
-    if (alldeps.length < 1){
-        appmessage.appMessageError('No rides available', 'Try again later', packageKey++);
-        return;
+    if (alldeps.length < 1) {
+        return -1;
     }
 
-    if (packageKey === -1) packageKey = packageKey++;
-
     var numberToAdd = alldeps.length > maxDepatures ? maxDepatures:alldeps.length;
-    appmessage.addRide(alldeps.slice(0, numberToAdd), packageKey);
-
-    Slebble.setLastOptions({
-        busFilterActive: busFilterActive,
-        filter: filter,
-        maxDepatures: maxDepatures,
-        packageKey: packageKey
-    });
-
-    Slebble.setLastRequest(this);
+    return alldeps.slice(0, numberToAdd);
 };

@@ -1,10 +1,8 @@
 /* eslint strict: 0 */
 
-var appmessage = require('./appmessage.js');
-var fetch = require('./fetch.js').fetch;
+var fetch = require('../fetch.js').fetch;
 var util = require('../util.js');
 var cnst = require('../const.js');
-var Slebble = require('../slebble.js');
 
 var key = {};
 key.resrobot = 'UacUcP0MlG9fZ0j82r1k5he6KXQ6koSS';
@@ -28,21 +26,23 @@ url.resrobotGeo = function(long, lat) {
  * @param {number}   packageKey A unique key that a set of messages should have
  */
 export var stolptid = (siteid, options = {busFilterActive: false, packageKey: -1, filter: []}) => {
-    if (options.packageKey === -1) {
+    return new Promise((resolve, reject) => {
         fetch(url.resrobot(siteid))
-        .then(response => _stolptidResponse(response, options.busFilterActive, options.filter, options.maxDepatures));
-    } else {
-        fetch(url.resrobot(siteid))
-        .then(response => _stolptidResponse(response, options.busFilterActive, options.filter, options.maxDepatures, options.packageKey))
-        .catch(error => appmessage.appMessageError('ERROR', error, options.packageKey++));
-    }
+        .then(response => {
+            var rides = _stolptidResponse(response, options.busFilterActive, options.filter, options.maxDepatures);
+            if (rides === -1) {
+                reject();
+            } else {
+                resolve(rides);
+            }
+        });
+    });
 };
 
-var _stolptidResponse = (resp, busFilterActive, filter, maxDepatures, packageKey = -1) => {
+var _stolptidResponse = (resp, busFilterActive, filter, maxDepatures) => {
     // check for empty response
     if (resp === '{"getdeparturesresult":{}}') {
-        appmessage.appMessageError('No rides available', 'Try again later', packageKey++);
-        return;
+        return -1;
     }
 
     var response = JSON.parse(resp);
@@ -73,19 +73,8 @@ var _stolptidResponse = (resp, busFilterActive, filter, maxDepatures, packageKey
         }
     }
 
-    if (packageKey === -1) packageKey = packageKey++;
-
     var batchLength  = alldeps.length > maxDepatures ? maxDepatures : alldeps.length;
-    appmessage.addRide(alldeps.slice(0, batchLength), packageKey);
-
-    Slebble.setLastOptions({
-        busFilterActive: busFilterActive,
-        filter: filter,
-        maxDepatures: maxDepatures,
-        packageKey: packageKey
-    });
-
-    Slebble.setLastRequest(this);
+    return alldeps.slice(0, batchLength);
 };
 
 /**
