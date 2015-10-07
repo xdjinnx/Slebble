@@ -3,11 +3,10 @@
 var fetch = require('../fetch.js').fetch;
 var util = require('../util.js');
 var cnst = require('../const.js');
+var log = require('../util.js').log;
 
 var key = {};
 key.resrobot = 'UacUcP0MlG9fZ0j82r1k5he6KXQ6koSS';
-
-var _nearbyStations = [];
 
 var url = {};
 url.resrobot = function(locationid) {
@@ -27,12 +26,16 @@ url.resrobotGeo = function(long, lat) {
  */
 export var stolptid = (siteid, options = {busFilterActive: false, packageKey: -1, filter: []}) => {
     return new Promise((resolve, reject) => {
+        log('stolptid in');
         fetch(url.resrobot(siteid))
         .then(response => {
+            log('stolptid in resp');
             var rides = _stolptidResponse(response, options.busFilterActive, options.filter, options.maxDepatures);
             if (rides === -1) {
+                log('reject');
                 reject();
             } else {
+                log('resolve' +rides);
                 resolve(rides);
             }
         });
@@ -66,15 +69,16 @@ var _stolptidResponse = (resp, busFilterActive, filter, maxDepatures) => {
         alldeps.push(ad);
     }
 
-    if (_nearbyStations.length === 0) {
-        // only filter if filter is actually active
-        if (busFilterActive) {
-            alldeps = alldeps.filter((ride) => util.filterRides(ride, filter));
-        }
+    // only filter if filter is actually active
+    if (busFilterActive) {
+        alldeps = alldeps.filter((ride) => util.filterRides(ride, filter));
     }
 
     var batchLength  = alldeps.length > maxDepatures ? maxDepatures : alldeps.length;
-    return alldeps.slice(0, batchLength);
+    var rides = alldeps.slice(0, batchLength);
+
+    if (rides.length > 0) return -1;
+    else rides;
 };
 
 /**
@@ -84,33 +88,44 @@ var _stolptidResponse = (resp, busFilterActive, filter, maxDepatures) => {
  * @param {Function} callback The callback that should handle the response from the api
  */
 export var nearbyStations = (latitude, longitude) => {
-    fetch(url.resrobotGeo(longitude, latitude)).then(resp => _GeoResponse(resp));
+    return new Promise((resolve, reject) => {
+        fetch(url.resrobotGeo(longitude, latitude))
+        .then(resp => {
+            var stations = _GeoResponse(resp);
+            log(stations);
+            if (stations === -1) {
+                log('reject');
+                reject();
+            } else {
+                log('solving');
+                resolve(stations);
+            }
+        });
+    });
 };
 
 var _GeoResponse = function(resp) {
-  //console.log(resp);
-  if (resp !== '{"stationsinzoneresult":{}}') {
-    var response = JSON.parse(resp);
-    var stations = [];
-    _nearbyStations = [];
-    if (Object.prototype.toString.call( response.stationsinzoneresult.location ) === '[object Array]') {
-      var batchLength = response.stationsinzoneresult.location.length > 5 ? 5:response.stationsinzoneresult.location.length;
-      for(var i = 0; i < batchLength; i++) {
-        var ad = {};
-        ad.from = response.stationsinzoneresult.location[i].name;
-        stations.push(ad);
-        _nearbyStations.push(response.stationsinzoneresult.location[i]['@id']);
-      }
+    //console.log(resp);
+    if (resp !== '{"stationsinzoneresult":{}}') {
+        var response = JSON.parse(resp);
+        var stations = [];
+        var nearbyStations = [];
+        if (Array.isArray(response.stationsinzoneresult.location)) {
+            var batchLength = response.stationsinzoneresult.location.length > 5 ? 5 : response.stationsinzoneresult.location.length;
+            for(var i = 0; i < batchLength; i++) {
+                let ad = {};
+                ad.from = response.stationsinzoneresult.location[i].name;
+                stations.push(ad);
+                nearbyStations.push(response.stationsinzoneresult.location[i]['@id']);
+            }
+        } else {
+            let ad = {};
+            ad.from = response.stationsinzoneresult.location.name;
+            stations.push(ad);
+            nearbyStations = [response.stationsinzoneresult.location['@id']];
+        }
+        return {ids: nearbyStations, names: stations};
     } else {
-      var ad = {};
-      ad.from = response.stationsinzoneresult.location.name;
-      stations.push(ad);
-      _nearbyStations = [response.stationsinzoneresult.location['@id']];
+        return -1;
     }
-
-    appmessage.addStation(stations, _packageKey++);
-
-  } else {
-    appmessage.appMessageError('No nearby stations', '', _packageKey++);
-  }
 };

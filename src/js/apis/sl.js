@@ -71,7 +71,7 @@ var _realtimeReponse = (resp, busFilterActive, filter, maxDepatures) => {
         Array.prototype.push.apply(deps, response.ResponseData.Trains);
     }
 
-    for (var i = 0; i < deps.length; i++){
+    for (var i = 0; i < deps.length; i++) {
         var ad = {};
         ad.number = deps[i].LineNumber;
         if(deps[i].DisplayTime === 'Nu') {

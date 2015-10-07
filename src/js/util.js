@@ -64,3 +64,8 @@ export var filterRides = function(ride, filter) {
     }
     return false;
 };
+
+var silent = false;
+export var log = (msg) => {
+    if (!silent) console.log(msg);
+};

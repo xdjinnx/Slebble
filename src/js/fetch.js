@@ -1,3 +1,5 @@
+var log = require('./util.js').log;
+
 /**
  * A simple fetch polyfill
  * @param  {string} url     Url to hit
@@ -7,6 +9,7 @@
 export var fetch = (url, options) => {
     'use strict';
     return new Promise((resolve, reject) => {
+        log(url);
         // Do the usual XHR stuff
         var req = new XMLHttpRequest();
         if (options !== undefined && options.method !== undefined) {
