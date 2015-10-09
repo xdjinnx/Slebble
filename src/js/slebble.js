@@ -56,7 +56,7 @@ module.exports = (function() {
             let busFilterActive = step === 1 ? false : _config.route[_queryIndex].busFilterActive;
             log('stolptid step '+step);
             resrobot.stolptid(_queryId, {
-                busFilterActive: step === 1 ? busFilterActive : false,
+                busFilterActive: busFilterActive,
                 filter: _config.route[_queryIndex].filter,
                 maxDepatures: _maxDepatures
             }).then((rides) => {
