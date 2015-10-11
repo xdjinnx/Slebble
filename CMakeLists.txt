@@ -10,5 +10,5 @@ if(TRAVIS)
 endif()
 
 enable_testing()
-add_subdirectory(src)
+add_subdirectory(src/c)
 add_subdirectory(test)
