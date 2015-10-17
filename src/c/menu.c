@@ -199,7 +199,7 @@ void window_load(Window *window) {
     });
 
     menu->load_image = gbitmap_create_with_resource(menu->load_image_resource_id);
-    bitmap_layer_set_background_color(menu->load_layer, GColorWhite);
+    bitmap_layer_set_background_color(menu->load_layer, GColorBlack);
     bitmap_layer_set_bitmap(menu->load_layer, menu->load_image);
 
     layer_add_child(window_layer, menu_layer_get_layer(menu->layer));
