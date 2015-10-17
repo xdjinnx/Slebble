@@ -64,6 +64,9 @@ void selection_changed_callback(struct MenuLayer *menu_layer, MenuIndex new_inde
 
 }
 
+/**
+* CRASHES HERE
+*/
 void text_scroll_handler(void *data) {
     Menu* menu = *((Menu**)data);
     MenuIndex selected_item = menu_layer_get_selected_index(menu->layer);

@@ -10,10 +10,8 @@ module.exports = (function() {
     var _provider = '';
     var _config = {};
     var _maxDepatures = 15;
-    var _queryIndex = 0;
     var _queryId = 0;
-    var _locationOptions = {timeout: 15000, maximumAge: 60000 };
-    var _packageKey = 1;
+    var _locationOptions = {timeout: 15000, maximumAge: 60000};
     var _nearbyStations = [];
     var _lastQueryId;
 
@@ -32,9 +30,9 @@ module.exports = (function() {
      * Request rides
      * @param index Station index
      */
-     var _requestRides = (index, step = 0) => {
-        _queryIndex = index;
-        log('step '+step);
+     var _requestRides = (index, step = 0, expectedPackageKey) => {
+        log('step ' + step);
+        log('expectedPackageKey '+ expectedPackageKey);
         if (step !== 1) {
             _queryId = _config.route[index].locationid;
             _nearbyStations = [];
@@ -45,35 +43,36 @@ module.exports = (function() {
         log(_queryId);
         if (_provider === 'sl' && step !== 1) { // if step is 1 request if from nearby
             slApi.realtime(_queryId, {
-                busFilterActive: _config.route[_queryIndex].busFilterActive,
-                filter: _config.route[_queryIndex].filter,
+                busFilterActive: _config.route[index].busFilterActive,
+                filter: _config.route[index].filter,
                 maxDepatures: _maxDepatures
             }).then((rides) => {
                 _lastQueryId = _queryId;
-                appmessage.addRide(rides, _packageKey);
-            }).catch(() => appmessage.appMessageError('No rides available', 'Try again later', _packageKey++));
+                appmessage.addRide(rides, expectedPackageKey);
+            }).catch(() => appmessage.appMessageError('No rides available', 'Try again later', expectedPackageKey));
         } else {
-            let busFilterActive = step === 1 ? false : _config.route[_queryIndex].busFilterActive;
+            let busFilterActive = step === 1 ? false : _config.route[index].busFilterActive;
             log('stolptid step '+step);
             resrobot.stolptid(_queryId, {
                 busFilterActive: busFilterActive,
-                filter: _config.route[_queryIndex].filter,
+                filter: _config.route[index].filter,
                 maxDepatures: _maxDepatures
             }).then((rides) => {
                 _lastQueryId = _queryId;
                 rides.forEach(r => log(r));
-                appmessage.addRide(rides, _packageKey);
-            }).catch(() => appmessage.appMessageError('No rides available', 'Try again later', _packageKey++));
+                appmessage.addRide(rides, expectedPackageKey);
+            }).catch(() => appmessage.appMessageError('No rides available', 'Try again later', expectedPackageKey));
         }
 
     };
 
-    var _requestUpdate = () => {
-        _requestRides(_lastQueryId);
-        // _lastOptions.packageKey = _packageKey - 1;
+    var _requestUpdate = (expectedPackageKey) => {
+        _requestRides(_lastQueryId, 0, expectedPackageKey);
     };
 
-    var _requestGeoRides = () => {
+    var locationVariable = 0;
+    var _requestGeoRides = (expectedPackageKey) => {
+        locationVariable = expectedPackageKey;
         navigator.geolocation.getCurrentPosition(_locationSuccess, _locationError, _locationOptions);
     };
 
@@ -87,8 +86,8 @@ module.exports = (function() {
         resrobot.nearbyStations(coordinates.latitude, coordinates.longitude)
         .then((stations) => {
             objectAssign(_nearbyStations, stations.ids);
-            appmessage.addStation(stations.names, _packageKey++);
-        }).catch(() => appmessage.appMessageError('No nearby stations', '', _packageKey++));
+            appmessage.addStation(stations.names, locationVariable);
+        }).catch(() => appmessage.appMessageError('No nearby stations', '', locationVariable));
     };
 
     /**
@@ -98,7 +97,7 @@ module.exports = (function() {
      */
     var _locationError = (err) => {
         console.warn('location error (' + err.code + '): ' + err.message);
-        appmessage.appMessageError('Location error', 'Can\'t get your location', _packageKey++);
+        appmessage.appMessageError('Location error', 'Can\'t get your location', locationVariable);
     };
 
     var open = {

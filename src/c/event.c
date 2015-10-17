@@ -73,10 +73,11 @@ void event_tick_handler(int size, void *data) {
     }
 }
 
-void appmessage(int index, int step) {
+void appmessage(int index, int step, int local_expected_package_key) {
     queue_size = 0;
     Tuplet value1 = TupletInteger(1, index);
     Tuplet value2 = TupletInteger(2, step);
+    Tuplet value3 = TupletInteger(3, local_expected_package_key);
 
     DictionaryIterator *iter;
     app_message_outbox_begin(&iter);
@@ -86,16 +87,16 @@ void appmessage(int index, int step) {
 
     dict_write_tuplet(iter, &value1);
     dict_write_tuplet(iter, &value2);
+    dict_write_tuplet(iter, &value3);
     dict_write_end(iter);
 
     app_message_outbox_send();
 }
 
 void update_appmessage() {
-    appmessage(0, 2);
+    appmessage(0, 2, expected_package_key);
 }
 
 void send_appmessage(int index, int step) {
-    expected_package_key++;
-    appmessage(index, step);
+    appmessage(index, step, ++expected_package_key);
 }

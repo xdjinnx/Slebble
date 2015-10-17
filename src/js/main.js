@@ -3,12 +3,12 @@
 var Slebble = require('./slebble.js');
 
 Pebble.addEventListener('ready', () => {
-    //console.log('ready');
+    console.log('ready');
     var response = localStorage.data;
     if (response !== '' && typeof response === 'string') {
-        //console.log('has data');
+        console.log('has data');
         response = JSON.parse(localStorage.data);
-        //console.log('saved data'+JSON.stringify(response));
+        console.log('saved data'+JSON.stringify(response));
         Slebble.loadConfig(response);
         var stations = [];
         for (var i = 0; i < response.route.length; i++) {
@@ -58,15 +58,20 @@ Pebble.addEventListener('webviewclosed', (e) => {
 });
 
 Pebble.addEventListener('appmessage', (e) => {
+    /**
+    * payload[1] : menu row
+    * payload[2] : step, is saying which instruction the watch excpects
+    * payload[3] : expected package key
+    */
     if (e.payload[2] === 0) {
         if (e.payload[1] !== 0) {
-            Slebble.requestRides(e.payload[1] - 1, 0);
+            Slebble.requestRides(e.payload[1] - 1, e.payload[2], e.payload[3]);
         } else {
-            Slebble.requestGeoRides();
+            Slebble.requestGeoRides(e.payload[3]);
         }
     } else if (e.payload[2] === 1){
-        Slebble.requestRides(e.payload[1], e.payload[2]);
+        Slebble.requestRides(e.payload[1], e.payload[2], e.payload[3]);
     } else {
-        Slebble.requestUpdate();
+        Slebble.requestUpdate(e.payload[3]);
     }
 });
