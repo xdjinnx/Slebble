@@ -6,7 +6,6 @@
  * @param {number} packageKey A unique key that a set of messages should have
  */
 export var addStation = function(stations, packageKey) {
-    console.log(stations.length);
     if (stations.length < 1) return;
     Pebble.sendAppMessage({
             '0': packageKey,

@@ -70,7 +70,7 @@ var _stolptidResponse = (resp, busFilterActive, filter, maxDepatures) => {
     }
 
     // only filter if filter is actually active
-    if (busFilterActive) {
+    if (busFilterActive === 'true') {
         alldeps = alldeps.filter((ride) => util.filterRides(ride, filter));
     }
 

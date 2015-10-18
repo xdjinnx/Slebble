@@ -84,7 +84,6 @@ var _realtimeReponse = (resp, busFilterActive, filter, maxDepatures) => {
         }
         ad.destination = deps[i].Destination;
 
-
         if (deps[i].TransportMode === 'BUS') {
             ad.ridetype = cnst.RT_BUS;
         } else {
@@ -94,7 +93,7 @@ var _realtimeReponse = (resp, busFilterActive, filter, maxDepatures) => {
     }
 
     // only filter if filter is actually active
-    if (busFilterActive) {
+    if (busFilterActive === 'true') {
         alldeps = alldeps.filter((ride) => util.filterRides(ride, filter));
     }
 
