@@ -10,10 +10,9 @@ module.exports = (function() {
     var _provider = '';
     var _config = {};
     var _maxDepatures = 15;
-    var _queryId = 0;
     var _locationOptions = {timeout: 15000, maximumAge: 60000};
     var _nearbyStations = [];
-    var _lastQueryId;
+    var _lastIndex;
 
     /**
      * Load config object
@@ -33,13 +32,12 @@ module.exports = (function() {
      var _requestRides = (index, step = 0, expectedPackageKey) => {
         log('step ' + step);
         log('expectedPackageKey '+ expectedPackageKey);
-        if (step === 0) {
-            _queryId = _config.route[index].locationid;
+        var _queryId
+        if (step !== 1) {
+             _queryId = _config.route[index].locationid;
             _nearbyStations = [];
-        } else if(step === 1) {
-            _queryId = _nearbyStations[index];
         } else {
-            _queryId = _lastQueryId;
+            _queryId = _nearbyStations[index];
         }
 
         log(_queryId);
@@ -49,7 +47,7 @@ module.exports = (function() {
                 filter: _config.route[index].filter,
                 maxDepatures: _maxDepatures
             }).then((rides) => {
-                _lastQueryId = _queryId;
+                _lastIndex = index;
                 appmessage.addRide(rides, expectedPackageKey);
             }).catch(() => appmessage.appMessageError('No rides available', 'Try again later', expectedPackageKey));
         } else {
@@ -60,7 +58,7 @@ module.exports = (function() {
                 filter: _config.route[index].filter,
                 maxDepatures: _maxDepatures
             }).then((rides) => {
-                _lastQueryId = _queryId;
+                _lastIndex = index;
                 rides.forEach(r => log(r));
                 appmessage.addRide(rides, expectedPackageKey);
             }).catch(() => appmessage.appMessageError('No rides available', 'Try again later', expectedPackageKey));
@@ -69,7 +67,7 @@ module.exports = (function() {
     };
 
     var _requestUpdate = (expectedPackageKey) => {
-        _requestRides(0, 2, expectedPackageKey);
+        _requestRides(_lastIndex, 2, expectedPackageKey);
     };
 
     var locationVariable = 0;
