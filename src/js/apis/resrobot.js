@@ -77,8 +77,8 @@ var _stolptidResponse = (resp, busFilterActive, filter, maxDepatures) => {
     var batchLength  = alldeps.length > maxDepatures ? maxDepatures : alldeps.length;
     var rides = alldeps.slice(0, batchLength);
 
-    if (rides.length > 0) return -1;
-    else rides;
+    if (rides.length > 0) return rides;
+    else return -1;
 };
 
 /**
