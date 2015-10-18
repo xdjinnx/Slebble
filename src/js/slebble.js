@@ -33,11 +33,13 @@ module.exports = (function() {
      var _requestRides = (index, step = 0, expectedPackageKey) => {
         log('step ' + step);
         log('expectedPackageKey '+ expectedPackageKey);
-        if (step !== 1) {
+        if (step === 0) {
             _queryId = _config.route[index].locationid;
             _nearbyStations = [];
-        } else {
+        } else if(step === 1) {
             _queryId = _nearbyStations[index];
+        } else {
+            _queryId = _lastQueryId;
         }
 
         log(_queryId);
@@ -67,7 +69,7 @@ module.exports = (function() {
     };
 
     var _requestUpdate = (expectedPackageKey) => {
-        _requestRides(_lastQueryId, 0, expectedPackageKey);
+        _requestRides(0, 2, expectedPackageKey);
     };
 
     var locationVariable = 0;
