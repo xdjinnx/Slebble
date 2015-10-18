@@ -10,7 +10,7 @@ enum SLKey {
 };
 
 int queue_size = 0;
-Event_Row queue[20];
+Row* queue[20];
 int expected_package_key = 0;
 char *event_data_char = "Favorites";
 view_func add_view;
@@ -42,10 +42,11 @@ void in_received_handler(DictionaryIterator *iter, void *context) {
 
     if(package_tuple->value->uint8 >= expected_package_key) {
 
-        memcpy(queue[queue_size].title, title_tuple->value->cstring, title_tuple->length);
-        memcpy(queue[queue_size].subtitle, subtitle_tuple->value->cstring, subtitle_tuple->length);
-        queue[queue_size].data_int = int_tuple->value->int8;
-        memcpy(queue[queue_size].data_char, string_tuple->value->cstring, string_tuple->length);
+        queue[queue_size] = row_create();
+        memcpy(queue[queue_size]->title, title_tuple->value->cstring, title_tuple->length);
+        memcpy(queue[queue_size]->subtitle, subtitle_tuple->value->cstring, subtitle_tuple->length);
+        queue[queue_size]->data_int = int_tuple->value->int8;
+        memcpy(queue[queue_size]->data_char, string_tuple->value->cstring, string_tuple->length);
 
         queue_size++;
 

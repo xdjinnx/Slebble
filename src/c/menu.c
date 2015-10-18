@@ -46,9 +46,9 @@ void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuIndex *c
         menu_cell_basic_draw(ctx, cell_layer, "Nearby Stations", "", NULL);
     else {
         if(selected_item.row == cell_index->row && text_scroll >= 0)
-            menu_cell_basic_draw(ctx, cell_layer, menu->row_title[cell_index->row]+((uint)text_scroll*sizeof(char)), menu->row_subtitle[cell_index->row], NULL);
+            menu_cell_basic_draw(ctx, cell_layer, menu->row[cell_index->row]->title+((uint)text_scroll*sizeof(char)), menu->row[cell_index->row]->subtitle, NULL);
         else
-            menu_cell_basic_draw(ctx, cell_layer, menu->row_title[cell_index->row], menu->row_subtitle[cell_index->row], NULL);
+            menu_cell_basic_draw(ctx, cell_layer, menu->row[cell_index->row]->title, menu->row[cell_index->row]->subtitle, NULL);
     }
 }
 
@@ -72,7 +72,7 @@ void text_scroll_handler(void *data) {
     MenuIndex selected_item = menu_layer_get_selected_index(menu->layer);
 
     if(menu->size > 0) {
-        char current_char = *(menu->row_title[selected_item.row]+((uint)text_scroll*sizeof(char)));
+        char current_char = *(menu->row[selected_item.row]->title+((uint)text_scroll*sizeof(char)));
         //Fixes åäö edge case
         if(current_char == 195)
             text_scroll++;
@@ -81,7 +81,7 @@ void text_scroll_handler(void *data) {
     if(!(menu->id == 0 && selected_item.section == 0))
         text_scroll++;
 
-    if(menu->size > 0 && text_scroll > ((int)strlen(menu->row_title[selected_item.row])) - 17)
+    if(menu->size > 0 && text_scroll > ((int)strlen(menu->row[selected_item.row]->title)) - 17)
         text_scroll = -2;
 
     menu_layer_reload_data(menu->layer);
@@ -92,39 +92,27 @@ void text_scroll_handler(void *data) {
 void menu_allocation(Menu *menu, int size) {
     if(menu->size == 0) {
         menu->title = malloc(sizeof(char)*32);
-        menu->row_title = malloc(sizeof(char*)*size);
-        menu->row_subtitle = malloc(sizeof(char*)*size);
-        menu->data_char = malloc(sizeof(char*)*size);
+        menu->row = malloc(sizeof(Row*)*size);
+
         for(int i = 0; i < size; i++) {
-            menu->row_title[i] = malloc(sizeof(char)*32);
-            menu->row_subtitle[i] = malloc(sizeof(char)*32);
-            menu->data_char[i] = malloc(sizeof(char)*32);
+          menu->row[i] = row_create();
         }
-        menu->data_int = malloc(sizeof(int)*size);
     }
 
     if(menu->size != size && menu->size != 0) {
         if(menu->size > size) {
             for(int i = size; i < menu->size; i++) {
-                free(menu->row_title[i]);
-                free(menu->row_subtitle[i]);
-                free(menu->data_char[i]);
+              row_destroy(menu->row[i]);
             }
         }
 
-        menu->row_title = realloc(menu->row_title, sizeof(char*)*size);
-        menu->row_subtitle = realloc(menu->row_subtitle, sizeof(char*)*size);
-        menu->data_char = realloc(menu->data_char, sizeof(char*)*size);
+        menu->row = realloc(menu->row, sizeof(Row*)*size);
 
         if(menu->size < size) {
             for(int i = menu->size; i < size; i++) {
-                menu->row_title[i] = malloc(sizeof(char)*32);
-                menu->row_subtitle[i] = malloc(sizeof(char)*32);
-                menu->data_char[i] = malloc(sizeof(char)*32);
+              menu->row[i] = row_create();
             }
         }
-
-        menu->data_int = realloc(menu->data_int, sizeof(int)*size);
     }
 
     menu->size = size;
@@ -133,15 +121,10 @@ void menu_allocation(Menu *menu, int size) {
 void menu_free_rows(Menu *menu) {
     if(menu->size != 0) {
         for(int i = 0; i < menu->size; i++) {
-            free(menu->row_title[i]);
-            free(menu->row_subtitle[i]);
-            free(menu->data_char[i]);
+            row_destroy(menu->row[i]);
         }
-        free(menu->row_title);
-        free(menu->row_subtitle);
+        free(menu->row);
         free(menu->title);
-        free(menu->data_int);
-        free(menu->data_char);
     }
 }
 
@@ -152,9 +135,9 @@ bool load_persistent(Menu *menu) {
         menu_allocation(menu, size);
 
         for(int i = 1; persist_exists(i); i++) {
-            persist_read_string(i, menu->row_title[i-1], 32);
+            persist_read_string(i, menu->row[i-1]->title, 32);
             snprintf(menu->title, 32, "%s", "Favorites");
-            snprintf(menu->row_subtitle[i-1], 32, "%s", "");
+            snprintf(menu->row[i-1]->subtitle, 32, "%s", "");
             menu->size = size;
         }
 
@@ -166,7 +149,7 @@ bool load_persistent(Menu *menu) {
 void store_persistent(Menu *menu) {
     persist_write_int(0, menu->size);
     for(int i = 0; i < menu->size; i++)
-        persist_write_string(i+1, menu->row_title[i]);
+        persist_write_string(i+1, menu->row[i]->title);
 }
 
 void window_load(Window *window) {
@@ -257,7 +240,7 @@ void hide_load_image(Menu *menu, bool vibe) {
     }
 }
 
-void menu_add_rows(void *menu_void, char *title, Event_Row* queue, int queue_size) {
+void menu_add_rows(void *menu_void, char *title, Row** queue, int queue_size) {
     if(menu_void == NULL)
         return;
 
@@ -267,25 +250,18 @@ void menu_add_rows(void *menu_void, char *title, Event_Row* queue, int queue_siz
 
     for(int i = 0; i < queue_size; i++) {
         memcpy(menu->title, title, 32);
+        row_memcpy(menu->row[i], queue[i]);
 
-        if(0 < strlen(queue[i].title))
-            memcpy(menu->row_title[i], queue[i].title, 32);
+        if(0 < strlen(queue[i]->title))
+            memcpy(menu->row[i]->title, queue[i]->title, 32);
         else {
-            if(queue[i].data_int > 0) {
-                snprintf(menu->row_title[i], 32, "%dmin - %s", queue[i].data_int, queue[i].data_char);
+            if(queue[i]->data_int > 0) {
+                snprintf(menu->row[i]->title, 32, "%dmin - %s", queue[i]->data_int, queue[i]->data_char);
             } else {
-                snprintf(menu->row_title[i], 32, "Nu - %s", queue[i].data_char);
+                snprintf(menu->row[i]->title, 32, "Nu - %s", queue[i]->data_char);
             }
         }
-
-        memcpy(menu->row_subtitle[i], queue[i].subtitle, 32);
-
-        if(queue[i].data_char != NULL)
-            memcpy(menu->data_char[i], queue[i].data_char, 32);
-
-        int *temp = menu->data_int;
-            temp[i] = queue[i].data_int;
-
+        row_destroy(queue[i]);
     }
 
     menu_layer_reload_data(menu->layer);
@@ -293,18 +269,6 @@ void menu_add_rows(void *menu_void, char *title, Event_Row* queue, int queue_siz
     if(menu->id == 0)
         store_persistent(menu);
 }
-
-void menu_update_row(void *menu_void, int index, char *title, int data_int) {
-    if(menu_void == NULL)
-        return;
-
-    Menu *menu = (Menu*)menu_void;
-
-    memcpy(menu->row_title[index], title, 32);
-    int *temp = menu->data_int;
-        temp[index] = data_int;
-}
-
 
 void menu_init_text_scroll(Menu **menu) {
     scroll_timer = app_timer_register(500, &text_scroll_handler, menu);

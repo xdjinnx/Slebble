@@ -7,15 +7,18 @@ bool first_tick = false;
 
 void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
     if(first_tick) {
-        event_tick_handler(menu->size, menu->data_int);
+
         for(int i = 0; i < menu->size; i++) {
-            char buf[32];
-            if(((int*)menu->data_int)[i] > 0) {
-                snprintf(buf, 32, "%dmin - %s", ((int*)menu->data_int)[i], ((char**)menu->data_char)[i]);
+            if(menu->row[i]->data_int > 0)
+                menu->row[i]->data_int--;
+        }
+
+        for(int i = 0; i < menu->size; i++) {
+            if(menu->row[i]->data_int > 0) {
+              snprintf(menu->row[i]->title, 32, "%dmin - %s", menu->row[i]->data_int, menu->row[i]->data_char);
             } else {
-                snprintf(buf, 32, "Nu - %s", ((char**)menu->data_char)[i]);
+              snprintf(menu->row[i]->title, 32, "Nu - %s", menu->row[i]->data_char);
             }
-            menu_update_row(menu, i, buf, ((int*)menu->data_int)[i]);
         }
         menu_layer_reload_data(menu->layer);
 
@@ -33,7 +36,7 @@ void remove_callback_handler(void *data) {
 }
 
 void select_nearby_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
-    char *click_data = menu->row_title[cell_index->row];
+    char *click_data = menu->row[cell_index->row]->title;
     int row_clicked = cell_index->row;
 
     event_set_click_data(click_data);
@@ -62,7 +65,7 @@ void select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
         click_data = "Nearby Stations";
         row_clicked--;
     } else
-        click_data = menu->row_title[cell_index->row];
+        click_data = menu->row[cell_index->row]->title;
 
     event_set_click_data(click_data);
 
