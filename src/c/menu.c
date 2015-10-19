@@ -195,6 +195,8 @@ void window_load(Window *window) {
 
 void window_unload(Window *window) {
     Menu* menu = window_get_user_data(window);
+    if(menu->id == 0)
+      menu_deinit_text_scroll();
 
     Menu *ret = menu->menu;
 

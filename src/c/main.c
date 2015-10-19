@@ -108,5 +108,4 @@ int main(void) {
     app_event_loop();
 
     app_message_deregister_callbacks();
-    menu_deinit_text_scroll();
 }
