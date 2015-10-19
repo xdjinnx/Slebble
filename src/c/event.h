@@ -2,8 +2,9 @@
 
 #include "pebble.h"
 #include "row.h"
+#include "queue.h"
 
-typedef void (*view_func)(void*, char*, Row**, int);
+typedef void (*view_func)(void*, char*, Queue*);
 
 extern void send_appmessage(int index, int step);
 extern void update_appmessage();

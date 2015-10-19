@@ -9,8 +9,7 @@ enum SLKey {
     LAST_KEY = 0x5
 };
 
-int queue_size = 0;
-Row* queue[20];
+Queue *queue;
 int expected_package_key = 0;
 char *event_data_char = "Favorites";
 view_func add_view;
@@ -19,6 +18,7 @@ void **view_ptr;
 void event_set_view_func(void *view, view_func func) {
     view_ptr = view;
     add_view = func;
+    queue = queue_create();
 }
 
 void event_set_click_data(char* data) {
@@ -42,17 +42,16 @@ void in_received_handler(DictionaryIterator *iter, void *context) {
 
     if(package_tuple->value->uint8 >= expected_package_key) {
 
-        queue[queue_size] = row_create();
-        memcpy(queue[queue_size]->title, title_tuple->value->cstring, title_tuple->length);
-        memcpy(queue[queue_size]->subtitle, subtitle_tuple->value->cstring, subtitle_tuple->length);
-        queue[queue_size]->data_int = int_tuple->value->int8;
-        memcpy(queue[queue_size]->data_char, string_tuple->value->cstring, string_tuple->length);
+        Row *row = row_create();
+        memcpy(row->title, title_tuple->value->cstring, title_tuple->length);
+        memcpy(row->subtitle, subtitle_tuple->value->cstring, subtitle_tuple->length);
+        row->data_int = int_tuple->value->int8;
+        memcpy(row->data_char, string_tuple->value->cstring, string_tuple->length);
 
-        queue_size++;
+        queue = queue_queue(queue, row);
 
         if(last_tuple->value->int8) {
-            add_view(*view_ptr, event_data_char, queue, queue_size);
-            queue_size = 0;
+            add_view(*view_ptr, event_data_char, queue);
         }
 
     }
@@ -66,16 +65,12 @@ void event_register_app_message() {
   app_comm_set_sniff_interval(SNIFF_INTERVAL_REDUCED);
 }
 
-void event_tick_handler(int size, void *data) {
-    int *min_left = data;
-    for(int i = 0; i < size; i++) {
-        if(min_left[i] > 0)
-            min_left[i]--;
-    }
-}
-
 void appmessage(int index, int step, int local_expected_package_key) {
-    queue_size = 0;
+    while(!queue_empty(queue)) {
+      Row * row = queue_pop(queue);
+      free(row);
+    }
+
     Tuplet value1 = TupletInteger(1, index);
     Tuplet value2 = TupletInteger(2, step);
     Tuplet value3 = TupletInteger(3, local_expected_package_key);

@@ -240,28 +240,29 @@ void hide_load_image(Menu *menu, bool vibe) {
     }
 }
 
-void menu_add_rows(void *menu_void, char *title, Row** queue, int queue_size) {
+void menu_add_rows(void *menu_void, char *title, Queue *queue) {
     if(menu_void == NULL)
         return;
 
     Menu *menu = (Menu*)menu_void;
 
-    menu_allocation(menu, queue_size);
+    menu_allocation(menu, queue_length(queue));
 
-    for(int i = 0; i < queue_size; i++) {
+    for(int i = 0; !queue_empty(queue); i++) {
+        Row *row = queue_pop(queue);
         memcpy(menu->title, title, 32);
-        row_memcpy(menu->row[i], queue[i]);
+        row_memcpy(menu->row[i], row);
 
-        if(0 < strlen(queue[i]->title))
-            memcpy(menu->row[i]->title, queue[i]->title, 32);
+        if(0 < strlen(row->title))
+            memcpy(menu->row[i]->title, row->title, 32);
         else {
-            if(queue[i]->data_int > 0) {
-                snprintf(menu->row[i]->title, 32, "%dmin - %s", queue[i]->data_int, queue[i]->data_char);
+            if(row->data_int > 0) {
+                snprintf(menu->row[i]->title, 32, "%dmin - %s", row->data_int, row->data_char);
             } else {
-                snprintf(menu->row[i]->title, 32, "Nu - %s", queue[i]->data_char);
+                snprintf(menu->row[i]->title, 32, "Nu - %s", row->data_char);
             }
         }
-        row_destroy(queue[i]);
+        row_destroy(row);
     }
 
     menu_layer_reload_data(menu->layer);

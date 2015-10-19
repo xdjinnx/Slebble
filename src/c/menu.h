@@ -2,6 +2,7 @@
 
 #include "pebble.h"
 #include "row.h"
+#include "queue.h"
 
 typedef struct MenuCallbacks {
     void (*select_click)(MenuLayer*, MenuIndex*, void*);
@@ -26,7 +27,7 @@ typedef struct Menu {
 } Menu;
 
 extern Menu* menu_create(uint32_t load_image_resource_id, MenuCallbacks callbacks);
-extern void menu_add_rows(void *menu, char *title, Row **queue, int queue_size);
+extern void menu_add_rows(void *menu, char *title, Queue *queue);
 
 extern void menu_init_text_scroll(Menu **menu);
 extern void menu_deinit_text_scroll();
