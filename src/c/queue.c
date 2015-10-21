@@ -1,54 +1,44 @@
 #include "queue.h"
 
 void* queue_pop(Queue *queue){
-  if(queue->next == queue->prev) {
-    queue->next = NULL;
-    queue->prev = NULL;
-    return queue->value;
-  }
+  Queue_Node *node = queue->last;
+  queue->last = queue->last->prev;
 
-  void *ret = queue->prev->value;
-  Queue *temp_queue = queue->prev->prev;
-
-  queue->prev->prev->next = queue;
-  queue->prev->next = NULL;
-  queue_destroy(queue->prev);
-  queue->prev = temp_queue;
+  void* ret = node->value;
+  free(node);
 
   return ret;
 }
 
 void* queue_peek(Queue *queue) {
-  return queue->prev->value;
+  return queue->last->value;
 }
 
-Queue* queue_queue(Queue *queue, void *value) {
-  if(queue_empty(queue)) {
-    queue->next = queue;
-    queue->prev = queue;
-    queue->value = value;
-    return queue;
+void queue_queue(Queue *queue, void *value) {
+  Queue_Node *node = malloc(sizeof(Queue_Node));
+  node->value = value;
+  node->prev = NULL;
+
+  if(queue->last == NULL) {
+    queue->first = node;
+    queue->last = node;
+    return;
   }
 
-  Queue *new_queue = queue_create();
-  new_queue->value = value;
-  new_queue->next = queue;
-  new_queue->prev = queue->prev;
-  queue->prev->next = new_queue;
-  queue->prev  = new_queue;
-  return new_queue;
+  queue->first->prev = node;
+  queue->first = node;
+
 }
 
 Queue* queue_create() {
   Queue *queue = malloc(sizeof(Queue));
-  queue->next = NULL;
-  queue->prev = NULL;
-  queue->value = NULL;
+  queue->first = NULL;
+  queue->last = NULL;
   return queue;
 }
 
 bool queue_empty(Queue *queue) {
-  return queue->next == NULL;
+  return queue->last == NULL;
 }
 
 bool queue_destroy(Queue *queue) {
@@ -60,14 +50,12 @@ bool queue_destroy(Queue *queue) {
 }
 
 int queue_length(Queue *queue) {
-  if(queue_empty(queue))
-    return 0;
-  int length = 1;
-  Queue *temp = queue->next;
+  int length = 0;
+  Queue_Node *node = queue->last;
 
-  while(queue != temp) {
+  while(node != NULL) {
     length++;
-    temp = temp->next;
+    node = node->prev;
   }
   return length;
 }

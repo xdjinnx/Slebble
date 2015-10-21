@@ -48,7 +48,7 @@ void in_received_handler(DictionaryIterator *iter, void *context) {
         row->data_int = int_tuple->value->int8;
         memcpy(row->data_char, string_tuple->value->cstring, string_tuple->length);
 
-        queue = queue_queue(queue, row);
+        queue_queue(queue, row);
 
         if(last_tuple->value->int8) {
             add_view(*view_ptr, event_data_char, queue);
