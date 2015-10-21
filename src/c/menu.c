@@ -247,6 +247,8 @@ void menu_add_rows(void *menu_void, char *title, Queue *queue) {
         return;
 
     Menu *menu = (Menu*)menu_void;
+    if(0 < menu->size && strcmp(menu->title, title) != 0)
+      return;
 
     menu_allocation(menu, queue_length(queue));
 
