@@ -32,16 +32,16 @@ module.exports = (function() {
      var _requestRides = (index, step = 0, expectedPackageKey) => {
         log('step ' + step);
         log('expectedPackageKey '+ expectedPackageKey);
-        var _queryId
-        if (step !== 1) {
-             _queryId = _config.route[index].locationid;
-            _nearbyStations = [];
-        } else {
+        var _queryId;
+        if (step === 1 || (step === 2 && 0 < _nearbyStations.length)) {
             _queryId = _nearbyStations[index];
+        } else {
+            _queryId = _config.route[index].locationid;
+            _nearbyStations = [];
         }
 
         log(_queryId);
-        if (_provider === 'sl' && step !== 1) { // if step is 1 request if from nearby
+        if (_provider === 'sl' && 0 === _nearbyStations.length) { // if step is 1 request if from nearby
             slApi.realtime(_queryId, {
                 busFilterActive: _config.route[index].busFilterActive,
                 filter: _config.route[index].filter,
@@ -51,7 +51,7 @@ module.exports = (function() {
                 appmessage.addRide(rides, expectedPackageKey);
             }).catch(() => appmessage.appMessageError('No rides available', 'Try again later', expectedPackageKey));
         } else {
-            let busFilterActive = step === 1 ? false : _config.route[index].busFilterActive;
+            let busFilterActive = 0 < _nearbyStations.length ? false : _config.route[index].busFilterActive;
             log('stolptid step '+step);
             resrobot.stolptid(_queryId, {
                 busFilterActive: busFilterActive,
