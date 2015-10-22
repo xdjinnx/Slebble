@@ -67,6 +67,9 @@ void select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
     } else
         click_data = menu->row[cell_index->row]->title;
 
+    if(strcmp(click_data, "No configuration") == 0)
+      return;
+
     event_set_click_data(click_data);
 
     Menu *temp = menu;
