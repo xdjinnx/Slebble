@@ -52,10 +52,11 @@ module.exports = (function() {
             }).catch(() => appmessage.appMessageError('No rides available', 'Try again later', expectedPackageKey));
         } else {
             let busFilterActive = 0 < _nearbyStations.length ? false : _config.route[index].busFilterActive;
+            let busFilter = 0 < _nearbyStations.length ? [] : _config.route[index].filter;
             log('stolptid step '+step);
             resrobot.stolptid(_queryId, {
                 busFilterActive: busFilterActive,
-                filter: _config.route[index].filter,
+                filter: busFilter,
                 maxDepatures: _maxDepatures
             }).then((rides) => {
                 _lastIndex = index;
