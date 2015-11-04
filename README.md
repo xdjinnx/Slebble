@@ -2,7 +2,7 @@
 
 # Slebble
 
-[![Slebble is available on the Pebble appstore](http://pblweb.com/badge/5320c36f53fab421d000003a/black/large)](https://apps.getpebble.com/applications/5320c36f53fab421d000003a)
+[![Slebble is available on the Pebble appstore](http://pblweb.com/badge/5320c36f53fab421d000003a/orange/large)](https://apps.getpebble.com/applications/5320c36f53fab421d000003a)
 
 ## Screenshots
 
@@ -25,7 +25,7 @@ The most important part of the gulp execution is the [webpack](https://webpack.g
 ## Testing
 The Slebble js is tested using the [Jest](https://facebook.github.io/jest/) testing framework. Which practices we are using when testing the private functions in the Slebble js can be found [here](http://philipwalton.com/articles/how-to-unit-test-private-functions-in-javascript/).
 
-Testing of the C code is for now absent. The framework that should be used to test the code is undecided. Two examples of frameworks that could be used is [Check](http://check.sourceforge.net/) and [cmocka](https://cmocka.org/).
+Testing of the C code is for now absent. The framework that should be used to test the code is [cmocka](https://cmocka.org/).
 
 ## License
 
