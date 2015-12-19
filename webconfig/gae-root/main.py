@@ -10,28 +10,22 @@ bottle = Bottle()
 def resrobot(query):
     json = memcache.get('resrobot_'+query)
     if json is None:
-        key = 'UacUcP0MlG9fZ0j82r1k5he6KXQ6koSS'
-        url = 'https://api.trafiklab.se/samtrafiken/resrobot/FindLocation.json'
-        url += '?key=' + key + '&from=' + urllib2.quote(query) + '&coordSys=RT90&apiVersion=2.1'
+        key = '77697c18-628a-49ec-a6de-c194ca16cbcb'
+        url = 'https://api.resrobot.se/location.name.json'
+        url += '?key=' + key + '&input=' + urllib2.quote(query)
         print url
         response = urllib2.urlopen(url)
         the_page = response.read()
         jsondata = loads(the_page)
 
-        stations = jsondata['findlocationresult']['from']['location']
+        stations = jsondata['StopLocation']
 
         data = []
-        if not isinstance(stations, list):
+        for s in stations:
             stat = {}
-            stat['id'] = stations['locationid']
-            stat['name'] = stations['displayname']
+            stat['id'] = s['id']
+            stat['name'] = s['name']
             data.append(stat)
-        else:
-            for s in stations:
-                stat = {}
-                stat['id'] = s['locationid']
-                stat['name'] = s['displayname']
-                data.append(stat)
 
         json = loads('{"result":'+JSONEncoder().encode(data)+'}')
         memcache.add('resrobot_'+query, json)
