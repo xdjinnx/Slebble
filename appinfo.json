@@ -29,8 +29,8 @@
   },
   "shortName": "Slebble",
   "uuid": "7bd25d0e-ad3c-4e7c-9256-12be89a1a482",
-  "versionCode": 23,
-  "versionLabel": "2.3",
+  "versionCode": 24,
+  "versionLabel": "2.4",
   "watchapp": {
     "watchface": false
   },
