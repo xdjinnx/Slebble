@@ -3,7 +3,7 @@ module.exports = (function() {
 
     var appmessage = require('./appmessage.js');
     var slApi = require('./apis/sl.js');
-    var resrobot = require('./apis/resrobot.js');
+    var resrobot = require('./apis/resrobot2.js');
     var objectAssign = require('object-assign');
     var log = require('./util.js').log;
 
@@ -60,7 +60,7 @@ module.exports = (function() {
                 maxDepatures: _maxDepatures
             }).then((rides) => {
                 _lastIndex = index;
-                rides.forEach(r => log(r));
+                //rides.forEach(r => log(r));
                 appmessage.addRide(rides, expectedPackageKey);
             }).catch(() => appmessage.appMessageError('No rides available', 'Try again later', expectedPackageKey));
         }
