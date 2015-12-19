@@ -21,7 +21,10 @@ install:
 - make --directory=cmocka-1.0.1/build && make install --directory=cmocka-1.0.1/build
 - nvm install 4.1
 - pip install --install-option="--no-cython-compile" cython
+- virtualenv --no-site-packages pebble-dev/${PEBBLE_SDK}/.env
+- source pebble-dev/${PEBBLE_SDK}/.env/bin/activate
 - pip install -r pebble-dev/${PEBBLE_SDK}/requirements.txt
+- deactivate
 - npm install
 - export PATH=$(pwd)/pebble-dev/${PEBBLE_SDK}/bin:$PATH
 - touch pebble-dev/NO_TRACKING
