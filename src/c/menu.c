@@ -289,6 +289,7 @@ Menu* menu_create(uint32_t load_image_resource_id, MenuCallbacks callbacks) {
     menu->callbacks = callbacks;
     menu->size = 0;
     menu->id = new_id++;
+    menu->title = "";
 
     bool loaded_persistant = load_persistent(menu);
 
