@@ -208,10 +208,10 @@ var Slebble = (function(){
 
     var provider = _provider.value;
 
-    var url = 'http://diesel-ability-711.appspot.com/'+provider+'/';
+    var url = 'https://diesel-ability-711.appspot.com/'+provider+'/';
 
     if (DEBUG) {
-      url = 'http://localhost:8080/'+provider+'/';
+      url = 'https://localhost:8080/'+provider+'/';
     }
 
     var req = new XMLHttpRequest();
