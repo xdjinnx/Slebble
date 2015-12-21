@@ -1,6 +1,6 @@
 {
   "name": "Slebble",
-  "version": "2.5.0",
+  "version": "2.6.0",
   "description": "Public transportation watchapp for Pebble smartwatch",
   "devDependencies": {
     "babel-eslint": "^4.1.3",
