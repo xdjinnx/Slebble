@@ -28,9 +28,9 @@ Pebble.addEventListener('ready', () => {
 
 Pebble.addEventListener('showConfiguration', () => {
     if (localStorage.data) {
-        Pebble.openURL('http://diesel-ability-711.appspot.com/webconfig/index.html?version=2.0' + '&setting=' + localStorage.data);
+        Pebble.openURL('https://diesel-ability-711.appspot.com/webconfig/index.html?version=2.0' + '&setting=' + localStorage.data);
     } else {
-        Pebble.openURL('http://diesel-ability-711.appspot.com/webconfig/index.html?version=2.0');
+        Pebble.openURL('https://diesel-ability-711.appspot.com/webconfig/index.html?version=2.0');
     }
 });
 
