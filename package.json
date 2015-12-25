@@ -9,7 +9,7 @@
     "gulp-eslint": "^1.0.0",
     "gulp-shell": "^0.4.3",
     "gulp-strip-code": "^0.1.2",
-    "jest-cli": "^0.5.9",
+    "jest-cli": "^0.8.2",
     "object-assign": "^4.0.1",
     "promise": "^7.0.4",
     "webpack-stream": "^2.1.1"

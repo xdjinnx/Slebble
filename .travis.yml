@@ -19,7 +19,7 @@ before_install:
 
 install:
 - make --directory=cmocka-1.0.1/build && make install --directory=cmocka-1.0.1/build
-- nvm install 4.1
+- nvm install 5.3
 - pip install --install-option="--no-cython-compile" cython
 - virtualenv --no-site-packages pebble-dev/${PEBBLE_SDK}/.env
 - source pebble-dev/${PEBBLE_SDK}/.env/bin/activate
