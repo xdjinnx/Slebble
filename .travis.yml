@@ -28,7 +28,7 @@ install:
 - npm install
 - export PATH=$(pwd)/pebble-dev/${PEBBLE_SDK}/bin:$PATH
 - touch pebble-dev/NO_TRACKING
-
+- echo y | pebble sdk install 3.8.2
 
 env:
   global:
