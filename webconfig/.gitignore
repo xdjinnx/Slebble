@@ -80,3 +80,8 @@ build/Release
 # https://www.npmjs.org/doc/misc/npm-faq.html#should-i-check-my-node_modules-folder-into-git-
 node_modules
 bower_components
+
+# Builddirs and webkit stuff
+gae-root/webconfig/fonts
+gae-root/webconfig/scripts
+gae-root/webconfig/styles
