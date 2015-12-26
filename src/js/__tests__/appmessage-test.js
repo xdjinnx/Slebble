@@ -1,8 +1,14 @@
 jest.dontMock('../appmessage.js');
-var appmessage = require('../appmessage.js');
-var nack = 0;
+var appmessage;
+var nack;
 
-describe('addStation', function() {
+
+beforeEach(function() {
+  appmessage = require('../appmessage.js');
+  nack = 0;
+});
+
+xdescribe('addStation', function() {
   it('checks if entire stations set is sent to watch', function() {
     Pebble = new PebbleMock();
     nack = 4;
@@ -13,7 +19,7 @@ describe('addStation', function() {
   });
 });
 
-describe('addRide', function() {
+xdescribe('addRide', function() {
   it('checks if entire ride set is sent to watch', function() {
     Pebble = new PebbleMock();
     nack = 4;
@@ -25,7 +31,7 @@ describe('addRide', function() {
   });
 });
 
-describe('addMessageError', function() {
+xdescribe('addMessageError', function() {
   it('checks if error message is sent to watch', function() {
     Pebble = new PebbleMock();
     nack = 4;

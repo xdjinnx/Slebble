@@ -1,8 +1,8 @@
-jest.dontMock('../api.js');
-var appmessage = require('../appmessage.js');
-var api = require('../api.js');
+//jest.dontMock('../api.js');
+//var appmessage = require('../appmessage.js');
+//var api = require('../api.js');
 
-describe('requestSLRealtime', function() {
+xdescribe('requestSLRealtime', function() {
   it('checks if XHR success route is correct', function() {
  	  XMLHttpRequest = XHRSuccessMockObject;
     var mockCallback = jest.genMockFunction();
@@ -29,7 +29,7 @@ describe('requestSLRealtime', function() {
   });
 });
 
-describe('requestResrobot', function() {
+xdescribe('requestResrobot', function() {
   it('checks if XHR success route is correct', function() {
  	  XMLHttpRequest = XHRSuccessMockObject;
     var mockCallback = jest.genMockFunction();
@@ -55,7 +55,7 @@ describe('requestResrobot', function() {
   });
 });
 
-describe('requestNearbyStations', function() {
+xdescribe('requestNearbyStations', function() {
   it('checks if requestNearbyStations works', function() {
  	  XMLHttpRequest = XHRSuccessMockObject;
     var mockCallback = jest.genMockFunction();
