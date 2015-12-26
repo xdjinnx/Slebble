@@ -2,10 +2,14 @@ sudo: false
 
 language: python
 
+git:
+  depth: 3
+
 cache:
   directories:
   - node_modules
   - pebble-dev
+  - cmocka-1.0.1
 
 script:
 - ./node_modules/.bin/gulp
