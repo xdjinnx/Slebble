@@ -1,8 +1,12 @@
 /* eslint strict: 0 */
+/* global trackJs */
 
 var Slebble = require('./slebble.js');
+window._trackJs = { token: '9f36ea9a2ea04439907e32f217e1fcc2' };
 
 Pebble.addEventListener('ready', () => {
+    trackJs.track('ahoy trackjs!');
+
     console.log('ready');
     var response = localStorage.data;
     if (response !== '' && typeof response === 'string') {
