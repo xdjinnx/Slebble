@@ -3,7 +3,8 @@ var gulp = require('gulp'),
     shell = require('gulp-shell'),
     webpack = require('webpack-stream'),
     stripCode = require('gulp-strip-code'),
-    eslint = require('gulp-eslint');
+    eslint = require('gulp-eslint'),
+    concat = require('gulp-concat');
 
 gulp.task('webpack', ['lint'], function() {
   return gulp.src('./src/js/main.js')
@@ -17,26 +18,32 @@ gulp.task('webpack', ['lint'], function() {
         }]
       }
     }))
-    .pipe(gulp.dest('./src/js/'));
+    .pipe(gulp.dest('./src/js/build/'));
 });
 
 gulp.task('lint', function(){
-  return gulp.src(['./src/js/*.js', '!./src/js/pebble-js-app.js'])
+  return gulp.src(['./src/js/*.js', '!./src/js/build/*'])
         .pipe(eslint())
         .pipe(eslint.format())
         .pipe(eslint.failAfterError());
 });
 
 gulp.task('strip', ['webpack'],function(){
-  return gulp.src(['./src/js/pebble-js-app.js'])
+  return gulp.src(['./src/js/build/pebble-js-app.js'])
     .pipe(stripCode({
       start_comment: "test-block",
       end_comment: "end-test-block"
     }))
-    .pipe(gulp.dest('./src/js'));
+    .pipe(gulp.dest('./src/js/build/'));
 });
 
-gulp.task('build', ['strip'], shell.task([
+gulp.task('concat', ['strip'], function() {
+  return gulp.src(['./src/js/build/pebble-js-app.js', './node_modules/trackjs/tracker.js'])
+    .pipe(concat('pebble-js-app.js'))
+    .pipe(gulp.dest('./src/js/build/'));
+});
+
+gulp.task('build', ['concat'], shell.task([
   'pebble build'
 ]));
 
