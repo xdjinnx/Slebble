@@ -12,7 +12,7 @@
 ![Screenshot4](https://assets.getpebble.com/api/file/KxSn79xGRnSZl8YXahUi/convert?cache=true&w=144&h=168&fit=)
 
 ## Build & Install
-You will need to download and install the Pebble SDK found on the [official Pebble developer website](https://developer.getpebble.com/sdk/install/). It's also recommended that you follow the instructions found on the website. **NOTE: The appmessage does not work in Slebble when compiling with a SDK above version 3.7**
+You will need to download and install the Pebble SDK found on the [official Pebble developer website](https://developer.getpebble.com/sdk/install/). It's also recommended that you follow the instructions found on the website.
 
 ### No Pebble watch needed
 There is an emulator available to use within the Pebble SDK. Instruction on how to use the emulator can be found [here](https://developer.getpebble.com/guides/publishing-tools/pebble-tool/#installing-watchapps) and how to use the settings page can be found [here](https://developer.getpebble.com/guides/pebble-apps/pebblekit-js/app-configuration/#testing-in-the-sdk-emulator).

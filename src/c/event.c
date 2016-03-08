@@ -26,7 +26,7 @@ void event_set_click_data(char* data) {
 }
 
 void in_dropped_handler(AppMessageResult reason, void *context) {
-    //APP_LOG(APP_LOG_LEVEL_WARNING, "DROPPED PACKAGE");
+    APP_LOG(APP_LOG_LEVEL_WARNING, "DROPPED PACKAGE");
 }
 
 void in_received_handler(DictionaryIterator *iter, void *context) {
@@ -61,7 +61,7 @@ void event_register_app_message() {
   app_message_register_inbox_received(in_received_handler);
   app_message_register_inbox_dropped(in_dropped_handler);
 
-  app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
+  app_message_open(512, 512);
   app_comm_set_sniff_interval(SNIFF_INTERVAL_REDUCED);
 }
 

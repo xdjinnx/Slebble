@@ -13,17 +13,17 @@
         "file": "images/SLEBBLE_BUS_ICON.png",
         "menuIcon": true,
         "name": "SLEBBLE_BUS_ICON",
-        "type": "png"
+        "type": "bitmap"
       },
       {
         "file": "images/SLEBBLE_START_BLACK.png",
         "name": "SLEBBLE_START_BLACK",
-        "type": "png"
+        "type": "bitmap"
       },
       {
         "file": "images/SLEBBLE_LOADING_BLACK.png",
         "name": "SLEBBLE_LOADING_BLACK",
-        "type": "png"
+        "type": "bitmap"
       }
     ]
   },
