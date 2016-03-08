@@ -1,4 +1,5 @@
 var log = require('./util.js').log;
+var Promise = require('promise');
 
 /**
  * A simple fetch polyfill

@@ -1,5 +1,7 @@
 /* eslint strict: 0 */
 
+var Promise = require('promise');
+
 var fetch = require('../fetch.js').fetch;
 var util = require('../util.js');
 var cnst = require('../const.js');
