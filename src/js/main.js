@@ -11,9 +11,8 @@ Pebble.addEventListener('ready', () => {
 
         var response = localStorage.data;
         if (response !== '' && typeof response === 'string') {
-            console.log('has data');
+            console.log(localStorage.data);
             response = JSON.parse(localStorage.data);
-            console.log('saved data'+JSON.stringify(response));
             Slebble.loadConfig(response);
             var stations = [];
             for (var i = 0; i < response.route.length; i++) {
@@ -50,6 +49,7 @@ Pebble.addEventListener('webviewclosed', (e) => {
             localStorage.setItem('data', e.response);
 
             if (localStorage.data) {
+                console.log(localStorage.data);
                 var response = JSON.parse(localStorage.data);
                 Slebble.loadConfig(response);
 
