@@ -27,9 +27,12 @@ The Slebble js is tested using the [Jest](https://facebook.github.io/jest/) test
 
 Testing of the C code is for now absent. The framework that should be used to test the code is [cmocka](https://cmocka.org/).
 
+## Sponsor
+[![Protected by TrackJS JavaScript Error Monitoring](https://trackjs.com/assets/external/badge.gif)](https://trackjs.com/?utm_source=badges)
+
 ## License
 
-	Copyright (C) 2014 - 2015  Peter Lundberg
+	Copyright (C) 2014 - 2016  Peter Lundberg
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
