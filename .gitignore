@@ -20,3 +20,5 @@ CMakeScripts
 Makefile
 cmake_install.cmake
 install_manifest.txt
+
+.lock-waf_darwin_build
