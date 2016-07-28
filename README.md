@@ -22,6 +22,11 @@ Before you can build the application you need to run [gulp](http://gulpjs.com/).
 
 The most important part of the gulp execution is the [webpack](https://webpack.github.io/) operation that concatinates the js files.
 
+## Formatting
+This project uses [Clang-Format](http://clang.llvm.org/docs/ClangFormat.html).
+
+The _fmt_ bash script should be used to keep consistency in the C code.
+
 ## Testing
 The Slebble js is tested using the [Jest](https://facebook.github.io/jest/) testing framework. Which practices we are using when testing the private functions in the Slebble js can be found [here](http://philipwalton.com/articles/how-to-unit-test-private-functions-in-javascript/).
 
