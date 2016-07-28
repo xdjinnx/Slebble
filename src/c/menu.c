@@ -45,7 +45,8 @@ void menu_draw_row_callback(GContext *ctx, const Layer *cell_layer, MenuIndex *c
     if (menu->id == 0 && cell_index->section == 0)
         menu_cell_basic_draw(ctx, cell_layer, "Nearby Stations", "", NULL);
     else {
-        char *title = menu->row[cell_index->row]->title char *subtitle = menu->row[cell_index->row]->subtitle;
+        char *title = menu->row[cell_index->row]->title;
+        char *subtitle = menu->row[cell_index->row]->subtitle;
 
         if (selected_item.row == cell_index->row && text_scroll >= 0) {
             title = title + ((uint)text_scroll * sizeof(char));
