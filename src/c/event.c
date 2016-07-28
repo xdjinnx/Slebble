@@ -21,7 +21,7 @@ void event_set_view_func(void *view, view_func func) {
     queue = queue_create();
 }
 
-void event_set_click_data(char* data) {
+void event_set_click_data(char *data) {
     event_data_char = data;
 }
 
@@ -30,8 +30,7 @@ void in_dropped_handler(AppMessageResult reason, void *context) {
 }
 
 void in_received_handler(DictionaryIterator *iter, void *context) {
-
-    //APP_LOG(APP_LOG_LEVEL_INFO, "Appmessage recived");
+    // APP_LOG(APP_LOG_LEVEL_INFO, "Appmessage recived");
 
     Tuple *package_tuple = dict_find(iter, PACKAGE_KEY);
     Tuple *title_tuple = dict_find(iter, TITLE_KEY);
@@ -40,8 +39,7 @@ void in_received_handler(DictionaryIterator *iter, void *context) {
     Tuple *string_tuple = dict_find(iter, STRING_KEY);
     Tuple *last_tuple = dict_find(iter, LAST_KEY);
 
-    if(package_tuple->value->uint8 >= expected_package_key) {
-
+    if (package_tuple->value->uint8 >= expected_package_key) {
         Row *row = row_create();
         memcpy(row->title, title_tuple->value->cstring, title_tuple->length);
         memcpy(row->subtitle, subtitle_tuple->value->cstring, subtitle_tuple->length);
@@ -50,25 +48,24 @@ void in_received_handler(DictionaryIterator *iter, void *context) {
 
         queue_queue(queue, row);
 
-        if(last_tuple->value->int8) {
+        if (last_tuple->value->int8) {
             add_view(*view_ptr, event_data_char, queue);
         }
-
     }
 }
 
 void event_register_app_message() {
-  app_message_register_inbox_received(in_received_handler);
-  app_message_register_inbox_dropped(in_dropped_handler);
+    app_message_register_inbox_received(in_received_handler);
+    app_message_register_inbox_dropped(in_dropped_handler);
 
-  app_message_open(512, 512);
-  app_comm_set_sniff_interval(SNIFF_INTERVAL_REDUCED);
+    app_message_open(512, 512);
+    app_comm_set_sniff_interval(SNIFF_INTERVAL_REDUCED);
 }
 
 void appmessage(int index, int step, int local_expected_package_key) {
-    while(!queue_empty(queue)) {
-      Row * row = queue_pop(queue);
-      free(row);
+    while (!queue_empty(queue)) {
+        Row *row = queue_pop(queue);
+        free(row);
     }
 
     Tuplet value1 = TupletInteger(1, index);
