@@ -1,4 +1,5 @@
 #include "event.h"
+#include "departure.h"
 
 enum SLKey {
     PACKAGE_KEY = 0x0,
@@ -41,10 +42,17 @@ void in_received_handler(DictionaryIterator *iter, void *context) {
 
     if (package_tuple->value->uint8 >= expected_package_key) {
         Row *row = row_create();
+
+        if (strlen(row->title) == 0) {
+            Departure *departure = departure_create();
+            departure->time_left = int_tuple->value->int8;
+            memcpy(departure->departure_time, string_tuple->value->cstring, string_tuple->length);
+
+            row->data = departure;
+        }
+
         memcpy(row->title, title_tuple->value->cstring, title_tuple->length);
         memcpy(row->subtitle, subtitle_tuple->value->cstring, subtitle_tuple->length);
-        row->data_int = int_tuple->value->int8;
-        memcpy(row->data_char, string_tuple->value->cstring, string_tuple->length);
 
         queue_queue(queue, row);
 

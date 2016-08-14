@@ -1,29 +1,36 @@
 #include "event.h"
-#include "menu.h"
+#include "menu/menu.h"
+#include "departure.h"
 #include "pebble.h"
 
 Menu *menu;
 bool first_tick = false;
 
 void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
-    if (first_tick) {
-        for (int i = 0; i < menu->size; i++) {
-            if (menu->row[i]->data_int > 0)
-                menu->row[i]->data_int--;
-        }
-
-        for (int i = 0; i < menu->size; i++) {
-            if (menu->row[i]->data_int > 0) {
-                snprintf(menu->row[i]->title, 32, "%dmin - %s", menu->row[i]->data_int, menu->row[i]->data_char);
-            } else {
-                snprintf(menu->row[i]->title, 32, "Nu - %s", menu->row[i]->data_char);
-            }
-        }
-        menu_layer_reload_data(menu->layer);
-
-        update_appmessage();
+    if (!first_tick) {
+        first_tick = true;
+        return;
     }
-    first_tick = true;
+
+    for (int i = 0; i < menu->size; i++) {
+        Departure *departure = menu->row[i]->data;
+        if (departure->time_left > 0) {
+            departure->time_left--;
+        }
+    }
+
+    for (int i = 0; i < menu->size; i++) {
+        Departure *departure = menu->row[i]->data;
+
+        if (departure->time_left > 0) {
+            snprintf(menu->row[i]->title, 32, "%dmin - %s", departure->time_left, departure->departure_time);
+        } else {
+            snprintf(menu->row[i]->title, 32, "Nu - %s", departure->departure_time);
+        }
+    }
+    menu_layer_reload_data(menu->layer);
+
+    update_appmessage();
 }
 
 void remove_callback_handler(void *data) {

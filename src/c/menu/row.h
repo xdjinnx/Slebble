@@ -1,10 +1,10 @@
 #pragma once
+#include "pebble.h"
 
 typedef struct Row {
     char title[32];
     char subtitle[32];
-    int data_int;
-    char data_char[32];
+    void *data;
 } Row;
 
 extern Row *row_create();

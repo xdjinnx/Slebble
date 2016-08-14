@@ -17,4 +17,4 @@ extern void queue_queue(Queue *queue, void *value);
 extern Queue *queue_create();
 extern bool queue_destroy(Queue *queue);
 extern bool queue_empty(Queue *queue);
-extern int queue_length(Queue *queue);
+extern uint16_t queue_length(Queue *queue);

@@ -1,4 +1,5 @@
 #include "menu.h"
+#include "../departure.h"
 
 int updates = 0;
 int new_id = 0;
@@ -259,14 +260,15 @@ void menu_add_rows(void *menu_void, char *title, Queue *queue) {
         memcpy(menu->title, title, 32);
         row_memcpy(menu->row[i], row);
 
-        if (0 < strlen(row->title))
+        if (0 < strlen(row->title)) {
             memcpy(menu->row[i]->title, row->title, 32);
-        else {
-            if (row->data_int > 0) {
-                snprintf(menu->row[i]->title, 32, "%dmin - %s", row->data_int,
-                         row->data_char);
+        } else {
+            Departure *departure = row->data;
+
+            if (departure->time_left > 0) {
+                snprintf(menu->row[i]->title, 32, "%dmin - %s", departure->time_left, departure->departure_time);
             } else {
-                snprintf(menu->row[i]->title, 32, "Nu - %s", row->data_char);
+                snprintf(menu->row[i]->title, 32, "Nu - %s", departure->departure_time);
             }
         }
         row_destroy(row);
