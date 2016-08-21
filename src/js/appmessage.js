@@ -9,11 +9,9 @@ export var addStation = function(stations, packageKey) {
     if (stations.length < 1) return;
     Pebble.sendAppMessage({
             '0': packageKey,
-            '1': stations[0].from,
-            '2': '',
-            '3': 0,
-            '4': '',
-            '5': stations.length == 1 ? 1 : 0
+            '1': 0,
+            '2': stations.length == 1 ? 1 : 0,
+            '3': stations[0].from
         },
         function() {
             stations.shift();
@@ -34,12 +32,11 @@ export var addRide = function(depatureList, packageKey) {
     if (depatureList.length < 1) return;
     Pebble.sendAppMessage({
             '0': packageKey,
-            //'1': depatureList[0].displayTime == 0 ? "Nu - " + depatureList[0].time : depatureList[0].displayTime + "min - " + depatureList[0].time,
-            '1': '',
-            '2': depatureList[0].number + ' ' + depatureList[0].destination,
+            '1': 1,
+            '2': depatureList.length == 1 ? 1 : 0,
             '3': depatureList[0].displayTime,
             '4': depatureList[0].time,
-            '5': depatureList.length == 1 ? 1 : 0
+            '5': depatureList[0].number + ' ' + depatureList[0].destination
         },
         function() {
             depatureList.shift();
