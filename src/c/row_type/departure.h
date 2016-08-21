@@ -10,6 +10,6 @@ typedef struct Departure {
     char departure_time[32];
 } Departure;
 
-extern Departure *departure_create();
+extern Departure *departure_create(DictionaryIterator *iter);
 extern void departure_destroy(Departure *departure);
 extern Row *departure_convert(void *data);

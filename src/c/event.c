@@ -3,7 +3,6 @@
 #include "row_type/departure.h"
 #include "row_type/station.h"
 
-// TODO: Rewrite the key enum to use the new type system.
 enum SLKey {
     PACKAGE_KEY = 0x0,
     TITLE_KEY = 0x1,
@@ -11,6 +10,17 @@ enum SLKey {
     INT_KEY = 0x3,
     STRING_KEY = 0x4,
     LAST_KEY = 0x5
+};
+
+enum AppMessageEnum {
+    PACKAGE = 0,
+    TYPE = 1,
+    LAST = 2
+};
+
+enum TypeEnum {
+    STATION = 0,
+    DEPARTURE = 1
 };
 
 Queue *queue;
@@ -33,33 +43,25 @@ void in_dropped_handler(AppMessageResult reason, void *context) {
     APP_LOG(APP_LOG_LEVEL_WARNING, "DROPPED PACKAGE");
 }
 
-
-// TODO: Rewrite to send departures and stations instead of rows.
 void in_received_handler(DictionaryIterator *iter, void *context) {
     // APP_LOG(APP_LOG_LEVEL_INFO, "Appmessage recived");
 
-    Tuple *package_tuple = dict_find(iter, PACKAGE_KEY);
-    Tuple *title_tuple = dict_find(iter, TITLE_KEY);
-    Tuple *subtitle_tuple = dict_find(iter, SUBTITLE_KEY);
-    Tuple *int_tuple = dict_find(iter, INT_KEY);
-    Tuple *string_tuple = dict_find(iter, STRING_KEY);
-    Tuple *last_tuple = dict_find(iter, LAST_KEY);
+    int package = dict_find(iter, PACKAGE)->value->int8;
+    int type = dict_find(iter, TYPE)->value->int8;
+    int last = dict_find(iter, LAST)->value->int8;
 
-    if (package_tuple->value->uint8 >= expected_package_key) {
-        Row *row = row_create();
+    if (package >= expected_package_key) {
+        void *data;
 
-        if (strlen(row->title) == 0) {
-            Departure *departure = departure_create();
-            departure->time_left = int_tuple->value->int8;
-            memcpy(departure->departure_time, string_tuple->value->cstring, string_tuple->length);
+        if (type == STATION) {
+            data = station_create(iter);
+        } else {
+            data = departure_create(iter);
         }
 
-        memcpy(row->title, title_tuple->value->cstring, title_tuple->length);
-        memcpy(row->subtitle, subtitle_tuple->value->cstring, subtitle_tuple->length);
+        queue_queue(queue, data);
 
-        queue_queue(queue, row);
-
-        if (last_tuple->value->int8) {
+        if (last) {
             add_view(*view_ptr, event_data_char, queue);
         }
     }

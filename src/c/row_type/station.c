@@ -3,8 +3,18 @@
 #include "pebble.h"
 #include "../menu/row.h"
 
-Station *station_create() {
-    return calloc(1, sizeof(Station));
+enum StationEnum {
+        // 0, 1, 2 allocated for AppMessageEnum
+        TITLE = 3
+    };
+
+Station *station_create(DictionaryIterator *iter) {
+    Station *station = calloc(1, sizeof(Station));
+
+    Tuple *title_tuple = dict_find(iter, TITLE);
+    memcpy(station->title, title_tuple->value->cstring, title_tuple->length);
+
+    return station;
 }
 
 void station_destroy(Station *station) {
