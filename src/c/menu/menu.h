@@ -4,6 +4,8 @@
 #include "../queue.h"
 #include "row.h"
 
+typedef Row* (*converter)(void *);
+
 typedef struct MenuCallbacks {
     void (*select_click)(MenuLayer *, MenuIndex *, void *);
     void (*remove_callback)(void *);
@@ -15,7 +17,9 @@ typedef struct Menu {
 
     uint16_t size;
     char *title;
-    Row **row;
+    void **data;
+
+    converter converter;
 
     MenuCallbacks callbacks;
 
@@ -26,8 +30,8 @@ typedef struct Menu {
     BitmapLayer *load_layer;
 } Menu;
 
-extern Menu *menu_create(uint32_t load_image_resource_id, MenuCallbacks callbacks);
-extern void menu_add_rows(void *menu, char *title, Queue *queue);
+extern Menu *menu_create(uint32_t load_image_resource_id, converter converter, MenuCallbacks callbacks);
+extern void menu_add_data(void *menu, char *title, Queue *queue);
 
 extern void menu_init_text_scroll(Menu **menu);
 extern void menu_deinit_text_scroll();

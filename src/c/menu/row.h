@@ -4,7 +4,6 @@
 typedef struct Row {
     char title[32];
     char subtitle[32];
-    void *data;
 } Row;
 
 extern Row *row_create();

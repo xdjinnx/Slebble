@@ -1,5 +1,4 @@
 #include "menu.h"
-#include "../departure.h"
 
 int updates = 0;
 int new_id = 0;
@@ -46,8 +45,9 @@ void menu_draw_row_callback(GContext *ctx, const Layer *cell_layer, MenuIndex *c
     if (menu->id == 0 && cell_index->section == 0)
         menu_cell_basic_draw(ctx, cell_layer, "Nearby Stations", "", NULL);
     else {
-        char *title = menu->row[cell_index->row]->title;
-        char *subtitle = menu->row[cell_index->row]->subtitle;
+        Row *row = menu->converter(menu->data[cell_index->row]);
+        char *title = row->title;
+        char *subtitle = row->subtitle;
 
         if (selected_item.row == cell_index->row && text_scroll >= 0) {
             title = title + ((uint)text_scroll * sizeof(char));
@@ -67,27 +67,32 @@ void selection_changed_callback(struct MenuLayer *menu_layer, MenuIndex new_inde
         text_scroll = -2;
 }
 
-/**
-* CRASHES HERE
-*/
 void text_scroll_handler(void *data) {
     Menu *menu = *((Menu **)data);
     MenuIndex selected_item = menu_layer_get_selected_index(menu->layer);
 
-    if (menu->size > 0) {
-        char current_char = *(menu->row[selected_item.row]->title + ((uint)text_scroll * sizeof(char)));
+    Row *row = NULL;
 
-        // Fixes åäö edge case
-        if (current_char == 195)
-            text_scroll++;
+    if (menu->size > 0) {
+        row = menu->converter(menu->data[selected_item.row]);
     }
 
-    if (!(menu->id == 0 && selected_item.section == 0))
-        text_scroll++;
+    if (row) {
+        char current_char = *(row->title + ((uint)text_scroll * sizeof(char)));
 
-    if (menu->size > 0 &&
-        text_scroll > ((int)strlen(menu->row[selected_item.row]->title)) - 17)
+        // Fixes åäö edge case
+        if (current_char == 195) {
+            text_scroll++;
+        }
+    }
+
+    if (!(menu->id == 0 && selected_item.section == 0)) {
+        text_scroll++;
+    }
+
+    if (row && text_scroll > ((int)strlen(row->title)) - 17) {
         text_scroll = -2;
+    }
 
     menu_layer_reload_data(menu->layer);
     scroll_timer = app_timer_register(500, &text_scroll_handler, data);
@@ -96,38 +101,28 @@ void text_scroll_handler(void *data) {
 void menu_allocation(Menu *menu, int size) {
     if (menu->size == 0) {
         menu->title = malloc(sizeof(char) * 32);
-        menu->row = malloc(sizeof(Row *) * size);
-
-        for (int i = 0; i < size; i++) {
-            menu->row[i] = row_create();
-        }
+        menu->data = calloc(size, sizeof(void *));
     }
 
     if (menu->size != size && menu->size != 0) {
         if (menu->size > size) {
             for (int i = size; i < menu->size; i++) {
-                row_destroy(menu->row[i]);
+                free(menu->data[i]);
             }
         }
 
-        menu->row = realloc(menu->row, sizeof(Row *) * size);
-
-        if (menu->size < size) {
-            for (int i = menu->size; i < size; i++) {
-                menu->row[i] = row_create();
-            }
-        }
+        menu->data = realloc(menu->data, sizeof(void *) * size);
     }
 
     menu->size = size;
 }
 
-void menu_free_rows(Menu *menu) {
+void menu_free_data(Menu *menu) {
     if (menu->size != 0) {
         for (int i = 0; i < menu->size; i++) {
-            row_destroy(menu->row[i]);
+            free(menu->data[i]);
         }
-        free(menu->row);
+        free(menu->data);
         free(menu->title);
     }
 }
@@ -139,9 +134,10 @@ bool load_persistent(Menu *menu) {
         menu_allocation(menu, size);
 
         for (int i = 1; persist_exists(i); i++) {
-            persist_read_string(i, menu->row[i - 1]->title, 32);
+            Row *row = menu->converter(menu->data[i - 1]);
+            persist_read_string(i, row->title, 32);
             snprintf(menu->title, 32, "%s", "Favorites");
-            snprintf(menu->row[i - 1]->subtitle, 32, "%s", "");
+            snprintf(row->subtitle, 32, "%s", "");
             menu->size = size;
         }
 
@@ -152,8 +148,10 @@ bool load_persistent(Menu *menu) {
 
 void store_persistent(Menu *menu) {
     persist_write_int(0, menu->size);
-    for (int i = 0; i < menu->size; i++)
-        persist_write_string(i + 1, menu->row[i]->title);
+    for (int i = 0; i < menu->size; i++) {
+        Row *row = menu->converter(menu->data[i]);
+        persist_write_string(i + 1, row->title);
+    }
 }
 
 void window_load(Window *window) {
@@ -203,8 +201,9 @@ void window_unload(Window *window) {
 
     Menu *ret = menu->menu;
 
-    if (ret != NULL)
+    if (ret != NULL) {
         prev_index = menu_layer_get_selected_index(ret->layer).row;
+    }
     text_scroll = -2;
 
     menu->callbacks.remove_callback(ret);
@@ -215,7 +214,7 @@ void window_unload(Window *window) {
     bitmap_layer_destroy(menu->load_layer);
     gbitmap_destroy(menu->load_image);
 
-    menu_free_rows(menu);
+    menu_free_data(menu);
 
 #ifdef PBL_SDK_3
     if (ret == NULL)
@@ -240,12 +239,17 @@ void hide_load_image(Menu *menu, bool vibe) {
         menu_layer_reload_data(menu->layer);
         layer_set_hidden(bitmap_layer_get_layer(menu->load_layer), true);
         menu_layer_set_click_config_onto_window(menu->layer, menu->window);
-        if (vibe)
+
+        if (vibe) {
             vibes_short_pulse();
+        }
     }
 }
 
-void menu_add_rows(void *menu_void, char *title, Queue *queue) {
+
+// TODO: Rewrite this to not use this worse less queue system.
+// Should be able to send a array pointer.
+void menu_add_data(void *menu_void, char *title, Queue *queue) {
     if (menu_void == NULL)
         return;
 
@@ -256,22 +260,7 @@ void menu_add_rows(void *menu_void, char *title, Queue *queue) {
     menu_allocation(menu, queue_length(queue));
 
     for (int i = 0; !queue_empty(queue); i++) {
-        Row *row = queue_pop(queue);
-        memcpy(menu->title, title, 32);
-        row_memcpy(menu->row[i], row);
-
-        if (0 < strlen(row->title)) {
-            memcpy(menu->row[i]->title, row->title, 32);
-        } else {
-            Departure *departure = row->data;
-
-            if (departure->time_left > 0) {
-                snprintf(menu->row[i]->title, 32, "%dmin - %s", departure->time_left, departure->departure_time);
-            } else {
-                snprintf(menu->row[i]->title, 32, "Nu - %s", departure->departure_time);
-            }
-        }
-        row_destroy(row);
+        menu->data[i] = queue_pop(queue);
     }
 
     menu_layer_reload_data(menu->layer);
@@ -287,10 +276,11 @@ void menu_deinit_text_scroll() {
     app_timer_cancel(scroll_timer);
 }
 
-Menu *menu_create(uint32_t load_image_resource_id, MenuCallbacks callbacks) {
+Menu *menu_create(uint32_t load_image_resource_id, converter converter, MenuCallbacks callbacks) {
     Menu *menu = malloc(sizeof(Menu));
     menu->window = window_create();
     menu->load_image_resource_id = load_image_resource_id;
+    menu->converter = converter;
     menu->callbacks = callbacks;
     menu->size = 0;
     menu->id = new_id++;

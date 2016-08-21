@@ -1,6 +1,9 @@
 #include "event.h"
-#include "departure.h"
 
+#include "row_type/departure.h"
+#include "row_type/station.h"
+
+// TODO: Rewrite the key enum to use the new type system.
 enum SLKey {
     PACKAGE_KEY = 0x0,
     TITLE_KEY = 0x1,
@@ -30,6 +33,8 @@ void in_dropped_handler(AppMessageResult reason, void *context) {
     APP_LOG(APP_LOG_LEVEL_WARNING, "DROPPED PACKAGE");
 }
 
+
+// TODO: Rewrite to send departures and stations instead of rows.
 void in_received_handler(DictionaryIterator *iter, void *context) {
     // APP_LOG(APP_LOG_LEVEL_INFO, "Appmessage recived");
 
@@ -47,8 +52,6 @@ void in_received_handler(DictionaryIterator *iter, void *context) {
             Departure *departure = departure_create();
             departure->time_left = int_tuple->value->int8;
             memcpy(departure->departure_time, string_tuple->value->cstring, string_tuple->length);
-
-            row->data = departure;
         }
 
         memcpy(row->title, title_tuple->value->cstring, title_tuple->length);

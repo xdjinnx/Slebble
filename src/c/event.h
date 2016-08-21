@@ -1,8 +1,8 @@
 #pragma once
 
+#include "menu/row.h"
 #include "pebble.h"
 #include "queue.h"
-#include "menu/row.h"
 
 typedef void (*view_func)(void *, char *, Queue *);
 
