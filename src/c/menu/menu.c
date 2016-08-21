@@ -286,7 +286,7 @@ Menu *menu_create(uint32_t load_image_resource_id, converter converter, MenuCall
     menu->id = new_id++;
     menu->title = "";
 
-    bool loaded_persistant = load_persistent(menu);
+    //bool loaded_persistant = load_persistent(menu);
 
     window_set_user_data(menu->window, menu);
 
@@ -300,8 +300,8 @@ Menu *menu_create(uint32_t load_image_resource_id, converter converter, MenuCall
     // window_set_background_color(menu->window, GColorClear);
 
     window_stack_push(menu->window, true);
-    if (loaded_persistant)
-        hide_load_image(menu, false);
+    //if (loaded_persistant)
+    //    hide_load_image(menu, false);
 
     return menu;
 }

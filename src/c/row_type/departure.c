@@ -15,7 +15,7 @@ Departure *departure_create(DictionaryIterator *iter) {
 
     departure->time_left = dict_find(iter, TIME_LEFT)->value->int8;
 
-    Tuple *depature_time_tuple = dict_find(iter, SUBTITLE);
+    Tuple *depature_time_tuple = dict_find(iter, DEPARTURE_TIME);
     memcpy(departure->departure_time, depature_time_tuple->value->cstring, depature_time_tuple->length);
 
     Tuple *subtitle_tuple = dict_find(iter, SUBTITLE);
@@ -34,12 +34,12 @@ Row *departure_convert(void *data) {
     Row *row = row_create();
 
     if (departure->time_left > 0) {
-        snprintf(row->title, 32, "%dmin - %s", departure->time_left, departure->departure_time);
+        snprintf(row->title, 64, "%dmin - %s", departure->time_left, departure->departure_time);
     } else {
-        snprintf(row->title, 32, "Nu - %s", departure->departure_time);
+        snprintf(row->title, 64, "Nu - %s", departure->departure_time);
     }
 
-    memcpy(row->subtitle, departure->subtitle, 32);
+    memcpy(row->subtitle, departure->subtitle, 64);
 
     return row;
 }

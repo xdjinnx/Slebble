@@ -2,8 +2,8 @@
 #include "pebble.h"
 
 typedef struct Row {
-    char title[32];
-    char subtitle[32];
+    char title[64];
+    char subtitle[64];
 } Row;
 
 extern Row *row_create();

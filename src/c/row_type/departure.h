@@ -4,10 +4,10 @@
 #include "../menu/row.h"
 
 typedef struct Departure {
-    char subtitle[32];
+    char subtitle[64];
 
     uint16_t time_left;
-    char departure_time[32];
+    char departure_time[64];
 } Departure;
 
 extern Departure *departure_create(DictionaryIterator *iter);

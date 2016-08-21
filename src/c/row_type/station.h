@@ -4,7 +4,7 @@
 #include "../menu/row.h"
 
 typedef struct Station {
-    char title[32];
+    char title[64];
 } Station;
 
 extern Station *station_create(DictionaryIterator *iter);
