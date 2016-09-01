@@ -4,8 +4,8 @@
 var Slebble = require('./slebble.js');
 window._trackJs = { token: '9f36ea9a2ea04439907e32f217e1fcc2' };
 
-Pebble.addEventListener('ready', () => { 
-    trackJs.attempt(() => {
+Pebble.addEventListener('ready', function() {
+    trackJs.attempt(function() {
         console.log('Running ready event');
         console.log('TrackJs version: ' + trackJs.version);
 
@@ -31,8 +31,8 @@ Pebble.addEventListener('ready', () => {
 });
 
 
-Pebble.addEventListener('showConfiguration', () => { 
-    trackJs.attempt(() => {
+Pebble.addEventListener('showConfiguration', function() {
+    trackJs.attempt(function() {
         if (localStorage.data) {
             Pebble.openURL('https://diesel-ability-711.appspot.com/webconfig/index.html?version=2.0' + '&setting=' + localStorage.data);
         } else {
@@ -41,8 +41,8 @@ Pebble.addEventListener('showConfiguration', () => {
     }, this);
 });
 
-Pebble.addEventListener('webviewclosed', (e) => { 
-    trackJs.attempt((e) => {
+Pebble.addEventListener('webviewclosed', function(e) {
+    trackJs.attempt(function(e) {
         if (e.response === 'reset') {
             localStorage.removeItem('data');
         } else if (e.response !== 'CANCELLED' && e.response.substring(0, 12) !== '{"route": []' && e.response !== '{}') {
@@ -67,8 +67,8 @@ Pebble.addEventListener('webviewclosed', (e) => {
     }, this, e);
 });
 
-Pebble.addEventListener('appmessage', (e) => { 
-    trackJs.attempt((e) => {
+Pebble.addEventListener('appmessage', function(e) {
+    trackJs.attempt(function(e) {
         /**
         * payload[1] : menu row
         * payload[2] : step, is saying which instruction the watch excpects

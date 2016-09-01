@@ -9,14 +9,14 @@ var cnst = require('../const.js');
 var key = {};
 key.slReal3 = '190079364ffe4e278f7e27dabd6dce6c';
 
-var urlSlReal3 = (locationid) => {
+var urlSlReal3 = function(locationid) {
     //return 'https://api.sl.se/api2/realtimedepartures.json?key=' + _key.slReal3 + '&siteid=' + locationid + '&timewindow=120';
     // sl has spoky cert?
     return 'http://api.sl.se/api2/realtimedepartures.json?key=' + key.slReal3 + '&siteid=' + locationid + '&timewindow=120';
 };
 
 
-var _formatDiaplayTime = (departure) => {
+var _formatDiaplayTime = function(departure) {
     var dt = departure.DisplayTime;
 
     if (dt.substring(dt.length - 3, dt.length) !== 'min') {
@@ -26,7 +26,7 @@ var _formatDiaplayTime = (departure) => {
     }
 };
 
-var _formatTime = (departure, ad) => {
+var _formatTime = function(departure, ad) {
     var dt = departure.DisplayTime;
 
     if (dt.substring(dt.length-3, dt.length) !== 'min') {
@@ -34,7 +34,7 @@ var _formatTime = (departure, ad) => {
     } else {
         return util.determineTime(ad.displayTime);
     }
-}
+};
 
 /**
  * Get depatures from SLReal3 api
@@ -43,10 +43,14 @@ var _formatTime = (departure, ad) => {
  * @param {Function} callback   The callback that should handle the response from the api
  * @param {number}   packageKey A unique key that a set of messages should have
  */
-export var realtime = (siteid, options = {busFilterActive: false, filter: []}) => {
-    return new Promise((resolve, reject) => {
+export var realtime = function(siteid, options) {
+    if (!options) {
+        options = {busFilterActive: false, filter: []};
+    }
+
+    return new Promise(function(resolve, reject) {
         fetch(urlSlReal3(siteid))
-        .then(response => {
+        .then(function(response) {
             var rides = _realtimeReponse(response, options.busFilterActive, options.filter, options.maxDepatures);
             if (rides === -1) {
                 reject();
@@ -57,7 +61,7 @@ export var realtime = (siteid, options = {busFilterActive: false, filter: []}) =
     });
 };
 
-var _realtimeReponse = (resp, busFilterActive, filter, maxDepatures) => {
+var _realtimeReponse = function(resp, busFilterActive, filter, maxDepatures) {
     //console.log('sl callback');
     var response = JSON.parse(resp);
     var alldeps = [];
@@ -96,10 +100,12 @@ var _realtimeReponse = (resp, busFilterActive, filter, maxDepatures) => {
 
     // only filter if filter is actually active
     if (busFilterActive === 'true') {
-        alldeps = alldeps.filter((ride) => util.filterRides(ride, filter));
+        alldeps = alldeps.filter(function(ride) {
+            util.filterRides(ride, filter)
+        });
     }
 
-    alldeps = alldeps.sort((a, b) => {
+    alldeps = alldeps.sort(function(a, b) {
         if (a.displayTime === b.displayTime) return 0;
         if (a.displayTime < b.displayTime) return -1;
         return 1;

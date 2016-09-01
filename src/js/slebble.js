@@ -18,7 +18,7 @@ module.exports = (function() {
      * Load config object
      * @param config Json object
      */
-    var _loadConfig = (config) => {
+    var _loadConfig = function(config) {
         log('Loading config..');
         _config = config;
         _provider = config.provider;
@@ -29,7 +29,11 @@ module.exports = (function() {
      * Request rides
      * @param index Station index
      */
-     var _requestRides = (index, step = 0, expectedPackageKey) => {
+     var _requestRides = function(index, step, expectedPackageKey) {
+        if (!step) {
+            step = 0;
+        }
+        
         log('step ' + step);
         log('expectedPackageKey '+ expectedPackageKey);
         var _queryId;
@@ -46,10 +50,12 @@ module.exports = (function() {
                 busFilterActive: _config.route[index].busFilterActive,
                 filter: _config.route[index].filter,
                 maxDepatures: _maxDepatures
-            }).then((rides) => {
+            }).then(function(rides) {
                 _lastIndex = index;
                 appmessage.addRide(rides, expectedPackageKey);
-            }).catch(() => appmessage.appMessageError('No rides available', 'Try again later', expectedPackageKey));
+            }).catch(function() {
+                appmessage.appMessageError('No rides available', 'Try again later', expectedPackageKey);
+            });
         } else {
             let busFilterActive = 0 < _nearbyStations.length ? false : _config.route[index].busFilterActive;
             let busFilter = 0 < _nearbyStations.length ? [] : _config.route[index].filter;
@@ -58,21 +64,22 @@ module.exports = (function() {
                 busFilterActive: busFilterActive,
                 filter: busFilter,
                 maxDepatures: _maxDepatures
-            }).then((rides) => {
+            }).then(function(rides) {
                 _lastIndex = index;
-                //rides.forEach(r => log(r));
                 appmessage.addRide(rides, expectedPackageKey);
-            }).catch(() => appmessage.appMessageError('No rides available', 'Try again later', expectedPackageKey));
+            }).catch(function() {
+                appmessage.appMessageError('No rides available', 'Try again later', expectedPackageKey)
+            });
         }
 
     };
 
-    var _requestUpdate = (expectedPackageKey) => {
+    var _requestUpdate = function(expectedPackageKey) {
         _requestRides(_lastIndex, 2, expectedPackageKey);
     };
 
     var locationVariable = 0;
-    var _requestGeoRides = (expectedPackageKey) => {
+    var _requestGeoRides = function(expectedPackageKey) {
         locationVariable = expectedPackageKey;
         navigator.geolocation.getCurrentPosition(_locationSuccess, _locationError, _locationOptions);
     };
@@ -82,13 +89,15 @@ module.exports = (function() {
      * @param pos
      * @private
      */
-    var _locationSuccess = (pos) => {
+    var _locationSuccess = function(pos) {
         var coordinates = pos.coords;
         resrobot.nearbyStations(coordinates.latitude, coordinates.longitude)
-        .then((stations) => {
+        .then(function(stations) {
             objectAssign(_nearbyStations, stations.ids);
             appmessage.addStation(stations.names, locationVariable);
-        }).catch(() => appmessage.appMessageError('No nearby stations', '', locationVariable));
+        }).catch(function() {
+            appmessage.appMessageError('No nearby stations', '', locationVariable)
+        });
     };
 
     /**
@@ -96,7 +105,7 @@ module.exports = (function() {
      * @param err
      * @private
      */
-    var _locationError = (err) => {
+    var _locationError = function(err) {
         console.warn('location error (' + err.code + '): ' + err.message);
         appmessage.appMessageError('Location error', 'Can\'t get your location', locationVariable);
     };

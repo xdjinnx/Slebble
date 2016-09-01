@@ -7,9 +7,9 @@ var Promise = require('promise');
  * @param  {object} options Options
  * @return {Promise}
  */
-export var fetch = (url, options) => {
+export var fetch = function(url, options) {
     'use strict';
-    return new Promise((resolve, reject) => {
+    return new Promise(function(resolve, reject) {
         log(url);
         // Do the usual XHR stuff
         var req = new XMLHttpRequest();
@@ -21,7 +21,9 @@ export var fetch = (url, options) => {
 
         req.setRequestHeader('Authorization', 'Bearer ' + localStorage.token);
         if (options !== undefined && options.headers !== undefined) {
-            options.headers.forEach((h) => req.setRequestHeader(h.name, h.content));
+            options.headers.forEach(function(h) {
+                req.setRequestHeader(h.name, h.content)
+            });
         }
 
         if (options !== undefined && options.json !== undefined) {

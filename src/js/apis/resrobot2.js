@@ -27,11 +27,15 @@ url.resrobotGeo = function(long, lat) {
  * @param {Function} callback   The callback that should handle the response from the api
  * @param {number}   packageKey A unique key that a set of messages should have
  */
-export var stolptid = (siteid, options = {busFilterActive: false, packageKey: -1, filter: []}) => {
-    return new Promise((resolve, reject) => {
+export var stolptid = function(siteid, options) {
+    if (!options) {
+        options = {busFilterActive: false, packageKey: -1, filter: []};
+    }
+
+    return new Promise(function (resolve, reject) {
         log('stolptid in');
         fetch(url.resrobot2(siteid))
-        .then(response => {
+        .then(function(response) {
             log('stolptid in resp');
             var rides = _stolptidResponse(response, options.busFilterActive, options.filter, options.maxDepatures);
             if (rides === -1) {
@@ -45,7 +49,7 @@ export var stolptid = (siteid, options = {busFilterActive: false, packageKey: -1
     });
 };
 
-var _stolptidResponse = (resp, busFilterActive, filter, maxDepatures) => {
+var _stolptidResponse = function(resp, busFilterActive, filter, maxDepatures) {
     // check for empty response
     if (resp === '{}') {
         return -1;
@@ -75,7 +79,9 @@ var _stolptidResponse = (resp, busFilterActive, filter, maxDepatures) => {
 
     // only filter if filter is actually active
     if (busFilterActive === 'true') {
-        alldeps = alldeps.filter((ride) => util.filterRides(ride, filter));
+        alldeps = alldeps.filter(function(ride) {
+            util.filterRides(ride, filter)
+        });
     }
 
     var batchLength  = alldeps.length > maxDepatures ? maxDepatures : alldeps.length;
@@ -91,10 +97,10 @@ var _stolptidResponse = (resp, busFilterActive, filter, maxDepatures) => {
  * @param {number} longitude  Longitude coordinate for station
  * @param {Function} callback The callback that should handle the response from the api
  */
-export var nearbyStations = (latitude, longitude) => {
-    return new Promise((resolve, reject) => {
+export var nearbyStations = function(latitude, longitude) {
+    return new Promise(function(resolve, reject) {
         fetch(url.resrobotGeo(longitude, latitude))
-        .then(resp => {
+        .then(function(resp) {
             var stations = _GeoResponse(resp);
             log(stations);
             if (stations === -1) {
