@@ -5,10 +5,7 @@ int new_id = 0;
 AppTimer *scroll_timer;
 int text_scroll = -2;
 uint prev_index = 0;
-
-#ifdef PBL_SDK_3
 StatusBarLayer *status_bar;
-#endif
 
 uint16_t menu_get_num_sections_callback(MenuLayer *menu_layer, void *data) {
     Menu *menu = data;
@@ -162,17 +159,12 @@ void window_load(Window *window) {
     Layer *window_layer = window_get_root_layer(window);
     GRect bounds = layer_get_frame(window_layer);
 
-#ifdef PBL_SDK_3
     GRect menu_bounds = GRect(bounds.origin.x,
                               bounds.origin.y + STATUS_BAR_LAYER_HEIGHT,
                               bounds.size.w,
                               bounds.size.h - STATUS_BAR_LAYER_HEIGHT);
     menu->layer = menu_layer_create(menu_bounds);
     menu->load_layer = bitmap_layer_create(menu_bounds);
-#else
-    menu->layer = menu_layer_create(bounds);
-    menu->load_layer = bitmap_layer_create(bounds);
-#endif
 
     menu_layer_set_callbacks(
         menu->layer, menu,
@@ -216,20 +208,17 @@ void window_unload(Window *window) {
 
     menu_free_data(menu);
 
-#ifdef PBL_SDK_3
     if (ret == NULL)
         status_bar_layer_destroy(status_bar);
-#endif
 
     free(menu);
 }
 
 void window_appear(Window *window) {
-#ifdef PBL_SDK_3
-    if (status_bar == NULL)
+    if (status_bar == NULL) {
         status_bar = status_bar_layer_create();
+    }
     layer_add_child(window_get_root_layer(window), status_bar_layer_get_layer(status_bar));
-#endif
 }
 
 void hide_load_image(Menu *menu, bool vibe) {
