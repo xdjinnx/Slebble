@@ -1,5 +1,9 @@
+module.exports = (function() {
 // Ride Type Constants
-export var RT_BUS = 'B';
-export var RT_TRAIN = 'J';
-export var RT_METRO = 'U';
-export var RT_UNKNOWN = '?';
+	return {
+		RT_BUS: 'B',
+		RT_TRAIN: 'J',
+		RT_METRO: 'U',
+		RT_UNKNOWN: '?',
+	};
+});

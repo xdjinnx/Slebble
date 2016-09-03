@@ -1,6 +1,4 @@
 module.exports = (function() {
-    'use strict';
-
     var appmessage = require('./appmessage.js');
     var slApi = require('./apis/sl.js');
     var resrobot = require('./apis/resrobot2.js');
@@ -29,11 +27,11 @@ module.exports = (function() {
      * Request rides
      * @param index Station index
      */
-     var _requestRides = function(index, step, expectedPackageKey) {
+    var _requestRides = function(index, step, expectedPackageKey) {
         if (!step) {
             step = 0;
         }
-        
+
         log('step ' + step);
         log('expectedPackageKey '+ expectedPackageKey);
         var _queryId;
@@ -57,8 +55,8 @@ module.exports = (function() {
                 appmessage.appMessageError('No rides available', 'Try again later', expectedPackageKey);
             });
         } else {
-            let busFilterActive = 0 < _nearbyStations.length ? false : _config.route[index].busFilterActive;
-            let busFilter = 0 < _nearbyStations.length ? [] : _config.route[index].filter;
+            var busFilterActive = 0 < _nearbyStations.length ? false : _config.route[index].busFilterActive;
+            var busFilter = 0 < _nearbyStations.length ? [] : _config.route[index].filter;
             log('stolptid step '+step);
             resrobot.stolptid(_queryId, {
                 busFilterActive: busFilterActive,
@@ -92,10 +90,10 @@ module.exports = (function() {
     var _locationSuccess = function(pos) {
         var coordinates = pos.coords;
         resrobot.nearbyStations(coordinates.latitude, coordinates.longitude)
-        .then(function(stations) {
-            objectAssign(_nearbyStations, stations.ids);
-            appmessage.addStation(stations.names, locationVariable);
-        }).catch(function() {
+            .then(function(stations) {
+                objectAssign(_nearbyStations, stations.ids);
+                appmessage.addStation(stations.names, locationVariable);
+            }).catch(function() {
             appmessage.appMessageError('No nearby stations', '', locationVariable)
         });
     };

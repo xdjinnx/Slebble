@@ -10,19 +10,18 @@ Pebble.addEventListener('ready', function() {
         console.log('TrackJs version: ' + trackJs.version);
 
         var response = localStorage.data;
+        var ad = {};
         if (response !== '' && typeof response === 'string') {
             console.log(localStorage.data);
             response = JSON.parse(localStorage.data);
             Slebble.loadConfig(response);
             var stations = [];
             for (var i = 0; i < response.route.length; i++) {
-                let ad = {};
                 ad.from = response.route[i].from.replace(/\053/g, ' ');
                 stations.push(ad);
             }
             Slebble.addStation(stations, 0);
         } else {
-            let ad = {};
             ad.from = 'No configuration';
             ad = [ad];
             Slebble.addStation(ad, 0);
