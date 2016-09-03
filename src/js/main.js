@@ -4,8 +4,13 @@
 var Slebble = require('./slebble.js');
 window._trackJs = { token: '9f36ea9a2ea04439907e32f217e1fcc2' };
 
-Pebble.addEventListener('ready', () => { 
-    trackJs.attempt(() => {
+// This is a polyfill. This is needed to make the iphone work correctly.
+window.Image = function() {
+    return {};
+};
+
+Pebble.addEventListener('ready', function() {
+    trackJs.attempt(function() {
         console.log('Running ready event');
         console.log('TrackJs version: ' + trackJs.version);
 
@@ -16,35 +21,43 @@ Pebble.addEventListener('ready', () => {
             Slebble.loadConfig(response);
             var stations = [];
             for (var i = 0; i < response.route.length; i++) {
-                let ad = {};
+                var ad = {};
                 ad.from = response.route[i].from.replace(/\053/g, ' ');
                 stations.push(ad);
             }
             Slebble.addStation(stations, 0);
         } else {
-            let ad = {};
-            ad.from = 'No configuration';
-            ad = [ad];
-            Slebble.addStation(ad, 0);
+            Slebble.addStation([{
+                from: 'No configuration',
+            }], 0);
         }
     }, this);
 });
 
 
-Pebble.addEventListener('showConfiguration', () => { 
-    trackJs.attempt(() => {
+Pebble.addEventListener('showConfiguration', function() {
+    trackJs.attempt(function() {
+        var url = 'https://diesel-ability-711.appspot.com/webconfig/index.html?version=2.0';
+
         if (localStorage.data) {
-            Pebble.openURL('https://diesel-ability-711.appspot.com/webconfig/index.html?version=2.0' + '&setting=' + localStorage.data);
-        } else {
-            Pebble.openURL('https://diesel-ability-711.appspot.com/webconfig/index.html?version=2.0');
+            // This makes the iphone return blank page.
+            url = url + '&setting=' + localStorage.data;
         }
+
+        Pebble.openURL(url);
     }, this);
 });
 
-Pebble.addEventListener('webviewclosed', (e) => { 
-    trackJs.attempt((e) => {
+Pebble.addEventListener('webviewclosed', function(e) {
+    trackJs.attempt(function(e) {
+        console.log('Webviewclosed');
+        console.log(e.response);
+
         if (e.response === 'reset') {
             localStorage.removeItem('data');
+        // The iphone responds with an empty string when settings won't start up.
+        // This causes the settings to be removed. Leaving as is because it's better that the apps almost works.
+        // } else if (e.response && e.response !== 'CANCELLED' && e.response.substring(0, 12) !== '{"route": []' && e.response !== '{}') {
         } else if (e.response !== 'CANCELLED' && e.response.substring(0, 12) !== '{"route": []' && e.response !== '{}') {
             localStorage.setItem('data', e.response);
 
@@ -67,8 +80,8 @@ Pebble.addEventListener('webviewclosed', (e) => {
     }, this, e);
 });
 
-Pebble.addEventListener('appmessage', (e) => { 
-    trackJs.attempt((e) => {
+Pebble.addEventListener('appmessage', function(e) {
+    trackJs.attempt(function(e) {
         /**
         * payload[1] : menu row
         * payload[2] : step, is saying which instruction the watch excpects
