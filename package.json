@@ -5,7 +5,7 @@
   "dependencies": {
     "object-assign": "^4.0.1",
     "promise": "^7.0.4",
-    "trackjs": "^2.2.0"
+    "trackjs": "^2.5.1"
   },
   "devDependencies": {
     "gulp": "^3.9.0",
