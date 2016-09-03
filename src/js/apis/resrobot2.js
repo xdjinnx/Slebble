@@ -138,4 +138,4 @@ module.exports = (function() {
         nearbyStations: nearbyStations,
         stolptid: stolptid,
     };
-});
+})();

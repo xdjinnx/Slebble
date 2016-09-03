@@ -124,4 +124,4 @@ module.exports = (function() {
 	return {
 		realtime: realtime,
 	};
-});
+})();
