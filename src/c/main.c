@@ -68,8 +68,9 @@ void select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
         click_data = station->title;
     }
 
-    if (strcmp(click_data, "No configuration") == 0)
+    if (strcmp(click_data, "No configuration") == 0) {
         return;
+    }
 
     event_set_click_data(click_data);
 

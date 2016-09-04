@@ -1,6 +1,5 @@
 #include "menu.h"
 
-int updates = 0;
 int new_id = 0;
 AppTimer *scroll_timer;
 int text_scroll = -2;
@@ -17,10 +16,11 @@ uint16_t menu_get_num_sections_callback(MenuLayer *menu_layer, void *data) {
 
 uint16_t menu_get_num_rows_callback(MenuLayer *menu_layer, uint16_t section_index, void *data) {
     Menu *menu = data;
-    if (menu->id == 0 && section_index == 0)
+    if (menu->id == 0 && section_index == 0) {
         return 1;
-    else
+    } else {
         return menu->size;
+    }
 }
 
 int16_t menu_get_header_height_callback(MenuLayer *menu_layer, uint16_t section_index, void *data) {
@@ -30,10 +30,12 @@ int16_t menu_get_header_height_callback(MenuLayer *menu_layer, uint16_t section_
 
 void menu_draw_header_callback(GContext *ctx, const Layer *cell_layer, uint16_t section_index, void *data) {
     Menu *menu = data;
-    if (menu->id == 0 && section_index == 0)
+
+    if (menu->id == 0 && section_index == 0) {
         menu_cell_basic_header_draw(ctx, cell_layer, "Stations");
-    else
+    } else {
         menu_cell_basic_header_draw(ctx, cell_layer, menu->title);
+    }
 }
 
 void menu_draw_row_callback(GContext *ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data) {
@@ -51,6 +53,7 @@ void menu_draw_row_callback(GContext *ctx, const Layer *cell_layer, MenuIndex *c
         }
 
         menu_cell_basic_draw(ctx, cell_layer, title, subtitle, NULL);
+        row_destroy(row);
     }
 }
 
@@ -60,8 +63,9 @@ void selection_changed_callback(struct MenuLayer *menu_layer, MenuIndex new_inde
         prev_index = new_index.row;
         text_scroll = -2;
     }
-    if (menu->id == 0 && new_index.section == 0)
+    if (menu->id == 0 && new_index.section == 0) {
         text_scroll = -2;
+    }
 }
 
 void text_scroll_handler(void *data) {
@@ -93,6 +97,7 @@ void text_scroll_handler(void *data) {
 
     menu_layer_reload_data(menu->layer);
     scroll_timer = app_timer_register(500, &text_scroll_handler, data);
+    row_destroy(row);
 }
 
 void menu_allocation(Menu *menu, int size) {
@@ -115,13 +120,15 @@ void menu_allocation(Menu *menu, int size) {
 }
 
 void menu_free_data(Menu *menu) {
-    if (menu->size != 0) {
-        for (int i = 0; i < menu->size; i++) {
-            free(menu->data[i]);
-        }
-        free(menu->data);
-        free(menu->title);
+    if (menu->size == 0) {
+        return;
     }
+
+    for (int i = 0; i < menu->size; i++) {
+        free(menu->data[i]);
+    }
+    free(menu->data);
+    free(menu->title);
 }
 
 bool load_persistent(Menu *menu) {
@@ -148,12 +155,11 @@ void store_persistent(Menu *menu) {
     for (int i = 0; i < menu->size; i++) {
         Row *row = menu->converter(menu->data[i]);
         persist_write_string(i + 1, row->title);
+        row_destroy(row);
     }
 }
 
 void window_load(Window *window) {
-    updates = 0;
-
     Menu *menu = window_get_user_data(window);
 
     Layer *window_layer = window_get_root_layer(window);
@@ -239,13 +245,17 @@ void hide_load_image(Menu *menu, bool vibe) {
 // TODO: Rewrite this to not use this worse less queue system.
 // Should be able to send a array pointer.
 void menu_add_data(void *menu_void, char *title, Queue *queue) {
-    if (menu_void == NULL)
+    if (menu_void == NULL) {
         return;
+    }
 
     Menu *menu = (Menu *)menu_void;
-    if (0 < menu->size && strcmp(menu->title, title) != 0)
+    if (0 < menu->size && strcmp(menu->title, title) != 0) {
         return;
+    }
 
+    menu->title = calloc(64, sizeof(char));
+    memcpy(menu->title, title, 64);
     menu_allocation(menu, queue_length(queue));
 
     for (int i = 0; !queue_empty(queue); i++) {
@@ -254,8 +264,9 @@ void menu_add_data(void *menu_void, char *title, Queue *queue) {
 
     menu_layer_reload_data(menu->layer);
     hide_load_image(menu, true);
-    if (menu->id == 0)
+    if (menu->id == 0) {
         store_persistent(menu);
+    }
 }
 
 void menu_init_text_scroll(Menu **menu) {
@@ -285,8 +296,6 @@ Menu *menu_create(uint32_t load_image_resource_id, converter converter, MenuCall
                                    .unload = window_unload,
                                    .appear = window_appear,
                                });
-
-    // window_set_background_color(menu->window, GColorClear);
 
     window_stack_push(menu->window, true);
     //if (loaded_persistant)

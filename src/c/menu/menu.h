@@ -20,7 +20,6 @@ typedef struct Menu {
     void **data;
 
     converter converter;
-
     MenuCallbacks callbacks;
 
     Window *window;
