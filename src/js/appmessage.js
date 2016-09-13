@@ -56,18 +56,15 @@ module.exports = (function() {
      * @param {number} packageKey A unique key that a set of messages should have
      */
     var appMessageError = function (title, subtitle, packageKey) {
-        //console.log('sending error '+title+' '+subtitle);
         Pebble.sendAppMessage({
                 '0': packageKey,
-                '1': title,
-                '2': subtitle,
-                '3': 0,
-                '4': '',
-                '5': 1
+                '1': 2,
+                '2': 1,
+                '3': title,
+                '4': subtitle
             },
-            function () {
-            },
-            function () {
+            function() {},
+            function() {
                 setTimeout(function () {
                     appMessageError(title, subtitle, packageKey);
                 }, 100);

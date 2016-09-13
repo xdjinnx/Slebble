@@ -40,7 +40,6 @@ void select_nearby_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *
 
     Menu *temp = menu;
     menu = menu_create(RESOURCE_ID_SLEBBLE_LOADING_BLACK,
-                       &departure_convert,
                        (MenuCallbacks){
                            .select_click = NULL,
                            .remove_callback = &remove_callback_handler,
@@ -77,14 +76,12 @@ void select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
     Menu *temp = menu;
     if (cell_index->section == 0) {
         menu = menu_create(RESOURCE_ID_SLEBBLE_LOADING_BLACK,
-                           &station_convert,
                            (MenuCallbacks){
                                .select_click = &select_nearby_callback,
                                .remove_callback = &remove_callback_handler,
                            });
     } else {
         menu = menu_create(RESOURCE_ID_SLEBBLE_LOADING_BLACK,
-                           &departure_convert,
                            (MenuCallbacks){
                                .select_click = NULL,
                                .remove_callback = &remove_callback_handler,
@@ -105,7 +102,6 @@ void select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
 
 int main(void) {
     menu = menu_create(RESOURCE_ID_SLEBBLE_START_BLACK,
-                       &station_convert,
                        (MenuCallbacks){
                            .select_click = &select_callback,
                            .remove_callback = &remove_callback_handler,

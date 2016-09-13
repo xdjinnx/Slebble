@@ -244,7 +244,7 @@ void hide_load_image(Menu *menu, bool vibe) {
 
 // TODO: Rewrite this to not use this worse less queue system.
 // Should be able to send a array pointer.
-void menu_add_data(void *menu_void, char *title, Queue *queue) {
+void menu_add_data(void *menu_void, char *title, Queue *queue, converter converter) {
     if (menu_void == NULL) {
         return;
     }
@@ -256,6 +256,7 @@ void menu_add_data(void *menu_void, char *title, Queue *queue) {
 
     menu->title = calloc(64, sizeof(char));
     memcpy(menu->title, title, 64);
+    menu->converter = converter;
     menu_allocation(menu, queue_length(queue));
 
     for (int i = 0; !queue_empty(queue); i++) {
@@ -276,11 +277,10 @@ void menu_deinit_text_scroll() {
     app_timer_cancel(scroll_timer);
 }
 
-Menu *menu_create(uint32_t load_image_resource_id, converter converter, MenuCallbacks callbacks) {
+Menu *menu_create(uint32_t load_image_resource_id, MenuCallbacks callbacks) {
     Menu *menu = malloc(sizeof(Menu));
     menu->window = window_create();
     menu->load_image_resource_id = load_image_resource_id;
-    menu->converter = converter;
     menu->callbacks = callbacks;
     menu->size = 0;
     menu->id = new_id++;

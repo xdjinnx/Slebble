@@ -1,16 +1,9 @@
 #include "event.h"
 
+#include "menu/menu.h"
 #include "row_type/departure.h"
 #include "row_type/station.h"
-
-enum SLKey {
-    PACKAGE_KEY = 0x0,
-    TITLE_KEY = 0x1,
-    SUBTITLE_KEY = 0x2,
-    INT_KEY = 0x3,
-    STRING_KEY = 0x4,
-    LAST_KEY = 0x5
-};
+#include "row_type/error.h"
 
 enum AppMessageEnum {
     PACKAGE = 0,
@@ -20,7 +13,8 @@ enum AppMessageEnum {
 
 enum TypeEnum {
     STATION = 0,
-    DEPARTURE = 1
+    DEPARTURE = 1,
+    ERROR = 2
 };
 
 Queue *queue;
@@ -52,17 +46,23 @@ void in_received_handler(DictionaryIterator *iter, void *context) {
 
     if (package >= expected_package_key) {
         void *data;
+        converter converter;
 
         if (type == STATION) {
             data = station_create(iter);
-        } else {
+            converter = station_convert;
+        } else if (type == DEPARTURE) {
             data = departure_create(iter);
+            converter = departure_convert;
+        } else {
+            data = error_create(iter);
+            converter = error_convert;
         }
 
         queue_queue(queue, data);
 
         if (last) {
-            add_view(*view_ptr, event_data_char, queue);
+            add_view(*view_ptr, event_data_char, queue, converter);
         }
     }
 }
