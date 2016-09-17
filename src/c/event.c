@@ -1,17 +1,26 @@
 #include "event.h"
 
-enum SLKey {
-    PACKAGE_KEY = 0x0,
-    TITLE_KEY = 0x1,
-    SUBTITLE_KEY = 0x2,
-    INT_KEY = 0x3,
-    STRING_KEY = 0x4,
-    LAST_KEY = 0x5
+#include "menu/menu.h"
+#include "row_type/departure.h"
+#include "row_type/error.h"
+#include "row_type/station.h"
+#include "storage/storage.h"
+
+enum AppMessageEnum {
+    PACKAGE = 0,
+    TYPE = 1,
+    LAST = 2
+};
+
+enum TypeEnum {
+    STATION = 0,
+    DEPARTURE = 1,
+    ERROR = 2
 };
 
 Queue *queue;
 int expected_package_key = 0;
-char *event_data_char = "Favorites";
+char *section_title = "Favorites";
 view_func add_view;
 void **view_ptr;
 
@@ -22,7 +31,7 @@ void event_set_view_func(void *view, view_func func) {
 }
 
 void event_set_click_data(char *data) {
-    event_data_char = data;
+    section_title = data;
 }
 
 void in_dropped_handler(AppMessageResult reason, void *context) {
@@ -32,24 +41,30 @@ void in_dropped_handler(AppMessageResult reason, void *context) {
 void in_received_handler(DictionaryIterator *iter, void *context) {
     // APP_LOG(APP_LOG_LEVEL_INFO, "Appmessage recived");
 
-    Tuple *package_tuple = dict_find(iter, PACKAGE_KEY);
-    Tuple *title_tuple = dict_find(iter, TITLE_KEY);
-    Tuple *subtitle_tuple = dict_find(iter, SUBTITLE_KEY);
-    Tuple *int_tuple = dict_find(iter, INT_KEY);
-    Tuple *string_tuple = dict_find(iter, STRING_KEY);
-    Tuple *last_tuple = dict_find(iter, LAST_KEY);
+    int package = dict_find(iter, PACKAGE)->value->int8;
+    int type = dict_find(iter, TYPE)->value->int8;
+    int last = dict_find(iter, LAST)->value->int8;
 
-    if (package_tuple->value->uint8 >= expected_package_key) {
-        Row *row = row_create();
-        memcpy(row->title, title_tuple->value->cstring, title_tuple->length);
-        memcpy(row->subtitle, subtitle_tuple->value->cstring, subtitle_tuple->length);
-        row->data_int = int_tuple->value->int8;
-        memcpy(row->data_char, string_tuple->value->cstring, string_tuple->length);
+    if (package >= expected_package_key) {
+        void *data;
+        converter converter;
 
-        queue_queue(queue, row);
+        if (type == STATION) {
+            data = station_create(iter);
+            converter = station_convert;
+        } else if (type == DEPARTURE) {
+            data = departure_create(iter);
+            converter = departure_convert;
+        } else {
+            data = error_create(iter);
+            converter = error_convert;
+        }
 
-        if (last_tuple->value->int8) {
-            add_view(*view_ptr, event_data_char, queue);
+        queue_queue(queue, data);
+
+        if (last) {
+            add_view(*view_ptr, section_title, queue, converter);
+            storage_save(*view_ptr);
         }
     }
 }

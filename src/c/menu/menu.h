@@ -1,7 +1,7 @@
 #pragma once
 
 #include "pebble.h"
-#include "queue.h"
+#include "../queue.h"
 #include "row.h"
 
 typedef struct MenuCallbacks {
@@ -10,13 +10,14 @@ typedef struct MenuCallbacks {
 } MenuCallbacks;
 
 typedef struct Menu {
-    int id;
+    uint16_t id;
     struct Menu *menu;
 
-    int size;
+    uint16_t size;
     char *title;
-    Row **row;
+    void **data;
 
+    converter converter;
     MenuCallbacks callbacks;
 
     Window *window;
@@ -27,7 +28,7 @@ typedef struct Menu {
 } Menu;
 
 extern Menu *menu_create(uint32_t load_image_resource_id, MenuCallbacks callbacks);
-extern void menu_add_rows(void *menu, char *title, Queue *queue);
+extern void menu_add_data(void *menu, char *title, Queue *queue, converter converter);
 
 extern void menu_init_text_scroll(Menu **menu);
 extern void menu_deinit_text_scroll();

@@ -48,8 +48,8 @@ bool queue_destroy(Queue *queue) {
     return false;
 }
 
-int queue_length(Queue *queue) {
-    int length = 0;
+uint16_t queue_length(Queue *queue) {
+    uint16_t length = 0;
     Queue_Node *node = queue->last;
 
     while (node != NULL) {

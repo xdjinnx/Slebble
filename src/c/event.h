@@ -1,10 +1,10 @@
 #pragma once
 
+#include "menu/menu.h"
 #include "pebble.h"
 #include "queue.h"
-#include "row.h"
 
-typedef void (*view_func)(void *, char *, Queue *);
+typedef void (*view_func)(void *, char *, Queue *, converter);
 
 extern void send_appmessage(int index, int step);
 extern void update_appmessage();
