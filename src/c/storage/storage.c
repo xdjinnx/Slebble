@@ -4,7 +4,7 @@
 #include "../queue.h"
 
 bool storage_load(Menu *menu) {
-    if (menu->id != 0 || !persist_exists(0) || persist_read_int(0) == 0) {
+    if (menu->id != 0 || !persist_exists(1)) {
         return false;
     }
 

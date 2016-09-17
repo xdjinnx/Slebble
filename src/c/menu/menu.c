@@ -185,7 +185,7 @@ void menu_add_data(void *menu_void, char *title, Queue *queue, converter convert
     }
 
     Menu *menu = (Menu *)menu_void;
-    if (0 < menu->size && strcmp(menu->title, title) != 0) {
+    if (menu->size > 0 && strcmp(menu->title, title) != 0) {
         return;
     }
 
