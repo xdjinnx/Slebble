@@ -118,17 +118,6 @@ void menu_allocation(Menu *menu, int size) {
     menu->size = size;
 }
 
-void menu_free_data(Menu *menu) {
-    if (menu->size == 0) {
-        return;
-    }
-
-    for (int i = 0; i < menu->size; i++) {
-        free(menu->data[i]);
-    }
-    free(menu->data);
-}
-
 void window_load(Window *window) {
     Menu *menu = window_get_user_data(window);
 
@@ -182,7 +171,13 @@ void window_unload(Window *window) {
     bitmap_layer_destroy(menu->load_layer);
     gbitmap_destroy(menu->load_image);
 
-    menu_free_data(menu);
+    if (menu->size != 0) {
+        for (int i = 0; i < menu->size; i++) {
+            free(menu->data[i]);
+        }
+
+        free(menu->data);
+    }
 
     if (ret == NULL)
         status_bar_layer_destroy(status_bar);
@@ -211,9 +206,7 @@ void hide_load_image(Menu *menu, bool vibe) {
     }
 }
 
-
-// TODO: Rewrite this to not use this worse less queue system.
-// Should be able to send a array pointer.
+// Should be able to send an array pointer.
 void menu_add_data(void *menu_void, char *title, Queue *queue, converter converter) {
     if (menu_void == NULL) {
         return;

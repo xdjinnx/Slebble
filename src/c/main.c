@@ -1,9 +1,9 @@
 #include "event.h"
 #include "menu/menu.h"
 #include "pebble.h"
-#include "storage/storage.h"
 #include "row_type/departure.h"
 #include "row_type/station.h"
+#include "storage/storage.h"
 
 Menu *menu;
 bool first_tick = false;
