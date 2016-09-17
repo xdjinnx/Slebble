@@ -1,6 +1,7 @@
 #include "event.h"
 #include "menu/menu.h"
 #include "pebble.h"
+#include "storage/storage.h"
 #include "row_type/departure.h"
 #include "row_type/station.h"
 
@@ -108,6 +109,8 @@ int main(void) {
                            .select_click = &select_callback,
                            .remove_callback = &remove_callback_handler,
                        });
+
+    storage_load(menu);
 
     event_set_view_func(&menu, &menu_add_data);
     menu_init_text_scroll(&menu);

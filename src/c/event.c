@@ -4,6 +4,7 @@
 #include "row_type/departure.h"
 #include "row_type/error.h"
 #include "row_type/station.h"
+#include "storage/storage.h"
 
 enum AppMessageEnum {
     PACKAGE = 0,
@@ -63,6 +64,7 @@ void in_received_handler(DictionaryIterator *iter, void *context) {
 
         if (last) {
             add_view(*view_ptr, section_title, queue, converter);
+            storage_save(*view_ptr);
         }
     }
 }

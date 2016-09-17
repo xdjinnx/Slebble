@@ -129,34 +129,6 @@ void menu_free_data(Menu *menu) {
     free(menu->data);
 }
 
-bool load_persistent(Menu *menu) {
-    if (menu->id == 0 && persist_exists(0) && persist_read_int(0) > 0) {
-        int size = persist_read_int(0);
-
-        menu_allocation(menu, size);
-
-        for (int i = 1; persist_exists(i); i++) {
-            Row *row = menu->converter(menu->data[i - 1]);
-            persist_read_string(i, row->title, 32);
-            snprintf(menu->title, 32, "%s", "Favorites");
-            snprintf(row->subtitle, 32, "%s", "");
-            menu->size = size;
-        }
-
-        return true;
-    }
-    return false;
-}
-
-void store_persistent(Menu *menu) {
-    persist_write_int(0, menu->size);
-    for (int i = 0; i < menu->size; i++) {
-        Row *row = menu->converter(menu->data[i]);
-        persist_write_string(i + 1, row->title);
-        row_destroy(row);
-    }
-}
-
 void window_load(Window *window) {
     Menu *menu = window_get_user_data(window);
 
@@ -262,9 +234,6 @@ void menu_add_data(void *menu_void, char *title, Queue *queue, converter convert
 
     menu_layer_reload_data(menu->layer);
     hide_load_image(menu, true);
-    if (menu->id == 0) {
-        store_persistent(menu);
-    }
 }
 
 void menu_init_text_scroll(Menu **menu) {
@@ -283,8 +252,6 @@ Menu *menu_create(uint32_t load_image_resource_id, MenuCallbacks callbacks) {
     menu->id = new_id++;
     menu->title = "";
 
-    //bool loaded_persistant = load_persistent(menu);
-
     window_set_user_data(menu->window, menu);
 
     window_set_window_handlers(menu->window,
@@ -295,8 +262,6 @@ Menu *menu_create(uint32_t load_image_resource_id, MenuCallbacks callbacks) {
                                });
 
     window_stack_push(menu->window, true);
-    //if (loaded_persistant)
-    //    hide_load_image(menu, false);
 
     return menu;
 }

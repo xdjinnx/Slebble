@@ -8,11 +8,15 @@ enum StationEnum {
         TITLE = 3
     };
 
+Station *station_create_blank() {
+    Station *station = calloc(1, sizeof(Station));
+    return station;
+}
+
 Station *station_create(DictionaryIterator *iter) {
     Station *station = calloc(1, sizeof(Station));
 
     Tuple *title_tuple = dict_find(iter, TITLE);
-    //APP_LOG(APP_LOG_LEVEL_INFO, "Station: %s, Length: %d", title_tuple->value->cstring, title_tuple->length);
     memcpy(station->title, title_tuple->value->cstring, title_tuple->length);
 
     return station;
