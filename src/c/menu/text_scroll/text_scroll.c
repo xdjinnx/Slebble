@@ -34,7 +34,7 @@ void text_scroll_handler(void *data) {
         }
     }
 
-    if (!(menu->id == 0 && selected_item.section == 0)) {
+    if (selected_item.section != 0) {
         text_scroll++;
     }
 

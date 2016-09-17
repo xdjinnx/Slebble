@@ -48,7 +48,7 @@ void menu_draw_row_callback(GContext *ctx, const Layer *cell_layer, MenuIndex *c
         char *title = row->title;
         char *subtitle = row->subtitle;
 
-        if (selected_item.row == cell_index->row) {
+        if (selected_item.row == cell_index->row && menu->id == 0) {
             title = title + (text_scroll_value() * sizeof(char));
         }
 
