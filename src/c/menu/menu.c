@@ -1,8 +1,8 @@
 #include "menu.h"
 
+#include "text_scroll/text_scroll.h"
+
 int new_id = 0;
-AppTimer *scroll_timer;
-int text_scroll = -2;
 uint prev_index = 0;
 StatusBarLayer *status_bar;
 
@@ -48,8 +48,8 @@ void menu_draw_row_callback(GContext *ctx, const Layer *cell_layer, MenuIndex *c
         char *title = row->title;
         char *subtitle = row->subtitle;
 
-        if (selected_item.row == cell_index->row && text_scroll >= 0) {
-            title = title + ((uint)text_scroll * sizeof(char));
+        if (selected_item.row == cell_index->row) {
+            title = title + (text_scroll_value() * sizeof(char));
         }
 
         menu_cell_basic_draw(ctx, cell_layer, title, subtitle, NULL);
@@ -61,43 +61,11 @@ void selection_changed_callback(struct MenuLayer *menu_layer, MenuIndex new_inde
     Menu *menu = data;
     if (new_index.row != prev_index) {
         prev_index = new_index.row;
-        text_scroll = -2;
+        text_scroll_reset();
     }
     if (menu->id == 0 && new_index.section == 0) {
-        text_scroll = -2;
+        text_scroll_reset();
     }
-}
-
-void text_scroll_handler(void *data) {
-    Menu *menu = *((Menu **)data);
-    MenuIndex selected_item = menu_layer_get_selected_index(menu->layer);
-
-    Row *row = NULL;
-
-    if (menu->size > 0) {
-        row = menu->converter(menu->data[selected_item.row]);
-    }
-
-    if (row) {
-        char current_char = *(row->title + ((uint)text_scroll * sizeof(char)));
-
-        // Fixes åäö edge case
-        if (current_char == 195) {
-            text_scroll++;
-        }
-    }
-
-    if (!(menu->id == 0 && selected_item.section == 0)) {
-        text_scroll++;
-    }
-
-    if (row && text_scroll > ((int)strlen(row->title)) - 17) {
-        text_scroll = -2;
-    }
-
-    menu_layer_reload_data(menu->layer);
-    scroll_timer = app_timer_register(500, &text_scroll_handler, data);
-    row_destroy(row);
 }
 
 void menu_allocation(Menu *menu, int size) {
@@ -151,17 +119,25 @@ void window_load(Window *window) {
     layer_add_child(window_layer, bitmap_layer_get_layer(menu->load_layer));
 }
 
+void window_appear(Window *window) {
+    if (status_bar == NULL) {
+        status_bar = status_bar_layer_create();
+    }
+    layer_add_child(window_get_root_layer(window), status_bar_layer_get_layer(status_bar));
+}
+
 void window_unload(Window *window) {
     Menu *menu = window_get_user_data(window);
-    if (menu->id == 0)
+    if (menu->id == 0) {
         menu_deinit_text_scroll();
+    }
 
     Menu *ret = menu->menu;
 
     if (ret != NULL) {
         prev_index = menu_layer_get_selected_index(ret->layer).row;
     }
-    text_scroll = -2;
+    text_scroll_reset();
 
     menu->callbacks.remove_callback(ret);
 
@@ -179,30 +155,26 @@ void window_unload(Window *window) {
         free(menu->data);
     }
 
-    if (ret == NULL)
+    if (ret == NULL) {
         status_bar_layer_destroy(status_bar);
+    }
 
     free(menu);
 }
 
-void window_appear(Window *window) {
-    if (status_bar == NULL) {
-        status_bar = status_bar_layer_create();
-    }
-    layer_add_child(window_get_root_layer(window), status_bar_layer_get_layer(status_bar));
-}
-
 void hide_load_image(Menu *menu, bool vibe) {
-    if (!layer_get_hidden(bitmap_layer_get_layer(menu->load_layer))) {
-        prev_index = 0;
-        text_scroll = -2;
-        menu_layer_reload_data(menu->layer);
-        layer_set_hidden(bitmap_layer_get_layer(menu->load_layer), true);
-        menu_layer_set_click_config_onto_window(menu->layer, menu->window);
+    if (layer_get_hidden(bitmap_layer_get_layer(menu->load_layer))) {
+        return;
+    }
 
-        if (vibe) {
-            vibes_short_pulse();
-        }
+    prev_index = 0;
+    text_scroll_reset();
+    menu_layer_reload_data(menu->layer);
+    layer_set_hidden(bitmap_layer_get_layer(menu->load_layer), true);
+    menu_layer_set_click_config_onto_window(menu->layer, menu->window);
+
+    if (vibe) {
+        vibes_short_pulse();
     }
 }
 
@@ -229,13 +201,6 @@ void menu_add_data(void *menu_void, char *title, Queue *queue, converter convert
     hide_load_image(menu, true);
 }
 
-void menu_init_text_scroll(Menu **menu) {
-    scroll_timer = app_timer_register(500, &text_scroll_handler, menu);
-}
-void menu_deinit_text_scroll() {
-    app_timer_cancel(scroll_timer);
-}
-
 Menu *menu_create(uint32_t load_image_resource_id, MenuCallbacks callbacks) {
     Menu *menu = malloc(sizeof(Menu));
     menu->window = window_create();
@@ -255,6 +220,10 @@ Menu *menu_create(uint32_t load_image_resource_id, MenuCallbacks callbacks) {
                                });
 
     window_stack_push(menu->window, true);
+
+    if (menu->id == 0) {
+        menu_init_text_scroll(menu);
+    }
 
     return menu;
 }

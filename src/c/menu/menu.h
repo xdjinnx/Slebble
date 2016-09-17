@@ -29,6 +29,3 @@ typedef struct Menu {
 
 extern Menu *menu_create(uint32_t load_image_resource_id, MenuCallbacks callbacks);
 extern void menu_add_data(void *menu, char *title, Queue *queue, converter converter);
-
-extern void menu_init_text_scroll(Menu **menu);
-extern void menu_deinit_text_scroll();
