@@ -4,8 +4,6 @@
 #include "../queue.h"
 #include "row.h"
 
-typedef Row* (*converter)(void *);
-
 typedef struct MenuCallbacks {
     void (*select_click)(MenuLayer *, MenuIndex *, void *);
     void (*remove_callback)(void *);

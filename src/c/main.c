@@ -1,8 +1,8 @@
-#include "row_type/departure.h"
-#include "row_type/station.h"
 #include "event.h"
 #include "menu/menu.h"
 #include "pebble.h"
+#include "row_type/departure.h"
+#include "row_type/station.h"
 
 Menu *menu;
 bool first_tick = false;
@@ -47,8 +47,9 @@ void select_nearby_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *
 
     menu->menu = temp;
 
-    if (app_comm_get_sniff_interval() == SNIFF_INTERVAL_NORMAL)
+    if (app_comm_get_sniff_interval() == SNIFF_INTERVAL_NORMAL) {
         app_comm_set_sniff_interval(SNIFF_INTERVAL_REDUCED);
+    }
     send_appmessage(row_clicked, 1);
 
     first_tick = false;
@@ -90,8 +91,9 @@ void select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
 
     menu->menu = temp;
 
-    if (app_comm_get_sniff_interval() == SNIFF_INTERVAL_NORMAL)
+    if (app_comm_get_sniff_interval() == SNIFF_INTERVAL_NORMAL) {
         app_comm_set_sniff_interval(SNIFF_INTERVAL_REDUCED);
+    }
     send_appmessage(row_clicked, 0);
 
     if (cell_index->section != 0) {

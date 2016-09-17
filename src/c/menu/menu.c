@@ -102,7 +102,6 @@ void text_scroll_handler(void *data) {
 
 void menu_allocation(Menu *menu, int size) {
     if (menu->size == 0) {
-        menu->title = malloc(sizeof(char) * 32);
         menu->data = calloc(size, sizeof(void *));
     }
 
@@ -128,7 +127,6 @@ void menu_free_data(Menu *menu) {
         free(menu->data[i]);
     }
     free(menu->data);
-    free(menu->title);
 }
 
 bool load_persistent(Menu *menu) {
@@ -254,8 +252,7 @@ void menu_add_data(void *menu_void, char *title, Queue *queue, converter convert
         return;
     }
 
-    menu->title = calloc(64, sizeof(char));
-    memcpy(menu->title, title, 64);
+    menu->title = title;
     menu->converter = converter;
     menu_allocation(menu, queue_length(queue));
 

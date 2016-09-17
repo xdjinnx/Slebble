@@ -2,8 +2,8 @@
 
 #include "menu/menu.h"
 #include "row_type/departure.h"
-#include "row_type/station.h"
 #include "row_type/error.h"
+#include "row_type/station.h"
 
 enum AppMessageEnum {
     PACKAGE = 0,
@@ -19,7 +19,7 @@ enum TypeEnum {
 
 Queue *queue;
 int expected_package_key = 0;
-char *event_data_char = "Favorites";
+char *section_title = "Favorites";
 view_func add_view;
 void **view_ptr;
 
@@ -30,7 +30,7 @@ void event_set_view_func(void *view, view_func func) {
 }
 
 void event_set_click_data(char *data) {
-    event_data_char = data;
+    section_title = data;
 }
 
 void in_dropped_handler(AppMessageResult reason, void *context) {
@@ -62,7 +62,7 @@ void in_received_handler(DictionaryIterator *iter, void *context) {
         queue_queue(queue, data);
 
         if (last) {
-            add_view(*view_ptr, event_data_char, queue, converter);
+            add_view(*view_ptr, section_title, queue, converter);
         }
     }
 }
