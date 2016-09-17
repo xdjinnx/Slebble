@@ -112,7 +112,7 @@ int main(void) {
 
     storage_load(menu);
 
-    event_set_view_func(&menu, &menu_add_data);
+    app_message_set_context(&menu);
     event_register_app_message();
 
     app_event_loop();

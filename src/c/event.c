@@ -21,14 +21,6 @@ enum TypeEnum {
 Queue *queue;
 int expected_package_key = 0;
 char *section_title = "Favorites";
-view_func add_view;
-void **view_ptr;
-
-void event_set_view_func(void *view, view_func func) {
-    view_ptr = view;
-    add_view = func;
-    queue = queue_create();
-}
 
 void event_set_click_data(char *data) {
     section_title = data;
@@ -39,7 +31,7 @@ void in_dropped_handler(AppMessageResult reason, void *context) {
 }
 
 void in_received_handler(DictionaryIterator *iter, void *context) {
-    // APP_LOG(APP_LOG_LEVEL_INFO, "Appmessage recived");
+    Menu **menu = context;
 
     int package = dict_find(iter, PACKAGE)->value->int8;
     int type = dict_find(iter, TYPE)->value->int8;
@@ -63,13 +55,15 @@ void in_received_handler(DictionaryIterator *iter, void *context) {
         queue_queue(queue, data);
 
         if (last) {
-            add_view(*view_ptr, section_title, queue, converter);
-            storage_save(*view_ptr);
+            menu_add_data(*menu, section_title, queue, converter);
+            storage_save(*menu);
         }
     }
 }
 
 void event_register_app_message() {
+    queue = queue_create();
+
     app_message_register_inbox_received(in_received_handler);
     app_message_register_inbox_dropped(in_dropped_handler);
 
