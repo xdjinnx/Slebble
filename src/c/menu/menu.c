@@ -126,6 +126,16 @@ void window_appear(Window *window) {
     layer_add_child(window_get_root_layer(window), status_bar_layer_get_layer(status_bar));
 }
 
+void free_data(Menu *menu) {
+    if (menu->size == 0) {
+        return;
+    }
+
+    for (int i = 0; i < menu->size; i++) {
+        free(menu->data[i]);
+    }
+}
+
 void window_unload(Window *window) {
     Menu *menu = window_get_user_data(window);
     if (menu->id == 0) {
@@ -147,13 +157,8 @@ void window_unload(Window *window) {
     bitmap_layer_destroy(menu->load_layer);
     gbitmap_destroy(menu->load_image);
 
-    if (menu->size != 0) {
-        for (int i = 0; i < menu->size; i++) {
-            free(menu->data[i]);
-        }
-
-        free(menu->data);
-    }
+    free_data(menu);
+    free(menu->data);
 
     if (ret == NULL) {
         status_bar_layer_destroy(status_bar);
@@ -191,6 +196,8 @@ void menu_add_data(void *menu_void, char *title, Queue *queue, converter convert
 
     menu->title = title;
     menu->converter = converter;
+
+    free_data(menu);
     menu_allocation(menu, queue_length(queue));
 
     for (int i = 0; !queue_empty(queue); i++) {
