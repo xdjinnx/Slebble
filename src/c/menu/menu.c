@@ -2,13 +2,12 @@
 
 #include "text_scroll/text_scroll.h"
 
-int new_id = 0;
 uint prev_index = 0;
 StatusBarLayer *status_bar;
 
 uint16_t menu_get_num_sections_callback(MenuLayer *menu_layer, void *data) {
     Menu *menu = data;
-    if (menu->id == 0)
+    if (menu->menu == NULL)
         return 2;
     else
         return 1;
@@ -16,7 +15,7 @@ uint16_t menu_get_num_sections_callback(MenuLayer *menu_layer, void *data) {
 
 uint16_t menu_get_num_rows_callback(MenuLayer *menu_layer, uint16_t section_index, void *data) {
     Menu *menu = data;
-    if (menu->id == 0 && section_index == 0) {
+    if (menu->menu == NULL && section_index == 0) {
         return 1;
     } else {
         return menu->size;
@@ -31,7 +30,7 @@ int16_t menu_get_header_height_callback(MenuLayer *menu_layer, uint16_t section_
 void menu_draw_header_callback(GContext *ctx, const Layer *cell_layer, uint16_t section_index, void *data) {
     Menu *menu = data;
 
-    if (menu->id == 0 && section_index == 0) {
+    if (menu->menu == NULL && section_index == 0) {
         menu_cell_basic_header_draw(ctx, cell_layer, "Stations");
     } else {
         menu_cell_basic_header_draw(ctx, cell_layer, menu->title);
@@ -41,14 +40,14 @@ void menu_draw_header_callback(GContext *ctx, const Layer *cell_layer, uint16_t 
 void menu_draw_row_callback(GContext *ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data) {
     Menu *menu = data;
     MenuIndex selected_item = menu_layer_get_selected_index(menu->layer);
-    if (menu->id == 0 && cell_index->section == 0)
+    if (menu->menu == NULL && cell_index->section == 0)
         menu_cell_basic_draw(ctx, cell_layer, "Nearby Stations", "", NULL);
     else {
         Row *row = menu->converter(menu->data[cell_index->row]);
         char *title = row->title;
         char *subtitle = row->subtitle;
 
-        if (selected_item.row == cell_index->row && menu->id == 0) {
+        if (selected_item.row == cell_index->row && menu->menu == NULL) {
             title = title + (text_scroll_value() * sizeof(char));
         }
 
@@ -63,7 +62,7 @@ void selection_changed_callback(struct MenuLayer *menu_layer, MenuIndex new_inde
         prev_index = new_index.row;
         text_scroll_reset();
     }
-    if (menu->id == 0 && new_index.section == 0) {
+    if (menu->menu == NULL && new_index.section == 0) {
         text_scroll_reset();
     }
 }
@@ -138,7 +137,7 @@ void free_data(Menu *menu) {
 
 void window_unload(Window *window) {
     Menu *menu = window_get_user_data(window);
-    if (menu->id == 0) {
+    if (menu->menu == NULL) {
         menu_deinit_text_scroll();
     }
 
@@ -214,7 +213,6 @@ Menu *menu_create(uint32_t load_image_resource_id, MenuCallbacks callbacks) {
     menu->load_image_resource_id = load_image_resource_id;
     menu->callbacks = callbacks;
     menu->size = 0;
-    menu->id = new_id++;
     menu->title = "";
 
     window_set_user_data(menu->window, menu);
@@ -228,7 +226,7 @@ Menu *menu_create(uint32_t load_image_resource_id, MenuCallbacks callbacks) {
 
     window_stack_push(menu->window, true);
 
-    if (menu->id == 0) {
+    if (menu->menu == NULL) {
         menu_init_text_scroll(menu);
     }
 

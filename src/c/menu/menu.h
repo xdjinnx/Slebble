@@ -10,7 +10,6 @@ typedef struct MenuCallbacks {
 } MenuCallbacks;
 
 typedef struct Menu {
-    uint16_t id;
     struct Menu *menu;
 
     uint16_t size;
