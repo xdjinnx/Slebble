@@ -23,46 +23,6 @@ void menu_allocation(Menu *menu, int size) {
     menu->size = size;
 }
 
-void window_load(Window *window) {
-    Menu *menu = window_get_user_data(window);
-
-    Layer *window_layer = window_get_root_layer(window);
-    GRect bounds = layer_get_frame(window_layer);
-
-    GRect menu_bounds = GRect(bounds.origin.x,
-                              bounds.origin.y + STATUS_BAR_LAYER_HEIGHT,
-                              bounds.size.w,
-                              bounds.size.h - STATUS_BAR_LAYER_HEIGHT);
-    menu->layer = menu_layer_create(menu_bounds);
-    menu->load_layer = bitmap_layer_create(menu_bounds);
-
-    menu_layer_set_callbacks(
-        menu->layer, menu,
-        (MenuLayerCallbacks){
-            .get_num_sections = get_num_sections_callback,
-            .get_num_rows = get_num_rows_callback,
-            .get_header_height = get_header_height_callback,
-            .draw_header = draw_header_callback,
-            .draw_row = draw_row_callback,
-            .select_click = menu->callbacks.select_click,
-            .selection_will_change = selection_will_change_callback,
-        });
-
-    menu->load_image = gbitmap_create_with_resource(menu->load_image_resource_id);
-    bitmap_layer_set_background_color(menu->load_layer, GColorBlack);
-    bitmap_layer_set_bitmap(menu->load_layer, menu->load_image);
-
-    layer_add_child(window_layer, menu_layer_get_layer(menu->layer));
-    layer_add_child(window_layer, bitmap_layer_get_layer(menu->load_layer));
-}
-
-void window_appear(Window *window) {
-    if (status_bar == NULL) {
-        status_bar = status_bar_layer_create();
-    }
-    layer_add_child(window_get_root_layer(window), status_bar_layer_get_layer(status_bar));
-}
-
 void free_data(Menu *menu) {
     if (menu->size == 0) {
         return;
@@ -71,34 +31,6 @@ void free_data(Menu *menu) {
     for (int i = 0; i < menu->size; i++) {
         free(menu->data[i]);
     }
-}
-
-void window_unload(Window *window) {
-    Menu *menu = window_get_user_data(window);
-    if (menu->menu == NULL) {
-        menu_deinit_text_scroll();
-    }
-
-    Menu *ret = menu->menu;
-
-    text_scroll_reset();
-
-    menu->callbacks.remove_callback(ret);
-
-    window_stack_remove(window, true);
-    window_destroy(window);
-    menu_layer_destroy(menu->layer);
-    bitmap_layer_destroy(menu->load_layer);
-    gbitmap_destroy(menu->load_image);
-
-    free_data(menu);
-    free(menu->data);
-
-    if (ret == NULL) {
-        status_bar_layer_destroy(status_bar);
-    }
-
-    free(menu);
 }
 
 void hide_load_image(Menu *menu, bool vibe) {
@@ -139,6 +71,74 @@ void menu_add_data(void *menu_void, char *title, Queue *queue, converter convert
 
     menu_layer_reload_data(menu->layer);
     hide_load_image(menu, true);
+}
+
+void window_unload(Window *window) {
+    Menu *menu = window_get_user_data(window);
+    if (menu->menu == NULL) {
+        menu_deinit_text_scroll();
+    }
+
+    Menu *ret = menu->menu;
+
+    text_scroll_reset();
+
+    menu->callbacks.remove_callback(ret);
+
+    window_stack_remove(window, true);
+    window_destroy(window);
+    menu_layer_destroy(menu->layer);
+    bitmap_layer_destroy(menu->load_layer);
+    gbitmap_destroy(menu->load_image);
+
+    free_data(menu);
+    free(menu->data);
+
+    if (ret == NULL) {
+        status_bar_layer_destroy(status_bar);
+    }
+
+    free(menu);
+}
+
+void window_load(Window *window) {
+    Menu *menu = window_get_user_data(window);
+
+    Layer *window_layer = window_get_root_layer(window);
+    GRect bounds = layer_get_frame(window_layer);
+
+    GRect menu_bounds = GRect(bounds.origin.x,
+                              bounds.origin.y + STATUS_BAR_LAYER_HEIGHT,
+                              bounds.size.w,
+                              bounds.size.h - STATUS_BAR_LAYER_HEIGHT);
+    menu->layer = menu_layer_create(menu_bounds);
+    menu->load_layer = bitmap_layer_create(menu_bounds);
+
+    menu_layer_set_callbacks(
+        menu->layer, menu,
+        (MenuLayerCallbacks){
+            .get_num_sections = get_num_sections_callback,
+            .get_num_rows = get_num_rows_callback,
+            .get_header_height = get_header_height_callback,
+            .draw_header = draw_header_callback,
+            .draw_row = draw_row_callback,
+            .select_click = menu->callbacks.select_click,
+            .selection_will_change = selection_will_change_callback,
+        });
+
+    menu->load_image = gbitmap_create_with_resource(menu->load_image_resource_id);
+    bitmap_layer_set_background_color(menu->load_layer, GColorBlack);
+    bitmap_layer_set_bitmap(menu->load_layer, menu->load_image);
+
+    layer_add_child(window_layer, menu_layer_get_layer(menu->layer));
+    layer_add_child(window_layer, bitmap_layer_get_layer(menu->load_layer));
+}
+
+void window_appear(Window *window) {
+    if (status_bar == NULL) {
+        status_bar = status_bar_layer_create();
+    }
+    layer_add_child(window_get_root_layer(window), status_bar_layer_get_layer(status_bar));
 }
 
 Menu *menu_create(uint32_t load_image_resource_id, MenuCallbacks callbacks) {
