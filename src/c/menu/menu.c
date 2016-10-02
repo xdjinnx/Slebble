@@ -1,71 +1,9 @@
 #include "menu.h"
 
 #include "text_scroll/text_scroll.h"
+#include "handler/handler.h"
 
-uint prev_index = 0;
 StatusBarLayer *status_bar;
-
-uint16_t menu_get_num_sections_callback(MenuLayer *menu_layer, void *data) {
-    Menu *menu = data;
-    if (menu->menu == NULL)
-        return 2;
-    else
-        return 1;
-}
-
-uint16_t menu_get_num_rows_callback(MenuLayer *menu_layer, uint16_t section_index, void *data) {
-    Menu *menu = data;
-    if (menu->menu == NULL && section_index == 0) {
-        return 1;
-    } else {
-        return menu->size;
-    }
-}
-
-int16_t menu_get_header_height_callback(MenuLayer *menu_layer, uint16_t section_index, void *data) {
-    // This is a define provided in pebble.h that you may use for the default height
-    return MENU_CELL_BASIC_HEADER_HEIGHT;
-}
-
-void menu_draw_header_callback(GContext *ctx, const Layer *cell_layer, uint16_t section_index, void *data) {
-    Menu *menu = data;
-
-    if (menu->menu == NULL && section_index == 0) {
-        menu_cell_basic_header_draw(ctx, cell_layer, "Stations");
-    } else {
-        menu_cell_basic_header_draw(ctx, cell_layer, menu->title);
-    }
-}
-
-void menu_draw_row_callback(GContext *ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data) {
-    Menu *menu = data;
-    MenuIndex selected_item = menu_layer_get_selected_index(menu->layer);
-    if (menu->menu == NULL && cell_index->section == 0)
-        menu_cell_basic_draw(ctx, cell_layer, "Nearby Stations", "", NULL);
-    else {
-        Row *row = menu->converter(menu->data[cell_index->row]);
-        char *title = row->title;
-        char *subtitle = row->subtitle;
-
-        if (selected_item.row == cell_index->row && menu->menu == NULL) {
-            title = title + (text_scroll_value() * sizeof(char));
-        }
-
-        menu_cell_basic_draw(ctx, cell_layer, title, subtitle, NULL);
-        row_destroy(row);
-    }
-}
-
-void selection_changed_callback(struct MenuLayer *menu_layer, MenuIndex new_index, MenuIndex old_index, void *data) {
-    Menu *menu = data;
-    if (new_index.row != prev_index) {
-        prev_index = new_index.row;
-        text_scroll_reset();
-    }
-    if (menu->menu == NULL && new_index.section == 0) {
-        text_scroll_reset();
-    }
-}
 
 void menu_allocation(Menu *menu, int size) {
     if (menu->size == 0) {
@@ -101,13 +39,13 @@ void window_load(Window *window) {
     menu_layer_set_callbacks(
         menu->layer, menu,
         (MenuLayerCallbacks){
-            .get_num_sections = menu_get_num_sections_callback,
-            .get_num_rows = menu_get_num_rows_callback,
-            .get_header_height = menu_get_header_height_callback,
-            .draw_header = menu_draw_header_callback,
-            .draw_row = menu_draw_row_callback,
+            .get_num_sections = get_num_sections_callback,
+            .get_num_rows = get_num_rows_callback,
+            .get_header_height = get_header_height_callback,
+            .draw_header = draw_header_callback,
+            .draw_row = draw_row_callback,
             .select_click = menu->callbacks.select_click,
-            .selection_changed = selection_changed_callback,
+            .selection_will_change = selection_will_change_callback,
         });
 
     menu->load_image = gbitmap_create_with_resource(menu->load_image_resource_id);
@@ -143,9 +81,6 @@ void window_unload(Window *window) {
 
     Menu *ret = menu->menu;
 
-    if (ret != NULL) {
-        prev_index = menu_layer_get_selected_index(ret->layer).row;
-    }
     text_scroll_reset();
 
     menu->callbacks.remove_callback(ret);
@@ -171,7 +106,6 @@ void hide_load_image(Menu *menu, bool vibe) {
         return;
     }
 
-    prev_index = 0;
     text_scroll_reset();
     menu_layer_reload_data(menu->layer);
     layer_set_hidden(bitmap_layer_get_layer(menu->load_layer), true);
