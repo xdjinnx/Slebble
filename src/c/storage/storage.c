@@ -1,10 +1,10 @@
 #include "storage.h"
 
 #include "../row_type/station.h"
-#include "../queue.h"
+#include "../utils/queue.h"
 
 bool storage_load(Menu *menu) {
-    if (menu->id != 0 || !persist_exists(1)) {
+    if (menu->menu != NULL || !persist_exists(1)) {
         return false;
     }
 
@@ -23,7 +23,7 @@ bool storage_load(Menu *menu) {
 }
 
 void storage_save(Menu *menu) {
-    if (menu->id != 0) {
+    if (menu->menu != NULL) {
         return;
     }
 
