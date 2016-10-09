@@ -1,6 +1,8 @@
 /* eslint strict: 0 */
 
 module.exports = (function() {
+	'use strict';
+
 	var cnst = require('./const.js');
 
 	var determineTime = function (timeleft) {
@@ -75,6 +77,6 @@ module.exports = (function() {
 		determineTime: determineTime,
 		determineTimeLeft: determineTimeLeft,
 		filterRides: filterRides,
-		log: log,
+		log: log
 	};
 })();

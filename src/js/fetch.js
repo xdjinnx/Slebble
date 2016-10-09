@@ -1,4 +1,6 @@
 module.exports = (function() {
+	'use strict';
+
 	var log = require('./util.js').log;
 	var Promise = require('promise');
 
@@ -58,6 +60,6 @@ module.exports = (function() {
 	};
 
 	return {
-		fetch: fetch,
+		fetch: fetch
 	};
 })();

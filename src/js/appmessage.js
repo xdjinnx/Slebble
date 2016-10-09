@@ -75,6 +75,6 @@ module.exports = (function() {
     return {
         addStation: addStation,
         addRide: addRide,
-        appMessageError: appMessageError,
+        appMessageError: appMessageError
     };
 })();

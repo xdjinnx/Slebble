@@ -28,7 +28,7 @@ Pebble.addEventListener('ready', function() {
             Slebble.addStation(stations, 0);
         } else {
             Slebble.addStation([{
-                from: 'No configuration',
+                from: 'No configuration'
             }], 0);
         }
     }, this);
@@ -83,20 +83,32 @@ Pebble.addEventListener('webviewclosed', function(e) {
 Pebble.addEventListener('appmessage', function(e) {
     trackJs.attempt(function(e) {
         /**
-        * payload[1] : menu row
-        * payload[2] : step, is saying which instruction the watch excpects
-        * payload[3] : expected package key
+        * payload[1] : Menu row.
+        * payload[2] : Action.
+        * payload[3] : Expected package key.
         */
-        if (e.payload[2] === 0) {
-            if (e.payload[1] !== 0) {
-                Slebble.requestRides(e.payload[1] - 1, e.payload[2], e.payload[3]);
-            } else {
-                Slebble.requestGeoRides(e.payload[3]);
-            }
-        } else if (e.payload[2] === 1){
-            Slebble.requestRides(e.payload[1], e.payload[2], e.payload[3]);
-        } else {
+
+        var Action = {
+            'STATION': 0,
+            'NEARBYSTATION': 1,
+            'UPDATE': 2,
+            'CLEAR_NEARBYSTATION': 3
+        };
+
+        if (e.payload[2] === Action.STATION) {
+            Slebble.requestRides(e.payload[1], e.payload[3]);
+        }
+
+        if (e.payload[2] === Action.NEARBYSTATION) {
+            Slebble.requestGeoRides(e.payload[3]);
+        }
+
+        if (e.payload[2] === Action.UPDATE) {
             Slebble.requestUpdate(e.payload[3]);
+        }
+
+        if (e.payload[2] === Action.CLEAR_NEARBYSTATION) {
+            Slebble.clearNearbyStation();
         }
     }, this, e);
 });
