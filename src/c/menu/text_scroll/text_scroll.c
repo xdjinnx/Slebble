@@ -47,8 +47,6 @@ void text_scroll_handler(void *data) {
     row_destroy(row);
 }
 
-
-
 void menu_init_text_scroll(Menu *menu) {
     scroll_timer = app_timer_register(500, &text_scroll_handler, menu);
 }

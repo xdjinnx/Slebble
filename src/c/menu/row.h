@@ -6,7 +6,7 @@ typedef struct Row {
     char subtitle[64];
 } Row;
 
-typedef Row* (*converter)(void *);
+typedef Row *(*converter)(void *);
 
 extern Row *row_create();
 extern void row_destroy(Row *row);

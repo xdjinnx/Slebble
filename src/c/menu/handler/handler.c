@@ -58,7 +58,6 @@ void draw_row_callback(GContext *ctx, const Layer *cell_layer, MenuIndex *cell_i
     }
 }
 
-
 void selection_will_change_callback(struct MenuLayer *menu_layer, MenuIndex *new_index, MenuIndex old_index, void *data) {
     text_scroll_reset();
 }

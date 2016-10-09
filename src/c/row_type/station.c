@@ -4,9 +4,9 @@
 #include "../menu/row.h"
 
 enum StationEnum {
-        // 0, 1, 2 allocated for AppMessageEnum
-        TITLE = 3
-    };
+    // 0, 1, 2 allocated for AppMessageEnum
+    TITLE = 3
+};
 
 Station *station_create_blank() {
     Station *station = calloc(1, sizeof(Station));
