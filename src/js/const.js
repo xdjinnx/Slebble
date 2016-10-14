@@ -1,5 +1,4 @@
 module.exports = (function() {
-	'use strict';
 
 // Ride Type Constants
 	return {

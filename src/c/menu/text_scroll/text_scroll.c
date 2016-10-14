@@ -17,7 +17,7 @@ void text_scroll_reset() {
 
 void text_scroll_handler(void *data) {
     Menu *menu = (Menu *)data;
-    MenuIndex selected_item = menu_layer_get_selected_index(menu->layer);
+    MenuIndex selected_item = menu_layer_get_selected_index(menu->layer); // Crash here!
 
     Row *row = NULL;
 
