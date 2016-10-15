@@ -14,7 +14,7 @@ module.exports = (function() {
 			if (options !== undefined && options.method !== undefined) {
 				req.open(options.method, url);
 			} else {
-				req.open('GET', url, false);
+				req.open('GET', url, true);
 			}
 
 			req.setRequestHeader('Authorization', 'Bearer ' + localStorage.token);

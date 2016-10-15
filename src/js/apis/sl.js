@@ -97,10 +97,9 @@ module.exports = (function() {
 			alldeps.push(ad);
 		}
 
-		// only filter if filter is actually active
 		if (busFilterActive === 'true') {
 			alldeps = alldeps.filter(function (ride) {
-				filterRides(ride, filter)
+				return filterRides(ride, filter)
 			});
 		}
 
