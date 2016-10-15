@@ -1,7 +1,7 @@
 #include "departure.h"
 
-#include "pebble.h"
 #include "../menu/row.h"
+#include "pebble.h"
 
 enum DepartureKeyEnum {
     // 0, 1, 2 allocated for AppMessageEnum

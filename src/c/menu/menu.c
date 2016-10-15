@@ -1,7 +1,7 @@
 #include "menu.h"
 
-#include "text_scroll/text_scroll.h"
 #include "handler/handler.h"
+#include "text_scroll/text_scroll.h"
 
 StatusBarLayer *status_bar;
 

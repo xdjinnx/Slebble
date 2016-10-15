@@ -1,10 +1,10 @@
 #include "appmessage_in.h"
 
-#include "../storage/storage.h"
 #include "../menu/menu.h"
 #include "../row_type/departure.h"
 #include "../row_type/error.h"
 #include "../row_type/station.h"
+#include "../storage/storage.h"
 #include "appmessage_out.h"
 
 enum AppMessageEnum {
@@ -58,7 +58,7 @@ void in_received_handler(DictionaryIterator *iter, void *context) {
 
         queue_queue(queue, data);
 
-        uint16_t progress_amount = 100/(queue_length(queue) + messages_left);
+        uint16_t progress_amount = 100 / (queue_length(queue) + messages_left);
         menu_increment_loading_progress(*menu, progress_amount);
 
         if (messages_left == 0) {

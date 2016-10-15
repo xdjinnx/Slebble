@@ -1,7 +1,7 @@
 #pragma once
 
-#include "pebble.h"
 #include "../menu/row.h"
+#include "pebble.h"
 
 typedef struct Error {
     char title[64];

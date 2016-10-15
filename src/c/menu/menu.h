@@ -1,7 +1,7 @@
 #pragma once
 
-#include "pebble.h"
 #include "../utils/queue.h"
+#include "pebble.h"
 #include "progress_layer/progress_layer.h"
 #include "row.h"
 
