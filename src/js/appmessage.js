@@ -81,4 +81,4 @@ module.exports = (function() {
         addRide: addRide,
         appMessageError: appMessageError
     };
-})();
+}());

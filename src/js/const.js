@@ -6,4 +6,4 @@ module.exports = (function() {
 		RT_METRO: 'U',
 		RT_UNKNOWN: '?'
 	};
-})();
+}());

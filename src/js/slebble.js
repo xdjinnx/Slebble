@@ -1,6 +1,5 @@
 module.exports = (function() {
     var appmessage = require('./appmessage.js');
-    var slApi = require('./apis/sl.js');
     var resrobot = require('./apis/resrobot2.js');
     var objectAssign = require('object-assign');
 
@@ -15,6 +14,10 @@ module.exports = (function() {
         config = c;
         provider = config.provider;
         maxDepatures = parseInt(config.maxDepatures);
+
+        if (provider === "sl") {
+            Pebble.showSimpleNotificationOnPebble("Old settings", "Please visit the settings page. You are using an old provider that is no longer supported.");
+        }
     }
 
     function clearNearbyStation() {
@@ -43,19 +46,9 @@ module.exports = (function() {
         };
 
         lastIndex = index;
-
-        var fetchPromise;
-        if (provider === 'sl' && 0 === nearbyStations.length) {
-            fetchPromise = slApi.realtime(queryId, option).then(function success(rides) {
-                appmessage.addRide(rides, expectedPackageKey);
-            });
-        } else {
-            fetchPromise = resrobot.stolptid(queryId, option).then(function success(rides) {
-                appmessage.addRide(rides, expectedPackageKey);
-            });
-        }
-
-        fetchPromise.catch(function fail() {
+        resrobot.stolptid(queryId, option).then(function success(rides) {
+            appmessage.addRide(rides, expectedPackageKey);
+        }).catch(function fail() {
             appmessage.appMessageError('No rides available', 'Try again later', expectedPackageKey)
         });
     }
@@ -102,4 +95,4 @@ module.exports = (function() {
 
     return open;
 
-})();
+}());
