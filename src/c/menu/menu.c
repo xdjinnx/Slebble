@@ -41,6 +41,7 @@ void hide_load_image(Menu *menu, bool vibe) {
     text_scroll_reset();
     menu_layer_reload_data(menu->layer);
     layer_set_hidden(bitmap_layer_get_layer(menu->load_layer), true);
+    layer_set_hidden(menu->progress_layer, true);
     menu_layer_set_click_config_onto_window(menu->layer, menu->window);
 
     if (vibe) {
@@ -90,6 +91,7 @@ void window_unload(Window *window) {
     menu_layer_destroy(menu->layer);
     bitmap_layer_destroy(menu->load_layer);
     gbitmap_destroy(menu->load_image);
+    progress_layer_destroy(menu->progress_layer);
 
     free_data(menu);
     free(menu->data);
@@ -132,6 +134,21 @@ void window_load(Window *window) {
 
     layer_add_child(window_layer, menu_layer_get_layer(menu->layer));
     layer_add_child(window_layer, bitmap_layer_get_layer(menu->load_layer));
+
+    int PROGRESS_LAYER_WINDOW_WIDTH = 80;
+    int PROGRESS_LAYER_WINDOW_HEIGHT = 6;
+
+    GRect progress_bounds = GRect((menu_bounds.size.w - PROGRESS_LAYER_WINDOW_WIDTH) / 2,
+                                  155,
+                                  PROGRESS_LAYER_WINDOW_WIDTH,
+                                  PROGRESS_LAYER_WINDOW_HEIGHT);
+
+    menu->progress_layer = progress_layer_create(progress_bounds);
+    progress_layer_set_progress(menu->progress_layer, 0);
+    progress_layer_set_corner_radius(menu->progress_layer, 2);
+    progress_layer_set_foreground_color(menu->progress_layer, GColorLightGray);
+    progress_layer_set_background_color(menu->progress_layer, GColorWhite);
+    layer_add_child(window_layer, menu->progress_layer);
 }
 
 void window_appear(Window *window) {
@@ -165,4 +182,8 @@ Menu *menu_create(uint32_t load_image_resource_id, MenuCallbacks callbacks) {
     }
 
     return menu;
+}
+
+void menu_increment_loading_progress(Menu *menu, int16_t progress) {
+    progress_layer_increment_progress(menu->progress_layer, progress);
 }

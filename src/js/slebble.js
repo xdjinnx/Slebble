@@ -15,8 +15,8 @@ module.exports = (function() {
         provider = config.provider;
         maxDepatures = parseInt(config.maxDepatures);
 
-        if (provider === "sl") {
-            Pebble.showSimpleNotificationOnPebble("Old settings", "Please visit the settings page. You are using an old provider that is no longer supported.");
+        if (provider === 'sl') {
+            Pebble.showSimpleNotificationOnPebble('Old settings', 'Please visit the settings page. You are using an old provider that is no longer supported.');
         }
     }
 

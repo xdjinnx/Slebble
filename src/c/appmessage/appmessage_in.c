@@ -10,7 +10,7 @@
 enum AppMessageEnum {
     PACKAGE = 0,
     TYPE = 1,
-    LAST = 2
+    MESSAGES_LEFT = 2
 };
 
 enum RowTypeEnum {
@@ -35,7 +35,7 @@ void in_received_handler(DictionaryIterator *iter, void *context) {
 
     int package = dict_find(iter, PACKAGE)->value->int8;
     int type = dict_find(iter, TYPE)->value->int8;
-    int last = dict_find(iter, LAST)->value->int8;
+    uint16_t messages_left = dict_find(iter, MESSAGES_LEFT)->value->uint8;
 
     if (package >= appmessage_package_key_value()) {
         void *data = NULL;
@@ -58,7 +58,10 @@ void in_received_handler(DictionaryIterator *iter, void *context) {
 
         queue_queue(queue, data);
 
-        if (last) {
+        uint16_t progress_amount = 100/(queue_length(queue) + messages_left);
+        menu_increment_loading_progress(*menu, progress_amount);
+
+        if (messages_left == 0) {
             menu_add_data(*menu, section_title, queue, converter);
             storage_save(*menu);
         }

@@ -12,7 +12,7 @@ module.exports = (function() {
         Pebble.sendAppMessage({
                 '0': packageKey,
                 '1': 0,
-                '2': stations.length == 1 ? 1 : 0,
+                '2': stations.length - 1,
                 '3': stations[0].from
             },
             function() {
@@ -38,7 +38,7 @@ module.exports = (function() {
         Pebble.sendAppMessage({
                 '0': packageKey,
                 '1': 1,
-                '2': depatureList.length == 1 ? 1 : 0,
+                '2': depatureList.length - 1,
                 '3': depatureList[0].displayTime,
                 '4': depatureList[0].time,
                 '5': depatureList[0].number + ' ' + depatureList[0].destination
@@ -63,7 +63,7 @@ module.exports = (function() {
         Pebble.sendAppMessage({
                 '0': packageKey,
                 '1': 2,
-                '2': 1,
+                '2': 0,
                 '3': title,
                 '4': subtitle
             },
