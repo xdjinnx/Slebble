@@ -1,13 +1,10 @@
-/* eslint strict: 0 */
-
 module.exports = (function() {
-
     var Promise = require('promise');
 
-    var fetch = require('../fetch.js').fetch;
-    var util = require('../util.js');
+    var fetch = require('../utils/fetch.js').fetch;
+    var timeFunctions = require('../utils/time.js');
+    var filterRides = require('../utils/filter.js').filterRides;
     var cnst = require('../const.js');
-    var log = require('../util.js').log;
 
     var key = {};
     key.resrobot2 = 'dc778c95-e014-472d-ae19-a2bf0ffa04c7';
@@ -35,23 +32,19 @@ module.exports = (function() {
         }
 
         return new Promise(function (resolve, reject) {
-            log('stolptid in');
             fetch(url.resrobot2(siteid))
                 .then(function (response) {
-                    log('stolptid in resp');
-                    var rides = _stolptidResponse(response, options.busFilterActive, options.filter, options.maxDepatures);
+                    var rides = stolptidResponse(response, options.busFilterActive, options.filter, options.maxDepatures);
                     if (rides === -1) {
-                        log('reject');
                         reject();
                     } else {
-                        log('resolve' + rides);
                         resolve(rides);
                     }
                 });
         });
     };
 
-    var _stolptidResponse = function (resp, busFilterActive, filter, maxDepatures) {
+    var stolptidResponse = function (resp, busFilterActive, filter, maxDepatures) {
         // check for empty response
         if (resp === '{}') {
             return -1;
@@ -66,7 +59,7 @@ module.exports = (function() {
             ad.destination = element.direction;
             var time = element.rtTime === undefined ? element.time : element.rtTime;
             ad.time = time.substring(0, 5);
-            ad.displayTime = util.determineTimeLeft(ad.time);
+            ad.displayTime = timeFunctions.determineTimeLeft(ad.time);
 
             if (element.transportCategory === 'BLT') {
                 ad.ridetype = cnst.RT_BUS;
@@ -82,7 +75,7 @@ module.exports = (function() {
         // only filter if filter is actually active
         if (busFilterActive === 'true') {
             alldeps = alldeps.filter(function (ride) {
-                util.filterRides(ride, filter)
+                filterRides(ride, filter)
             });
         }
 
@@ -104,12 +97,9 @@ module.exports = (function() {
             fetch(url.resrobotGeo(longitude, latitude))
                 .then(function (resp) {
                     var stations = _GeoResponse(resp);
-                    log(stations);
                     if (stations === -1) {
-                        log('reject');
                         reject();
                     } else {
-                        log('solving');
                         resolve(stations);
                     }
                 });
@@ -117,7 +107,6 @@ module.exports = (function() {
     };
 
     var _GeoResponse = function (resp) {
-        //console.log(resp);
         if (resp !== '{}') {
             var response = JSON.parse(resp);
             var stations = [];

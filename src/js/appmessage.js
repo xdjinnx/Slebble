@@ -1,5 +1,3 @@
-/* eslint strict: 0 */
-
 module.exports = (function() {
     /**
      * Send a set of stations to the pebble watch
@@ -7,7 +5,10 @@ module.exports = (function() {
      * @param {number} packageKey A unique key that a set of messages should have
      */
     var addStation = function(stations, packageKey) {
-        if (stations.length < 1) return;
+        if (stations.length < 1) {
+            return;
+        }
+
         Pebble.sendAppMessage({
                 '0': packageKey,
                 '1': 0,
@@ -30,7 +31,10 @@ module.exports = (function() {
      * @param {number} packageKey A unique key that a set of messages should have
      */
     var addRide = function(depatureList, packageKey) {
-        if (depatureList.length < 1) return;
+        if (depatureList.length < 1) {
+            return;
+        }
+
         Pebble.sendAppMessage({
                 '0': packageKey,
                 '1': 1,

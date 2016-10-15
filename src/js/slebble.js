@@ -1,5 +1,4 @@
 module.exports = (function() {
-
     var appmessage = require('./appmessage.js');
     var slApi = require('./apis/sl.js');
     var resrobot = require('./apis/resrobot2.js');
@@ -43,21 +42,22 @@ module.exports = (function() {
             maxDepatures: maxDepatures
         };
 
+        lastIndex = index;
+
+        var fetchPromise;
         if (provider === 'sl' && 0 === nearbyStations.length) {
-            slApi.realtime(queryId, option).then(function(rides) {
-                lastIndex = index;
+            fetchPromise = slApi.realtime(queryId, option).then(function success(rides) {
                 appmessage.addRide(rides, expectedPackageKey);
-            }).catch(function() {
-                appmessage.appMessageError('No rides available', 'Try again later', expectedPackageKey);
             });
         } else {
-            resrobot.stolptid(queryId, option).then(function(rides) {
-                lastIndex = index;
+            fetchPromise = resrobot.stolptid(queryId, option).then(function success(rides) {
                 appmessage.addRide(rides, expectedPackageKey);
-            }).catch(function() {
-                appmessage.appMessageError('No rides available', 'Try again later', expectedPackageKey)
             });
         }
+
+        fetchPromise.catch(function fail() {
+            appmessage.appMessageError('No rides available', 'Try again later', expectedPackageKey)
+        });
     }
 
     function requestUpdate(expectedPackageKey) {

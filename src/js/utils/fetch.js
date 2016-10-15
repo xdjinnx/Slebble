@@ -1,6 +1,4 @@
 module.exports = (function() {
-
-	var log = require('./util.js').log;
 	var Promise = require('promise');
 
 	/**
@@ -11,7 +9,6 @@ module.exports = (function() {
 	 */
 	var fetch = function (url, options) {
 		return new Promise(function (resolve, reject) {
-			log(url);
 			// Do the usual XHR stuff
 			var req = new XMLHttpRequest();
 			if (options !== undefined && options.method !== undefined) {
@@ -61,4 +58,4 @@ module.exports = (function() {
 	return {
 		fetch: fetch
 	};
-})();
+}());

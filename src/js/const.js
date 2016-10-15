@@ -1,5 +1,4 @@
 module.exports = (function() {
-
 // Ride Type Constants
 	return {
 		RT_BUS: 'B',

@@ -1,4 +1,3 @@
-/* eslint strict: 0 */
 /* global trackJs */
 
 var Slebble = require('./slebble.js');

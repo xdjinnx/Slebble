@@ -1,11 +1,9 @@
-/* eslint strict: 0 */
-
 module.exports = (function() {
-
 	var Promise = require('promise');
 
-	var fetch = require('../fetch.js').fetch;
-	var util = require('../util.js');
+	var fetch = require('../utils/fetch.js').fetch;
+	var timeFunctions = require('../utils/time.js');
+	var filterRides = require('../utils/filter.js').filterRides;
 	var cnst = require('../const.js');
 
 	var key = {};
@@ -22,7 +20,7 @@ module.exports = (function() {
 		var dt = departure.DisplayTime;
 
 		if (dt.substring(dt.length - 3, dt.length) !== 'min') {
-			return util.determineTimeLeft(dt);
+			return timeFunctions.determineTimeLeft(dt);
 		} else {
 			return parseInt(dt.substring(0, dt.length - 4));
 		}
@@ -34,7 +32,7 @@ module.exports = (function() {
 		if (dt.substring(dt.length - 3, dt.length) !== 'min') {
 			return dt;
 		} else {
-			return util.determineTime(ad.displayTime);
+			return timeFunctions.determineTime(ad.displayTime);
 		}
 	};
 
@@ -64,7 +62,6 @@ module.exports = (function() {
 	};
 
 	var _realtimeReponse = function (resp, busFilterActive, filter, maxDepatures) {
-		//console.log('sl callback');
 		var response = JSON.parse(resp);
 		var alldeps = [];
 		var deps = [];
@@ -84,7 +81,7 @@ module.exports = (function() {
 			ad.number = deps[i].LineNumber;
 			if (deps[i].DisplayTime === 'Nu') {
 				ad.displayTime = 0;
-				ad.time = util.determineTime(0);
+				ad.time = timeFunctions.determineTime(0);
 			}
 			else {
 				ad.displayTime = _formatDiaplayTime(deps[i]);
@@ -103,7 +100,7 @@ module.exports = (function() {
 		// only filter if filter is actually active
 		if (busFilterActive === 'true') {
 			alldeps = alldeps.filter(function (ride) {
-				util.filterRides(ride, filter)
+				filterRides(ride, filter)
 			});
 		}
 

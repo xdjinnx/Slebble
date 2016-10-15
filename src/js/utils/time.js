@@ -1,9 +1,5 @@
-/* eslint strict: 0 */
-
 module.exports = (function() {
 	'use strict';
-
-	var cnst = require('./const.js');
 
 	var determineTime = function (timeleft) {
 		var date = new Date();
@@ -24,10 +20,9 @@ module.exports = (function() {
 	};
 
 	/**
-	 * Parse time left for resrobot times
+	 * Parse time left.
 	 * @param time HH:MM
 	 * @returns {number}
-	 * @private
 	 */
 	var determineTimeLeft = function (time) {
 		if (time === '') return 0;
@@ -52,31 +47,8 @@ module.exports = (function() {
 		return min + dMin;
 	};
 
-	/**
-	 * Filter function for rides to be used with array.filter
-	 * @param ride        A ride object, se sample in _SLRealtimeCallback
-	 * @returns {boolean} Returns true if ride is to be included
-	 * @private
-	 */
-	var filterRides = function (ride, filter) {
-		if (ride.ridetype !== cnst.RT_BUS) return true;
-
-		for (var i = filter.length - 1; i >= 0; i--) {
-			// only filter buses, else always include
-			if (filter[i] === ride.number) return true;
-		}
-		return false;
-	};
-
-	var silent = false;
-	var log = function (msg) {
-		if (!silent) console.log(msg);
-	};
-
 	return {
 		determineTime: determineTime,
-		determineTimeLeft: determineTimeLeft,
-		filterRides: filterRides,
-		log: log
+		determineTimeLeft: determineTimeLeft
 	};
-})();
+}());
