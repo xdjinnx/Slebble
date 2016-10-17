@@ -45,7 +45,7 @@ void draw_row_callback(GContext *ctx, const Layer *cell_layer, MenuIndex *cell_i
     if (menu->menu == NULL && cell_index->section == 0)
         menu_cell_basic_draw(ctx, cell_layer, "Nearby Stations", "", NULL);
     else {
-        Row *row = menu->converter(menu->data[cell_index->row]);
+        Row *row = menu->row[cell_index->row];
         char *title = row->title;
         char *subtitle = row->subtitle;
 
@@ -54,7 +54,6 @@ void draw_row_callback(GContext *ctx, const Layer *cell_layer, MenuIndex *cell_i
         }
 
         menu_cell_basic_draw(ctx, cell_layer, title, subtitle, NULL);
-        row_destroy(row);
     }
 }
 

@@ -22,7 +22,7 @@ void text_scroll_handler(void *data) {
     Row *row = NULL;
 
     if (menu->size > 0) {
-        row = menu->converter(menu->data[selected_item.row]);
+        row = menu->row[selected_item.row];
     }
 
     if (row) {
@@ -44,7 +44,6 @@ void text_scroll_handler(void *data) {
 
     menu_layer_reload_data(menu->layer);
     scroll_timer = app_timer_register(500, &text_scroll_handler, data);
-    row_destroy(row);
 }
 
 void menu_init_text_scroll(Menu *menu) {

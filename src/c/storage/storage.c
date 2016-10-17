@@ -17,7 +17,7 @@ bool storage_load(Menu *menu) {
         queue_queue(queue, station);
     }
 
-    menu_add_data(menu, "Favorites", queue, &station_convert);
+    menu_add_rows(menu, "Favorites", queue);
 
     return true;
 }
@@ -29,7 +29,7 @@ void storage_save(Menu *menu) {
 
     //persist_write_int(0, menu->size);
     for (int i = 0; i < menu->size; i++) {
-        Station *station = menu->data[i];
+        Station *station = menu->row[i];
         persist_write_string(i + 1, station->title);
     }
 }

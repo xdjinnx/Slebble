@@ -15,9 +15,8 @@ typedef struct Menu {
 
     uint16_t size;
     char *title;
-    void **data;
+    Row **row;
 
-    converter converter;
     MenuCallbacks callbacks;
 
     Window *window;
@@ -29,5 +28,5 @@ typedef struct Menu {
 } Menu;
 
 extern Menu *menu_create(uint32_t load_image_resource_id, MenuCallbacks callbacks);
-extern void menu_add_data(void *menu, char *title, Queue *queue, converter converter);
+extern void menu_add_rows(Menu *menu, char *title, Queue *queue);
 extern void menu_increment_loading_progress(Menu *menu, int16_t progress);

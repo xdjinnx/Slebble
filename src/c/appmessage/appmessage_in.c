@@ -39,21 +39,17 @@ void in_received_handler(DictionaryIterator *iter, void *context) {
 
     if (package >= appmessage_package_key_value()) {
         void *data = NULL;
-        converter converter;
 
         if (type == STATION) {
             data = station_create(iter);
-            converter = station_convert;
         }
 
         if (type == DEPARTURE) {
             data = departure_create(iter);
-            converter = departure_convert;
         }
 
         if (type == ERROR) {
             data = error_create(iter);
-            converter = error_convert;
         }
 
         queue_queue(queue, data);
@@ -62,7 +58,7 @@ void in_received_handler(DictionaryIterator *iter, void *context) {
         menu_increment_loading_progress(*menu, progress_amount);
 
         if (messages_left == 0) {
-            menu_add_data(*menu, section_title, queue, converter);
+            menu_add_rows(*menu, section_title, queue);
             storage_save(*menu);
         }
     }

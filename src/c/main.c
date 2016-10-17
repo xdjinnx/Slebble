@@ -16,10 +16,8 @@ void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
     }
 
     for (int i = 0; i < menu->size; i++) {
-        Departure *departure = menu->data[i];
-        if (departure->time_left > 0) {
-            departure->time_left--;
-        }
+        Departure *departure = menu->row[i];
+        departure_decrease_time_left(departure);
     }
 
     menu_layer_reload_data(menu->layer);
@@ -36,7 +34,7 @@ void remove_callback_handler(void *data) {
 }
 
 void select_nearby_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
-    Station *station = menu->data[cell_index->row];
+    Station *station = menu->row[cell_index->row];
     char *click_data = station->title;
 
     appmessage_set_click_data(click_data);
@@ -67,7 +65,7 @@ void select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
     if (cell_index->section == 0) {
         click_data = "Nearby Stations";
     } else {
-        Station *station = menu->data[cell_index->row];
+        Station *station = menu->row[cell_index->row];
         click_data = station->title;
     }
 

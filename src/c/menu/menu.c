@@ -7,17 +7,17 @@ StatusBarLayer *status_bar;
 
 void menu_allocation(Menu *menu, int size) {
     if (menu->size == 0) {
-        menu->data = calloc(size, sizeof(void *));
+        menu->row = calloc(size, sizeof(void *));
     }
 
     if (menu->size != size && menu->size != 0) {
         if (menu->size > size) {
             for (int i = size; i < menu->size; i++) {
-                free(menu->data[i]);
+                row_destroy(menu->row[i]);
             }
         }
 
-        menu->data = realloc(menu->data, sizeof(void *) * size);
+        menu->row = realloc(menu->row, sizeof(void *) * size);
     }
 
     menu->size = size;
@@ -29,7 +29,7 @@ void free_data(Menu *menu) {
     }
 
     for (int i = 0; i < menu->size; i++) {
-        free(menu->data[i]);
+        row_destroy(menu->row[i]);
     }
 }
 
@@ -50,24 +50,22 @@ void hide_load_image(Menu *menu, bool vibe) {
 }
 
 // Should be able to send an array pointer.
-void menu_add_data(void *menu_void, char *title, Queue *queue, converter converter) {
-    if (menu_void == NULL) {
+void menu_add_rows(Menu *menu, char *title, Queue *queue) {
+    if (menu == NULL) {
         return;
     }
 
-    Menu *menu = (Menu *)menu_void;
     if (menu->size > 0 && strcmp(menu->title, title) != 0) {
         return;
     }
 
     menu->title = title;
-    menu->converter = converter;
 
     free_data(menu);
     menu_allocation(menu, queue_length(queue));
 
     for (int i = 0; !queue_empty(queue); i++) {
-        menu->data[i] = queue_pop(queue);
+        menu->row[i] = queue_pop(queue);
     }
 
     menu_layer_reload_data(menu->layer);
@@ -94,7 +92,7 @@ void window_unload(Window *window) {
     progress_layer_destroy(menu->progress_layer);
 
     free_data(menu);
-    free(menu->data);
+    free(menu->row);
 
     if (ret == NULL) {
         status_bar_layer_destroy(status_bar);

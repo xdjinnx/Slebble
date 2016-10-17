@@ -8,29 +8,37 @@ enum StationEnum {
     TITLE = 3
 };
 
+typedef struct StationData {
+    char title[64];
+} StationData;
+
+void station_update(Station *station) {
+    StationData *station_data = station->data;
+
+    memcpy(station->title, station_data->title, 64);
+}
+
 Station *station_create_blank() {
-    Station *station = calloc(1, sizeof(Station));
+    StationData *station_data = calloc(1, sizeof(StationData));
+
+    Station *station = row_create(station_data);
+    station_update(station);
+
     return station;
 }
 
 Station *station_create(DictionaryIterator *iter) {
-    Station *station = calloc(1, sizeof(Station));
+    StationData *station_data = calloc(1, sizeof(StationData));
 
     Tuple *title_tuple = dict_find(iter, TITLE);
-    memcpy(station->title, title_tuple->value->cstring, title_tuple->length);
+    memcpy(station_data->title, title_tuple->value->cstring, title_tuple->length);
+
+    Station *station = row_create(station_data);
+    station_update(station);
 
     return station;
 }
 
 void station_destroy(Station *station) {
     free(station);
-}
-
-Row *station_convert(void *data) {
-    Station *station = data;
-
-    Row *row = row_create();
-    memcpy(row->title, station->title, 64);
-
-    return row;
 }

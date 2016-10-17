@@ -10,16 +10,38 @@ enum DepartureKeyEnum {
     SUBTITLE = 5
 };
 
-Departure *departure_create(DictionaryIterator *iter) {
-    Departure *departure = calloc(1, sizeof(Departure));
+typedef struct DepartureData {
+    char subtitle[64];
 
-    departure->time_left = dict_find(iter, TIME_LEFT)->value->int8;
+    uint16_t time_left;
+    char departure_time[64];
+} DepartureData;
+
+void departure_update(Departure *departure) {
+    DepartureData *departure_data = departure->data;
+
+    if (departure_data->time_left > 0) {
+        snprintf(departure->title, 64, "%dmin - %s", departure_data->time_left, departure_data->departure_time);
+    } else {
+        snprintf(departure->title, 64, "Nu - %s", departure_data->departure_time);
+    }
+
+    memcpy(departure->subtitle, departure_data->subtitle, 64);
+}
+
+Departure *departure_create(DictionaryIterator *iter) {
+    DepartureData *departure_data = calloc(1, sizeof(DepartureData));
+
+    departure_data->time_left = dict_find(iter, TIME_LEFT)->value->int8;
 
     Tuple *depature_time_tuple = dict_find(iter, DEPARTURE_TIME);
-    memcpy(departure->departure_time, depature_time_tuple->value->cstring, depature_time_tuple->length);
+    memcpy(departure_data->departure_time, depature_time_tuple->value->cstring, depature_time_tuple->length);
 
     Tuple *subtitle_tuple = dict_find(iter, SUBTITLE);
-    memcpy(departure->subtitle, subtitle_tuple->value->cstring, subtitle_tuple->length);
+    memcpy(departure_data->subtitle, subtitle_tuple->value->cstring, subtitle_tuple->length);
+
+    Departure *departure = row_create(departure_data);
+    departure_update(departure);
 
     return departure;
 }
@@ -28,18 +50,12 @@ void departure_destroy(Departure *departure) {
     free(departure);
 }
 
-Row *departure_convert(void *data) {
-    Departure *departure = data;
+void departure_decrease_time_left(Departure *departure) {
+    DepartureData *departure_data = departure->data;
 
-    Row *row = row_create();
-
-    if (departure->time_left > 0) {
-        snprintf(row->title, 64, "%dmin - %s", departure->time_left, departure->departure_time);
-    } else {
-        snprintf(row->title, 64, "Nu - %s", departure->departure_time);
+    if (departure_data->time_left > 0) {
+        departure_data->time_left--;
+        departure_update(departure);
     }
-
-    memcpy(row->subtitle, departure->subtitle, 64);
-
-    return row;
 }
+
