@@ -6,9 +6,25 @@ var runSequence = require('run-sequence');
 var sass = require('gulp-sass');
 var streamqueue = require('streamqueue');
 var concat = require('gulp-concat');
+var babel = require('gulp-babel');
+var webpack = require('webpack-stream');
 
+gulp.task("babel", function () {
+    return gulp.src('js/app.js')
+        .pipe(babel())
+        .pipe(gulp.dest('gae-root/webconfig/scripts'));
+});
 
-// Lint JavaScript
+gulp.task('webpack', ['babel'], function() {
+    return gulp.src('gae-root/webconfig/scripts/app.js')
+        .pipe(webpack({
+            output: {
+                filename: 'app.js'
+            }
+        }))
+        .pipe(gulp.dest('gae-root/webconfig/scripts'));
+});
+
 gulp.task('jshint', function () {
   return gulp.src('js/slebble.js')
     .pipe($.jshint())
@@ -16,7 +32,7 @@ gulp.task('jshint', function () {
 });
 
 gulp.task('uglify', function(){
-  return gulp.src(['js/main.js', 'js/slebble.js', 'bower_components/purl/purl.js'])
+  return gulp.src(['js/main.js', 'bower_components/purl/purl.js'])
     .pipe($.uglify())
     .pipe(gulp.dest('gae-root/webconfig/scripts'))
     .pipe($.size({title: 'js'}));
@@ -52,7 +68,7 @@ gulp.task('style', function () {
 
 // Build Production Files, the Default Task
 gulp.task('default', function (cb) {
-  runSequence(['uglify', 'style', 'fonts'], cb);
+  runSequence(['uglify', 'style', 'fonts', 'webpack'], cb);
 });
 
 // Load custom tasks from the `tasks` directory
