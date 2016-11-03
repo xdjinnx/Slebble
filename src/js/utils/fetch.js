@@ -29,15 +29,10 @@ module.exports = (function() {
 			}
 
 			req.onload = function () {
-				// This is called even on 404 etc
-				// so check the status
 				if (req.status.toString().match(/2../)) {
-					// Resolve the promise with the response text
 					resolve(req.responseText);
 				} else {
-					// Otherwise reject with the status text
-					// which will hopefully be a meaningful error
-					reject(Error(req.statusText));
+					reject(req.responseText);
 				}
 			};
 

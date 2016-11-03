@@ -17,29 +17,30 @@ module.exports = (function() {
         return 'https://api.resrobot.se/location.nearbystops.json?key=' + key.resGeo + '&originCoordLat=' + lat + '&originCoordLong=' + long + '&maxNo=5';
     };
 
-
-    /**
-     * Get depatures from Resrobot stolptidstabeller 2 api
-     *
-     * @param {number}   siteid     The unique id for a station
-     * @param {Function} callback   The callback that should handle the response from the api
-     * @param {number}   packageKey A unique key that a set of messages should have
-     */
     var stolptid = function (siteid, options) {
         if (!options) {
             options = {busFilterActive: false, packageKey: -1, filter: []};
         }
 
         return new Promise(function (resolve, reject) {
-            fetch(url.resrobot2(siteid))
-                .then(function (response) {
-                    var rides = stolptidResponse(response, options.busFilterActive, options.filter, options.maxDepatures);
-                    if (rides === -1) {
-                        reject();
-                    } else {
-                        resolve(rides);
-                    }
-                });
+            fetch(url.resrobot2(siteid)).then(requestSuccess, requestFailed);
+
+            function requestSuccess(response) {
+                var rides = stolptidResponse(response, options.busFilterActive, options.filter, options.maxDepatures);
+                if (rides === -1) {
+                    reject();
+                } else {
+                    resolve(rides);
+                }
+            }
+
+            function requestFailed(response) {
+                if (JSON.parse(response).errorCode === 'SVC_LOC') {
+                    reject('Reset your config!');
+                } else {
+                    reject();
+                }
+            }
         });
     };
 

@@ -48,8 +48,12 @@ module.exports = (function() {
         lastIndex = index;
         resrobot.stolptid(queryId, option).then(function success(rides) {
             appmessage.addRide(rides, expectedPackageKey);
-        }).catch(function fail() {
-            appmessage.appMessageError('No rides available', 'Try again later', expectedPackageKey)
+        }).catch(function fail(errorMessage) {
+            if (errorMessage) {
+                appmessage.appMessageError(errorMessage, '', expectedPackageKey);
+            } else {
+                appmessage.appMessageError('No rides available', 'Try again later', expectedPackageKey);
+            }
         });
     }
 
