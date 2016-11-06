@@ -10,7 +10,7 @@ var babel = require('gulp-babel');
 var webpack = require('webpack-stream');
 
 gulp.task("babel", function () {
-    return gulp.src('js/app.js')
+    return gulp.src('js/**/*.js')
         .pipe(babel())
         .pipe(gulp.dest('gae-root/webconfig/scripts'));
 });
