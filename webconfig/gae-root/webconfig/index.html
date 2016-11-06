@@ -20,68 +20,7 @@
   </div>
 </header>
 
-<app>
-
-  <div id="startPage" class="page">
-    <h2>Stations</h2>
-
-    <ul id="adding" class="slebble-list">
-      <span>No stations set</span>
-    </ul>
-
-    <h2>Max depatures</h2>
-
-    <input type="range" id="depature-range" min="1" max="20" value="15" step="1" onchange="Slebble.changePerformance()" oninput="Slebble.changePerformance()" />
-
-    <div style="width: 17px; display: inline-block;">
-      <span id="depature-number">15</span>
-    </div>
-    <span id="performance-display" class="theme--user-input">
-      <span class="icon-circle themed--background"><i class="icon icon-performance"></i></span>
-    </span>
-
-    <h2>Area</h2>
-
-    <select id="provider">
-      <option value="resrobot">Sweden</option>
-      <option value="sl">SL - Stockholm</option>
-    </select>
-    <p>Note: It is only possible to have stations from one area at a time. Current stations will be removed if you change.</p>
-
-  </div>
-
-  <div id="searchPage" class="page">
-    <h2>Search</h2>
-
-    <input type="text" id="search-field" onkeypress="Slebble.enterKeyPress(event)" />
-    <a id="search-btn" class="button--primary">
-      <div class="mglass"></div>
-    </a>
-
-    <ul id="results" class="list-links list-links--primary"></ul>
-  </div>
-
-  <div id="filterPage" class="page">
-    <h2>Filtering</h2>
-
-    <ul id="filterAdding" class="slebble-list list-links--primary">
-      <span>No stations set</span>
-    </ul>
-
-    <div class="highlight-module  highlight-module--right   highlight-module--learning">
-      <div class="highlight-module__container  icon-exclamation ">
-        <div class="highlight-module__content   g-wide--push-1 g-wide--pull-1  g-medium--pull-1   ">
-          <p class="highlight-module__title"> Help </p>
-
-          <p class="highlight-module__text"> Exemple "514, 321, 534" or "514". It's very important that it has ", "
-            between all the bus numbers!</p>
-        </div>
-      </div>
-    </div>
-
-  </div>
-
-</app>
+<app></app>
 <script src="scripts/purl.js"></script>
 <script src="scripts/app.js"></script>
 
