@@ -7,7 +7,7 @@ fi
 
 if [ ! -d "cmocka-1.0.1/build" ]; then
   echo "No cmocka-1.0.1/build found"
-  wget https://cmocka.org/files/1.0/cmocka-1.0.1.tar.xz
+  wget --no-check-certificate https://cmocka.org/files/1.0/cmocka-1.0.1.tar.xz
   tar -xvf cmocka-1.0.1.tar.xz
   mkdir cmocka-1.0.1/build
   cmake -DCMAKE_INSTALL_PREFIX=/home/travis/build/xdjinnx/Slebble/cmocka -DCMAKE_BUILD_TYPE=Debug -Bcmocka-1.0.1/build -Hcmocka-1.0.1
