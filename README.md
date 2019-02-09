@@ -2,17 +2,17 @@
 
 # Slebble
 
-[Slebble in pebble appstore](https://apps.getpebble.com/applications/5320c36f53fab421d000003a)
+[Slebble in pebble appstore](https://apps.rebble.io/en_US/application/5320c36f53fab421d000003a)
 
 ## Screenshots
 
-![Screenshot1](https://assets.getpebble.com/api/file/BU5C2Em2SyaGGBf9NNT9/convert?cache=true&w=144&h=168&fit=)
-![Screenshot2](https://assets.getpebble.com/api/file/uXi2g0mkRbCYpBIdoozF/convert?cache=true&w=144&h=168&fit=)
-![Screenshot3](https://assets.getpebble.com/api/file/o5aoCGuRuuVVP7oTHneQ/convert?cache=true&w=144&h=168&fit=)
-![Screenshot4](https://assets.getpebble.com/api/file/KxSn79xGRnSZl8YXahUi/convert?cache=true&w=144&h=168&fit=)
+![Screenshot1](https://assets.rebble.io/144x168/filters:upscale()/r5bc0YgVTFKftp8krkO2)
+![Screenshot2](https://assets.rebble.io/144x168/filters:upscale()/GTcHN9N2Re21z1iLYtdg)
+![Screenshot3](https://assets.rebble.io/144x168/filters:upscale()/VObN0prEQqyITXDCzcCy)
+![Screenshot4](https://assets.rebble.io/144x168/filters:upscale()/QacC5MdHQ0AU8Gx66q9K)
 
 ## Build & Install
-You will need to download and install the Pebble SDK found on the [official Pebble developer website](https://developer.getpebble.com/sdk/install/). It's also recommended that you follow the instructions found on the website.
+You will need to download and install the Pebble SDK found on the [Rebble developer website](https://developer.rebble.io/developer.pebble.com/sdk/index.html). It's also recommended that you follow the instructions found on the website.
 
 ### No Pebble watch needed
 There is an emulator available to use within the Pebble SDK. Instruction on how to use the emulator can be found [here](https://developer.getpebble.com/guides/publishing-tools/pebble-tool/#installing-watchapps) and how to use the settings page can be found [here](https://developer.getpebble.com/guides/pebble-apps/pebblekit-js/app-configuration/#testing-in-the-sdk-emulator).
